@@ -2,143 +2,180 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Question - IQ Test</title>
+    <title>Assessment - IQ Platform</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 2rem;
+            background: #F5F7FA;
+            padding: 0;
+            margin: 0;
         }
-        .test-container {
-            max-width: 800px;
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #E5E7EB;
+        }
+        .navbar-content {
+            max-width: 1000px;
             margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         .user-badge {
-            background: white;
-            padding: 0.8rem 1.5rem;
-            border-radius: 25px;
-            display: inline-flex;
+            display: flex;
             align-items: center;
-            gap: 0.8rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            gap: 0.75rem;
         }
         .user-badge img {
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
+            border: 2px solid #3498DB;
+        }
+        .progress-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 2rem 0;
+        }
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+            color: #7F8C8D;
+            font-weight: 500;
         }
         .progress-bar {
-            background: rgba(255,255,255,0.3);
-            height: 8px;
+            width: 100%;
+            height: 6px;
+            background: #E5E7EB;
             border-radius: 10px;
-            margin-bottom: 2rem;
             overflow: hidden;
         }
         .progress-fill {
-            background: white;
             height: 100%;
-            transition: width 0.3s;
+            background: linear-gradient(90deg, #3498DB 0%, #2980B9 100%);
+            transition: width 0.4s ease;
+        }
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 2rem 2rem;
         }
         .question-card {
             background: white;
-            border-radius: 20px;
+            border-radius: 12px;
             padding: 3rem;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #E5E7EB;
         }
-        .question-header {
-            color: #667eea;
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
+        .question-number {
+            color: #7F8C8D;
+            font-size: 0.875rem;
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1.5rem;
         }
         .question-text {
-            font-size: 1.4rem;
-            color: #333;
-            margin-bottom: 2rem;
+            font-size: 1.5rem;
+            color: #2C3E50;
             line-height: 1.6;
+            margin-bottom: 2.5rem;
+            font-weight: 500;
         }
         .question-image {
             max-width: 100%;
             height: auto;
-            border-radius: 10px;
-            margin: 1.5rem 0;
+            border-radius: 8px;
+            margin: 2rem 0;
+            border: 1px solid #E5E7EB;
         }
         .options {
             display: grid;
             gap: 1rem;
         }
         .option {
-            background: #f8f9fa;
-            padding: 1.2rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
+            background: #F8F9FA;
+            padding: 1.25rem;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
         }
         .option:hover {
-            border-color: #667eea;
-            background: #f0f4ff;
-            transform: translateX(5px);
+            border-color: #3498DB;
+            background: #EBF5FB;
         }
         .option input[type="radio"] {
             margin-right: 1rem;
             width: 20px;
             height: 20px;
             cursor: pointer;
+            accent-color: #3498DB;
         }
         .option-text {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             flex: 1;
+            color: #2C3E50;
         }
         .btn-next {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #3498DB;
             color: white;
-            padding: 14px 40px;
+            padding: 0.875rem 2rem;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 500;
             cursor: pointer;
-            margin-top: 2rem;
             float: right;
+            margin-top: 2rem;
+            transition: all 0.2s;
+        }
+        .btn-next:hover:not(:disabled) {
+            background: #2980B9;
+            transform: translateY(-1px);
         }
         .btn-next:disabled {
             opacity: 0.5;
             cursor: not-allowed;
         }
     </style>
-    <script>
-        function enableSubmit() {
-            document.getElementById('submitBtn').disabled = false;
-        }
-    </script>
 </head>
 <body>
-<div class="test-container">
-    <div class="user-badge">
-        <img th:src="${profilePicture}" alt="Profile">
-        <span th:text="${userName}">Test Taker</span>
+<nav class="navbar">
+    <div class="navbar-content">
+        <div style="font-weight: 600; color: #2C3E50;">IQ Assessment</div>
+        <div class="user-badge">
+            <img th:src="${profilePicture}" alt="" th:if="${profilePicture}">
+            <span style="font-weight: 500;" th:text="${userName}">User</span>
+        </div>
     </div>
+</nav>
 
+<div class="progress-container">
+    <div class="progress-info">
+        <span>Question <span th:text="${currentIndex + 1}">1</span> of <span th:text="${totalQuestions}">20</span></span>
+        <span><span th:text="${progress}">5</span>% Complete</span>
+    </div>
     <div class="progress-bar">
         <div class="progress-fill" th:style="'width: ' + ${progress} + '%'"></div>
     </div>
+</div>
 
+<div class="container">
     <div class="question-card">
-        <div class="question-header">
-            Question <span th:text="${currentIndex + 1}">1</span> of <span th:text="${totalQuestions}">20</span>
-        </div>
+        <div class="question-number">Question <span th:text="${currentIndex + 1}">1</span></div>
 
-        <h2 class="question-text" th:text="${question.questionText}">What comes next in the sequence?</h2>
+        <div class="question-text" th:text="${question.questionText}">What comes next in the sequence?</div>
 
         <img th:if="${question.questionImageUrl}"
              th:src="@{${question.questionImageUrl}}"
              class="question-image"
-             alt="Question image">
+             alt="Question visual">
 
         <form th:action="@{/test/submit-answer}" method="post">
             <input type="hidden" name="questionId" th:value="${question.questionId}">
@@ -149,7 +186,7 @@
                     <input type="radio"
                            name="optionId"
                            th:value="${option.optionId}"
-                           onclick="enableSubmit()"
+                           onclick="document.getElementById('submitBtn').disabled=false"
                            required>
                     <span class="option-text" th:text="${option.optionText}">Option text</span>
                 </label>

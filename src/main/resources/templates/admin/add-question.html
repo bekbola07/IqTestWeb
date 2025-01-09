@@ -4,113 +4,107 @@
     <meta charset="UTF-8">
     <title>Add Question - Admin</title>
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            margin: 0;
-            padding: 0;
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background: #F5F7FA;
+            color: #2C3E50;
         }
-
         .navbar {
             background: white;
-            padding: 1rem 2rem;
+            padding: 1.25rem 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #E5E7EB;
+        }
+        .navbar-content {
+            max-width: 1000px;
+            margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
-
         .navbar h1 {
-            color: #667eea;
-            margin: 0;
-        }
-
-        .navbar a {
-            color: #667eea;
-            text-decoration: none;
+            color: #2C3E50;
+            font-size: 1.5rem;
             font-weight: 600;
         }
-
-        .container {
-            max-width: 900px;
-            margin: 2rem auto;
-            padding: 0 2rem 2rem;
+        .navbar a {
+            color: #3498DB;
+            text-decoration: none;
+            font-weight: 500;
         }
-
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2.5rem 2rem;
+        }
         .card {
             background: white;
-            border-radius: 15px;
-            padding: 3rem;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 2.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #E5E7EB;
         }
-
         h2 {
-            color: #667eea;
+            color: #2C3E50;
+            font-size: 1.5rem;
+            font-weight: 600;
             margin-bottom: 2rem;
-            text-align: center;
         }
-
         .form-group {
             margin-bottom: 1.5rem;
         }
-
         label {
             display: block;
-            font-weight: 600;
-            color: #555;
+            font-weight: 500;
             margin-bottom: 0.5rem;
+            color: #2C3E50;
+            font-size: 0.9rem;
         }
-
-        label .required {
-            color: #ff4444;
+        .required {
+            color: #E74C3C;
         }
-
         input, select, textarea {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
+            padding: 0.75rem 1rem;
+            border: 1px solid #BDC3C7;
+            border-radius: 6px;
+            font-size: 0.95rem;
             font-family: inherit;
-            transition: border 0.3s;
+            transition: all 0.2s;
         }
-
         input:focus, select:focus, textarea:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #3498DB;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
         }
-
         textarea {
             min-height: 100px;
             resize: vertical;
         }
-
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 1rem;
         }
-
-        .options-container {
-            background: #f8f9fa;
+        .options-section {
+            background: #F8F9FA;
             padding: 1.5rem;
-            border-radius: 10px;
+            border-radius: 8px;
             margin-top: 1rem;
+            border: 1px solid #E5E7EB;
         }
-
         .options-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1rem;
         }
-
         .options-header h3 {
-            color: #667eea;
-            margin: 0;
+            color: #2C3E50;
+            font-size: 1rem;
+            font-weight: 600;
         }
-
         .option-input {
             display: flex;
             gap: 1rem;
@@ -118,122 +112,94 @@
             align-items: center;
             background: white;
             padding: 1rem;
-            border-radius: 8px;
-            border: 2px solid #e0e0e0;
-            transition: border 0.3s;
+            border-radius: 6px;
+            border: 1px solid #E5E7EB;
         }
-
-        .option-input:hover {
-            border-color: #667eea;
-        }
-
         .option-number {
-            background: #667eea;
+            width: 32px;
+            height: 32px;
+            background: #2C3E50;
             color: white;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
+            font-weight: 600;
             flex-shrink: 0;
+            font-size: 0.9rem;
         }
-
         .option-input input[type="text"] {
             flex: 1;
             margin: 0;
         }
-
         .option-input input[type="radio"] {
             width: auto;
             cursor: pointer;
+            accent-color: #3498DB;
         }
-
         .correct-label {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            white-space: nowrap;
-            color: #00cc66;
-            font-weight: 600;
+            color: #27AE60;
+            font-weight: 500;
+            font-size: 0.9rem;
         }
-
         .btn-add-option {
-            background: #667eea;
+            background: #3498DB;
             color: white;
-            padding: 0.6rem 1.5rem;
+            padding: 0.625rem 1.25rem;
             border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: transform 0.2s;
-        }
-
-        .btn-add-option:hover {
-            transform: translateY(-2px);
-        }
-
-        .btn-remove-option {
-            background: #ff4444;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
             border-radius: 6px;
             cursor: pointer;
+            font-weight: 500;
             font-size: 0.9rem;
-            display: none;
         }
-
-        .option-input:hover .btn-remove-option {
-            display: block;
-        }
-
-        .btn-submit {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .btn-remove {
+            background: #E74C3C;
             color: white;
-            padding: 14px 40px;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
+            padding: 0.5rem 0.875rem;
+            border-radius: 4px;
             cursor: pointer;
-            margin-top: 1rem;
+            font-size: 0.85rem;
+        }
+        .btn-submit {
+            background: #3498DB;
+            color: white;
+            padding: 0.875rem 2rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
             width: 100%;
-            transition: transform 0.2s;
+            margin-top: 1.5rem;
         }
-
         .btn-submit:hover {
-            transform: translateY(-2px);
+            background: #2980B9;
         }
-
         .help-text {
             font-size: 0.85rem;
-            color: #999;
-            margin-top: 0.3rem;
+            color: #7F8C8D;
+            margin-top: 0.4rem;
         }
     </style>
 </head>
 <body>
 <nav class="navbar">
-    <h1>➕ Add New Question</h1>
-    <div>
+    <div class="navbar-content">
+        <h1>Add New Question</h1>
         <a th:href="@{/admin/questions}">← Back to Questions</a>
     </div>
 </nav>
 
 <div class="container">
     <div class="card">
-        <h2>Create New IQ Test Question</h2>
+        <h2>Create Assessment Question</h2>
         <form th:action="@{/admin/questions/add}" method="post" id="questionForm">
 
             <div class="form-group">
                 <label for="questionText">Question Text <span class="required">*</span></label>
                 <textarea id="questionText" name="questionText" required
-                          placeholder="Enter your question here... (e.g., What comes next in the sequence: 2, 4, 8, 16, ?)"></textarea>
+                          placeholder="Enter the question text..."></textarea>
                 <div class="help-text">Write a clear and concise question</div>
             </div>
 
@@ -269,22 +235,21 @@
             <div class="form-group">
                 <label for="timeLimitSeconds">Time Limit (seconds)</label>
                 <input type="number" id="timeLimitSeconds" name="timeLimitSeconds" value="60" min="10" max="300">
-                <div class="help-text">Time allowed to answer</div>
+                <div class="help-text">Maximum time allowed to answer</div>
             </div>
 
             <div class="form-group">
                 <label for="questionImageUrl">Image URL (optional)</label>
                 <input type="text" id="questionImageUrl" name="questionImageUrl"
                        placeholder="https://example.com/image.jpg">
-                <div class="help-text">Add an image URL if your question includes a visual</div>
             </div>
 
             <div class="form-group">
                 <label>Answer Options <span class="required">*</span></label>
-                <div class="options-container">
+                <div class="options-section">
                     <div class="options-header">
                         <h3>Options</h3>
-                        <span style="color: #999; font-size: 0.9rem;">Select the correct answer</span>
+                        <span style="color: #7F8C8D; font-size: 0.85rem;">Select the correct answer</span>
                     </div>
 
                     <div id="optionsContainer">
@@ -292,36 +257,33 @@
                             <span class="option-number">1</span>
                             <input type="text" name="optionTexts" placeholder="Enter option 1" required>
                             <input type="radio" name="correctOptionIndex" value="0" required>
-                            <span class="correct-label">✓ Correct</span>
+                            <span class="correct-label">Correct</span>
                         </div>
                         <div class="option-input">
                             <span class="option-number">2</span>
                             <input type="text" name="optionTexts" placeholder="Enter option 2" required>
                             <input type="radio" name="correctOptionIndex" value="1">
-                            <span class="correct-label">✓ Correct</span>
+                            <span class="correct-label">Correct</span>
                         </div>
                         <div class="option-input">
                             <span class="option-number">3</span>
                             <input type="text" name="optionTexts" placeholder="Enter option 3" required>
                             <input type="radio" name="correctOptionIndex" value="2">
-                            <span class="correct-label">✓ Correct</span>
+                            <span class="correct-label">Correct</span>
                         </div>
                         <div class="option-input">
                             <span class="option-number">4</span>
                             <input type="text" name="optionTexts" placeholder="Enter option 4" required>
                             <input type="radio" name="correctOptionIndex" value="3">
-                            <span class="correct-label">✓ Correct</span>
-                            <button type="button" class="btn-remove-option" onclick="removeOption(this)">✕</button>
+                            <span class="correct-label">Correct</span>
                         </div>
                     </div>
 
-                    <button type="button" class="btn-add-option" onclick="addOption()">
-                        ➕ Add Another Option
-                    </button>
+                    <button type="button" class="btn-add-option" onclick="addOption()">Add Another Option</button>
                 </div>
             </div>
 
-            <button type="submit" class="btn-submit">✓ Create Question</button>
+            <button type="submit" class="btn-submit">Create Question</button>
         </form>
     </div>
 </div>
@@ -337,8 +299,8 @@
                 <span class="option-number">${optionCount + 1}</span>
                 <input type="text" name="optionTexts" placeholder="Enter option ${optionCount + 1}" required>
                 <input type="radio" name="correctOptionIndex" value="${optionCount}">
-                <span class="correct-label">✓ Correct</span>
-                <button type="button" class="btn-remove-option" onclick="removeOption(this)">✕</button>
+                <span class="correct-label">Correct</span>
+                <button type="button" class="btn-remove" onclick="removeOption(this)">Remove</button>
             `;
         container.appendChild(newOption);
         optionCount++;
@@ -350,7 +312,7 @@
         const optionInputs = optionsContainer.querySelectorAll('.option-input');
 
         if (optionInputs.length <= 2) {
-            alert('You must have at least 2 options!');
+            alert('You must have at least 2 options');
             return;
         }
 
@@ -377,44 +339,6 @@
             radio.value = index;
         });
     }
-
-    document.getElementById('questionForm').addEventListener('submit', function (e) {
-        const questionText = document.getElementById('questionText').value.trim();
-        const difficultyLevel = document.getElementById('difficultyLevel').value;
-        const optionTexts = document.querySelectorAll('input[name="optionTexts"]');
-        const correctOption = document.querySelector('input[name="correctOptionIndex"]:checked');
-
-        if (!questionText) {
-            e.preventDefault();
-            alert('Please enter a question text');
-            return;
-        }
-        if (!difficultyLevel) {
-            e.preventDefault();
-            alert('Please select a difficulty level');
-            return;
-        }
-
-
-        let allFilled = true;
-        optionTexts.forEach(input => {
-            if (!input.value.trim()) {
-                allFilled = false;
-            }
-        });
-
-        if (!allFilled) {
-            e.preventDefault();
-            alert('Please fill in all option fields');
-            return;
-        }
-
-        if (!correctOption) {
-            e.preventDefault();
-            alert('Please select the correct answer');
-            return;
-        }
-    });
 </script>
 </body>
 </html>

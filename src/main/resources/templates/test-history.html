@@ -3,113 +3,364 @@
 <head>
     <meta charset="UTF-8">
     <title>Test History - IQ Test</title>
+<!--    <style>-->
+<!--        body {-->
+<!--            font-family: 'Segoe UI', Tahoma, sans-serif;-->
+<!--            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);-->
+<!--            min-height: 100vh;-->
+<!--            margin: 0;-->
+<!--            padding: 0;-->
+<!--        }-->
+<!--        .navbar {-->
+<!--            background: white;-->
+<!--            padding: 1rem 2rem;-->
+<!--            border-radius: 0;-->
+<!--            display: flex;-->
+<!--            justify-content: space-between;-->
+<!--            align-items: center;-->
+<!--            margin-bottom: 2rem;-->
+<!--            box-shadow: 0 4px 12px rgba(0,0,0,0.1);-->
+<!--        }-->
+<!--        .navbar h1 {-->
+<!--            color: #667eea;-->
+<!--            margin: 0;-->
+<!--        }-->
+<!--        .user-info {-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--            gap: 1rem;-->
+<!--        }-->
+<!--        .navbar a {-->
+<!--            color: #667eea;-->
+<!--            text-decoration: none;-->
+<!--            font-weight: 600;-->
+<!--        }-->
+<!--        .container {-->
+<!--            max-width: 1200px;-->
+<!--            margin: 0 auto;-->
+<!--            padding: 0 2rem 2rem;-->
+<!--        }-->
+<!--        .stats-summary {-->
+<!--            display: grid;-->
+<!--            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));-->
+<!--            gap: 1.5rem;-->
+<!--            margin-bottom: 2rem;-->
+<!--        }-->
+<!--        .stat-card {-->
+<!--            background: white;-->
+<!--            border-radius: 12px;-->
+<!--            padding: 1.5rem;-->
+<!--            box-shadow: 0 4px 15px rgba(0,0,0,0.1);-->
+<!--            text-align: center;-->
+<!--        }-->
+<!--        .stat-icon {-->
+<!--            font-size: 2rem;-->
+<!--            margin-bottom: 0.5rem;-->
+<!--        }-->
+<!--        .stat-value {-->
+<!--            font-size: 2.5rem;-->
+<!--            font-weight: bold;-->
+<!--            color: #667eea;-->
+<!--        }-->
+<!--        .stat-label {-->
+<!--            color: #666;-->
+<!--            font-size: 0.9rem;-->
+<!--            margin-top: 0.5rem;-->
+<!--        }-->
+<!--        .card {-->
+<!--            background: white;-->
+<!--            border-radius: 15px;-->
+<!--            padding: 2rem;-->
+<!--            box-shadow: 0 10px 40px rgba(0,0,0,0.2);-->
+<!--        }-->
+<!--        h2 {-->
+<!--            color: #667eea;-->
+<!--            margin-bottom: 1.5rem;-->
+<!--        }-->
+<!--        .history-timeline {-->
+<!--            position: relative;-->
+<!--        }-->
+<!--        .timeline-item {-->
+<!--            position: relative;-->
+<!--            padding-left: 3rem;-->
+<!--            padding-bottom: 2rem;-->
+<!--            border-left: 3px solid #e0e0e0;-->
+<!--        }-->
+<!--        .timeline-item:last-child {-->
+<!--            border-left: none;-->
+<!--        }-->
+<!--        .timeline-marker {-->
+<!--            position: absolute;-->
+<!--            left: -12px;-->
+<!--            top: 0;-->
+<!--            width: 20px;-->
+<!--            height: 20px;-->
+<!--            border-radius: 50%;-->
+<!--            background: #667eea;-->
+<!--            border: 3px solid white;-->
+<!--            box-shadow: 0 2px 8px rgba(0,0,0,0.2);-->
+<!--        }-->
+<!--        .test-card {-->
+<!--            background: #f8f9fa;-->
+<!--            border-radius: 12px;-->
+<!--            padding: 1.5rem;-->
+<!--            border: 2px solid #e0e0e0;-->
+<!--            transition: all 0.3s;-->
+<!--        }-->
+<!--        .test-card:hover {-->
+<!--            border-color: #667eea;-->
+<!--            transform: translateX(5px);-->
+<!--        }-->
+<!--        .test-header {-->
+<!--            display: flex;-->
+<!--            justify-content: space-between;-->
+<!--            align-items: center;-->
+<!--            margin-bottom: 1rem;-->
+<!--        }-->
+<!--        .test-date {-->
+<!--            color: #999;-->
+<!--            font-size: 0.9rem;-->
+<!--        }-->
+<!--        .test-score {-->
+<!--            font-size: 2rem;-->
+<!--            font-weight: bold;-->
+<!--            padding: 0.5rem 1.5rem;-->
+<!--            border-radius: 25px;-->
+<!--            display: inline-block;-->
+<!--        }-->
+<!--        .score-genius {-->
+<!--            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);-->
+<!--            color: #996600;-->
+<!--        }-->
+<!--        .score-superior {-->
+<!--            background: linear-gradient(135deg, #00ff88 0%, #00cc66 100%);-->
+<!--            color: #006633;-->
+<!--        }-->
+<!--        .score-high {-->
+<!--            background: linear-gradient(135deg, #66ff99 0%, #33cc66 100%);-->
+<!--            color: #006600;-->
+<!--        }-->
+<!--        .score-average {-->
+<!--            background: linear-gradient(135deg, #99ccff 0%, #6699ff 100%);-->
+<!--            color: #003366;-->
+<!--        }-->
+<!--        .score-low {-->
+<!--            background: linear-gradient(135deg, #ffaa88 0%, #ff8866 100%);-->
+<!--            color: #cc3300;-->
+<!--        }-->
+<!--        .test-details {-->
+<!--            display: grid;-->
+<!--            grid-template-columns: repeat(3, 1fr);-->
+<!--            gap: 1rem;-->
+<!--            margin-top: 1rem;-->
+<!--        }-->
+<!--        .detail-item {-->
+<!--            text-align: center;-->
+<!--        }-->
+<!--        .detail-value {-->
+<!--            font-size: 1.5rem;-->
+<!--            font-weight: bold;-->
+<!--            color: #667eea;-->
+<!--        }-->
+<!--        .detail-label {-->
+<!--            color: #666;-->
+<!--            font-size: 0.85rem;-->
+<!--            margin-top: 0.3rem;-->
+<!--        }-->
+<!--        .empty-state {-->
+<!--            text-align: center;-->
+<!--            padding: 4rem 2rem;-->
+<!--            color: #999;-->
+<!--        }-->
+<!--        .empty-state-icon {-->
+<!--            font-size: 5rem;-->
+<!--            margin-bottom: 1rem;-->
+<!--        }-->
+<!--        .empty-state h3 {-->
+<!--            color: #667eea;-->
+<!--            margin-bottom: 0.5rem;-->
+<!--        }-->
+<!--        .btn-start {-->
+<!--            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);-->
+<!--            color: white;-->
+<!--            padding: 12px 30px;-->
+<!--            border: none;-->
+<!--            border-radius: 25px;-->
+<!--            font-size: 16px;-->
+<!--            font-weight: 600;-->
+<!--            cursor: pointer;-->
+<!--            text-decoration: none;-->
+<!--            display: inline-block;-->
+<!--            margin-top: 1rem;-->
+<!--        }-->
+<!--        .btn-start:hover {-->
+<!--            transform: translateY(-2px);-->
+<!--        }-->
+<!--    </style>-->
     <style>
+        /* Global Reset and Typography - Classic & Highly Legible */
         body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Georgia', 'Times New Roman', serif;
+            /* Solid, clean background for high contrast */
+            background-color: #ffffff;
             min-height: 100vh;
             margin: 0;
             padding: 0;
+            color: #212529; /* Dark charcoal for excellent readability */
         }
+
+        /* Primary Color Palette - Conservative Tones */
+        :root {
+            --primary-color: #004a99; /* Deep Navy Blue - Trustworthy */
+            --primary-dark: #003366;
+            --secondary-color: #6c757d; /* Medium Gray */
+            --background-light: #f8f9fa; /* Very light off-white/gray */
+            --border-color: #dee2e6;
+            --shadow-subtle: 0 2px 5px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Navigation Bar */
         .navbar {
-            background: white;
-            padding: 1rem 2rem;
-            border-radius: 0;
+            background: var(--primary-color);
+            padding: 1.25rem 2.5rem;
+            border-bottom: 1px solid var(--primary-dark);
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 2rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
         }
         .navbar h1 {
-            color: #667eea;
+            color: white;
+            font-size: 1.75rem; /* Slightly larger title */
+            font-weight: 700;
             margin: 0;
+            letter-spacing: 0.5px;
         }
         .user-info {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 1.5rem;
+            font-size: 1rem;
+        }
+        .user-info span {
+            color: #cccccc; /* Light gray text for user info */
+            font-weight: 400;
         }
         .navbar a {
-            color: #667eea;
+            color: white;
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 500;
+            transition: color 0.2s;
+            border: 1px solid transparent;
+            padding: 5px 10px;
+            border-radius: 4px;
         }
+        .navbar a:hover {
+            color: #ffffcc; /* Slight warm tint on hover */
+            border-color: #ffffcc;
+        }
+
+        /* Main Container */
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 2rem 2rem;
+            padding: 0 2rem 3rem;
         }
+
+        /* Headings */
+        h2 {
+            color: var(--primary-dark);
+            font-size: 1.6rem;
+            font-weight: 600;
+            padding-bottom: 0.75rem;
+            margin-bottom: 2rem;
+            border-bottom: 3px solid var(--border-color);
+        }
+
+        /* Statistics Summary Cards */
         .stats-summary {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1.5rem;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
         }
         .stat-card {
             background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            padding: 1.75rem;
+            box-shadow: var(--shadow-subtle);
             text-align: center;
+            border-top: 4px solid var(--primary-color); /* Conservative highlight */
+            transition: transform 0.1s;
+        }
+        .stat-card:hover {
+            transform: translateY(-1px);
         }
         .stat-icon {
-            font-size: 2rem;
+            font-size: 1.5rem;
             margin-bottom: 0.5rem;
+            color: var(--primary-color);
         }
         .stat-value {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #667eea;
+            font-size: 2.2rem; /* Slightly reduced size for visual balance */
+            font-weight: 700;
+            color: var(--primary-dark);
+            line-height: 1.1;
         }
         .stat-label {
-            color: #666;
+            color: var(--secondary-color);
             font-size: 0.9rem;
             margin-top: 0.5rem;
+            font-weight: 500;
+            text-transform: uppercase;
         }
+
+        /* General Card for Timeline */
         .card {
             background: white;
-            border-radius: 15px;
-            padding: 2rem;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            border-radius: 10px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow-subtle);
         }
-        h2 {
-            color: #667eea;
-            margin-bottom: 1.5rem;
-        }
+
+        /* Timeline Styling */
         .history-timeline {
             position: relative;
         }
         .timeline-item {
             position: relative;
             padding-left: 3rem;
-            padding-bottom: 2rem;
-            border-left: 3px solid #e0e0e0;
+            padding-bottom: 2.5rem;
+            border-left: 2px solid var(--border-color);
         }
         .timeline-item:last-child {
             border-left: none;
+            padding-bottom: 0;
         }
         .timeline-marker {
             position: absolute;
-            left: -12px;
+            left: -10px;
             top: 0;
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
-            background: #667eea;
-            border: 3px solid white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            background: white;
+            border: 3px solid var(--primary-color);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
         }
+
+        /* Individual Test Card */
         .test-card {
-            background: #f8f9fa;
-            border-radius: 12px;
+            background: var(--background-light);
+            border-radius: 8px;
             padding: 1.5rem;
-            border: 2px solid #e0e0e0;
-            transition: all 0.3s;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
         }
         .test-card:hover {
-            border-color: #667eea;
-            transform: translateX(5px);
+            border-color: #b3cde0;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
         }
         .test-header {
             display: flex;
@@ -118,40 +369,58 @@
             margin-bottom: 1rem;
         }
         .test-date {
-            color: #999;
-            font-size: 0.9rem;
+            color: #777;
+            font-size: 0.95rem;
+            font-style: italic;
         }
+        .test-card h3 {
+            margin: 0;
+            font-size: 1.25rem;
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        /* IQ Score Display - Clear and Bold */
         .test-score {
-            font-size: 2rem;
-            font-weight: bold;
-            padding: 0.5rem 1.5rem;
-            border-radius: 25px;
+            font-size: 1.8rem; /* Reduced slightly for classic feel */
+            font-weight: 700;
+            padding: 0.5rem 1.2rem;
+            border-radius: 6px;
             display: inline-block;
+            min-width: 70px;
+            text-align: center;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
         }
+
+        /* Score Color Coding - Muted Professional Palette */
         .score-genius {
-            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-            color: #996600;
+            background-color: #ffecb3; /* Light Beige/Gold */
+            color: #b8860b; /* Darker Gold Text */
         }
         .score-superior {
-            background: linear-gradient(135deg, #00ff88 0%, #00cc66 100%);
-            color: #006633;
+            background-color: #c8e6c9; /* Pale Green */
+            color: #2e7d32; /* Dark Green Text */
         }
         .score-high {
-            background: linear-gradient(135deg, #66ff99 0%, #33cc66 100%);
-            color: #006600;
+            background-color: #bbdefb; /* Pale Blue */
+            color: #1565c0; /* Medium Blue Text */
         }
         .score-average {
-            background: linear-gradient(135deg, #99ccff 0%, #6699ff 100%);
-            color: #003366;
+            background-color: #cfd8dc; /* Light Gray/Blue */
+            color: #455a64; /* Dark Gray Text */
         }
         .score-low {
-            background: linear-gradient(135deg, #ffaa88 0%, #ff8866 100%);
-            color: #cc3300;
+            background-color: #ffcdd2; /* Pale Red */
+            color: #c62828; /* Dark Red Text */
         }
+
+        /* Test Details Grid */
         .test-details {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
+            gap: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
             margin-top: 1rem;
         }
         .detail-item {
@@ -159,42 +428,67 @@
         }
         .detail-value {
             font-size: 1.5rem;
-            font-weight: bold;
-            color: #667eea;
+            font-weight: 700;
+            color: var(--primary-color);
         }
         .detail-label {
-            color: #666;
+            color: var(--secondary-color);
             font-size: 0.85rem;
-            margin-top: 0.3rem;
+            margin-top: 0.2rem;
+            text-transform: uppercase;
         }
+
+        /* Interpretation Text */
+        .test-card > div:last-child {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px dashed var(--border-color);
+            font-size: 0.9rem;
+        }
+        .test-card > div:last-child strong {
+            color: #333;
+            font-weight: 600;
+        }
+
+        /* Empty State */
         .empty-state {
             text-align: center;
             padding: 4rem 2rem;
-            color: #999;
+            color: #555;
+            background-color: #fcfcfc;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
         }
         .empty-state-icon {
-            font-size: 5rem;
+            font-size: 3rem;
             margin-bottom: 1rem;
+            color: var(--primary-color);
         }
         .empty-state h3 {
-            color: #667eea;
+            color: var(--primary-dark);
             margin-bottom: 0.5rem;
+            font-size: 1.4rem;
         }
+
+        /* Button Style - Traditional */
         .btn-start {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-color: var(--primary-color);
             color: white;
-            padding: 12px 30px;
+            padding: 14px 35px;
             border: none;
-            border-radius: 25px;
-            font-size: 16px;
+            border-radius: 5px; /* Sharper corner radius */
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             text-decoration: none;
             display: inline-block;
-            margin-top: 1rem;
+            margin-top: 1.5rem;
+            box-shadow: 0 3px 6px rgba(0, 74, 153, 0.4);
+            transition: all 0.2s ease;
         }
         .btn-start:hover {
-            transform: translateY(-2px);
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
         }
     </style>
 </head>
@@ -212,27 +506,28 @@
     <div class="stats-summary">
         <div class="stat-card">
             <div class="stat-icon">📝</div>
-            <div class="stat-value" th:text="${sessions.size()}">0</div>
+            <div class="stat-value" th:text="${totalTests}">0</div>
             <div class="stat-label">Total Tests</div>
         </div>
 
         <div class="stat-card">
             <div class="stat-icon">🏆</div>
-            <div class="stat-value" th:text="${sessions.stream().filter(s -> s.iqScore != null).mapToInt(s -> s.iqScore).max().orElse(0)}">0</div>
+            <div class="stat-value" th:text="${bestScore}">0</div>
             <div class="stat-label">Best Score</div>
         </div>
 
         <div class="stat-card">
             <div class="stat-icon">📈</div>
-            <div class="stat-value" th:text="${sessions.size() > 0 ? #numbers.formatDecimal(sessions.stream().filter(s -> s.iqScore != null).mapToInt(s -> s.iqScore).average().orElse(0), 0, 0) : 0}">0</div>
+            <div class="stat-value" th:text="${avgScore}">0</div>
             <div class="stat-label">Average Score</div>
         </div>
 
         <div class="stat-card">
             <div class="stat-icon">✅</div>
-            <div class="stat-value" th:text="${sessions.size() > 0 ? #numbers.formatDecimal(sessions.stream().filter(s -> s.correctAnswers != null and s.totalQuestions != null).mapToDouble(s -> s.correctAnswers * 100.0 / s.totalQuestions).average().orElse(0), 0, 0) + '%' : '0%'}">0%</div>
+            <div class="stat-value" th:text="${avgAccuracy + '%'}">0%</div>
             <div class="stat-label">Avg Accuracy</div>
         </div>
+
     </div>
 
     <!-- Test History -->
@@ -249,51 +544,56 @@
 
         <!-- Timeline -->
         <div th:if="${!#lists.isEmpty(sessions)}" class="history-timeline">
-            <div th:each="session : ${sessions}" class="timeline-item">
+            <div th:each="test_session : ${sessions}" class="timeline-item">
                 <div class="timeline-marker"></div>
                 <div class="test-card">
                     <div class="test-header">
                         <div>
-                            <div class="test-date" th:text="${#temporals.format(session.completedAt ?: session.startedAt, 'EEEE, MMMM dd, yyyy - HH:mm')}">Monday, January 01, 2024 - 10:00</div>
-                            <h3 th:text="'Test Session #' + ${session.sessionId}">Test Session #1</h3>
+<!--                            <div class="test-date" th:text="${#temporals.format(test_session.completedAt ?: test_session.startedAt, 'EEEE, MMMM dd, yyyy - HH:mm')}">Monday, January 01, 2024 - 10:00</div>-->
+                            <div class="test-date"
+                                 th:text="${#temporals.format(session.displayDateTime, 'EEEE, MMMM dd, yyyy - HH:mm')}">
+                                Monday, January 01, 2024 - 10:00
+                            </div>
+
+                            <h3 th:text="'Test Session #' + ${test_session.sessionId}">Test Session #1</h3>
                         </div>
                         <div>
                             <div class="test-score"
-                                 th:if="${session.iqScore != null}"
-                                 th:classappend="${session.iqScore >= 130} ? 'score-genius' :
-                                                     (${session.iqScore >= 120} ? 'score-superior' :
-                                                     (${session.iqScore >= 110} ? 'score-high' :
-                                                     (${session.iqScore >= 90} ? 'score-average' : 'score-low')))"
-                                 th:text="${session.iqScore}">120</div>
-                            <div th:if="${session.iqScore == null}" class="test-score score-average">-</div>
+                                 th:if="${test_session.iqScore != null}"
+                                 th:classappend="${test_session.iqScore >= 130} ? 'score-genius' :
+                                                     (${test_session.iqScore >= 120} ? 'score-superior' :
+                                                     (${test_session.iqScore >= 110} ? 'score-high' :
+                                                     (${test_session.iqScore >= 90} ? 'score-average' : 'score-low')))"
+                                 th:text="${test_session.iqScore}">120</div>
+                            <div th:if="${test_session.iqScore == null}" class="test-score score-average">-</div>
                         </div>
                     </div>
 
                     <div class="test-details">
                         <div class="detail-item">
-                            <div class="detail-value" th:text="${session.totalQuestions ?: '-'}">20</div>
+                            <div class="detail-value" th:text="${test_session.totalQuestions ?: '-'}">20</div>
                             <div class="detail-label">Questions</div>
                         </div>
                         <div class="detail-item">
-                            <div class="detail-value" th:text="${session.correctAnswers ?: '-'}">15</div>
+                            <div class="detail-value" th:text="${test_session.correctAnswers ?: '-'}">15</div>
                             <div class="detail-label">Correct</div>
                         </div>
                         <div class="detail-item">
-                            <div class="detail-value" th:text="${session.timeTakenSeconds != null ? #numbers.formatInteger(session.timeTakenSeconds / 60, 0) + ' min' : '-'}">15 min</div>
+                            <div class="detail-value" th:text="${test_session.timeTakenSeconds != null ? #numbers.formatInteger(test_session.timeTakenSeconds / 60, 0) + ' min' : '-'}">15 min</div>
                             <div class="detail-label">Time Taken</div>
                         </div>
                     </div>
 
-                    <div th:if="${session.iqScore != null}" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e0e0e0;">
+                    <div th:if="${test_session.iqScore != null}" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e0e0e0;">
                         <strong>Interpretation: </strong>
-                        <span th:if="${session.iqScore >= 130}" style="color: #996600;">🌟 Genius - Exceptional intelligence!</span>
-                        <span th:if="${session.iqScore >= 120 and session.iqScore < 130}" style="color: #006633;">⭐ Superior - Excellent performance!</span>
-                        <span th:if="${session.iqScore >= 110 and session.iqScore < 120}" style="color: #006600;">✨ High Average - Great job!</span>
-                        <span th:if="${session.iqScore >= 90 and session.iqScore < 110}" style="color: #003366;">👍 Average - Good work!</span>
-                        <span th:if="${session.iqScore < 90}" style="color: #cc3300;">💪 Keep practicing!</span>
+                        <span th:if="${test_session.iqScore >= 130}" style="color: #996600;">🌟 Genius - Exceptional intelligence!</span>
+                        <span th:if="${test_session.iqScore >= 120 and test_session.iqScore < 130}" style="color: #006633;">⭐ Superior - Excellent performance!</span>
+                        <span th:if="${test_session.iqScore >= 110 and test_session.iqScore < 120}" style="color: #006600;">✨ High Average - Great job!</span>
+                        <span th:if="${test_session.iqScore >= 90 and test_session.iqScore < 110}" style="color: #003366;">👍 Average - Good work!</span>
+                        <span th:if="${test_session.iqScore < 90}" style="color: #cc3300;">💪 Keep practicing!</span>
                     </div>
 
-                    <div th:if="${session.completedAt == null}" style="margin-top: 1rem; color: #ff9900; font-weight: 600;">
+                    <div th:if="${test_session.completedAt == null}" style="margin-top: 1rem; color: #ff9900; font-weight: 600;">
                         ⏳ Test in progress...
                     </div>
                 </div>

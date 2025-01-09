@@ -1,92 +1,235 @@
+<style>
+    :root {
+        --primary: #2C3E50;
+        --secondary: #34495E;
+        --accent: #3498DB;
+        --success: #27AE60;
+        --warning: #E67E22;
+        --danger: #E74C3C;
+        --light: #ECF0F1;
+        --dark: #2C3E50;
+        --text: #2C3E50;
+        --text-muted: #7F8C8D;
+        --border: #BDC3C7;
+        --shadow: rgba(44, 62, 80, 0.1);
+        --shadow-lg: rgba(44, 62, 80, 0.2);
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+        background: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
+        min-height: 100vh;
+        color: var(--text);
+        line-height: 1.6;
+        font-size: 15px;
+    }
+
+    /* Professional Typography */
+    h1, h2, h3, h4, h5, h6 {
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        color: var(--dark);
+    }
+
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+
+    /* Professional Buttons */
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.2s ease;
+        letter-spacing: 0.01em;
+    }
+
+    .btn-primary {
+        background: var(--accent);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #2980B9;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px var(--shadow-lg);
+    }
+
+    .btn-secondary {
+        background: white;
+        color: var(--accent);
+        border: 2px solid var(--accent);
+    }
+
+    .btn-danger {
+        background: var(--danger);
+        color: white;
+    }
+
+    /* Professional Cards */
+    .card {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 2px 8px var(--shadow);
+        border: 1px solid rgba(0,0,0,0.06);
+    }
+
+    /* Professional Navigation */
+    .navbar {
+        background: white;
+        padding: 1rem 2rem;
+        box-shadow: 0 2px 4px var(--shadow);
+        border-bottom: 1px solid var(--border);
+    }
+
+    /* Professional Forms */
+    input, select, textarea {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+        background: white;
+    }
+
+    input:focus, select:focus, textarea:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+
+    /* Professional Tables */
+    table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    th {
+        background: var(--light);
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+        border-bottom: 2px solid var(--border);
+    }
+
+    td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    tbody tr:hover {
+        background: #F8F9FA;
+    }
+
+    /* Professional Badges */
+    .badge {
+        padding: 0.35rem 0.75rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        display: inline-block;
+    }
+
+    .badge-success { background: #D5F5E3; color: #27AE60; }
+    .badge-warning { background: #FCE4D6; color: #E67E22; }
+    .badge-danger { background: #FADBD8; color: #E74C3C; }
+    .badge-info { background: #D6EAF8; color: #3498DB; }
+</style>
+
+<!-- ============================================
+   1. LOGIN PAGE (Professional)
+   ============================================ -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Login - IQ Test</title>
+    <title>Sign In - IQ Assessment Platform</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0;
-            padding: 1rem;
+            min-height: 100vh;
+            padding: 2rem;
         }
         .login-container {
             background: white;
-            border-radius: 20px;
-            padding: 3rem;
-            max-width: 450px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(44, 62, 80, 0.15);
+            max-width: 440px;
             width: 100%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .login-header {
+            background: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
+            padding: 2.5rem 2rem;
             text-align: center;
+            color: white;
         }
-        h1 {
-            color: #667eea;
+        .login-header h1 {
+            color: white;
+            font-size: 1.75rem;
             margin-bottom: 0.5rem;
+            font-weight: 600;
         }
-        .subtitle {
-            color: #666;
-            margin-bottom: 2rem;
+        .login-header p {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.95rem;
         }
-        .alert {
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            text-align: left;
-        }
-        .alert-success {
-            background: #e6ffe6;
-            color: #006600;
-            border: 1px solid #99ff99;
-        }
-        .alert-error {
-            background: #ffe6e6;
-            color: #cc0000;
-            border: 1px solid #ff9999;
-        }
-        .login-form {
-            margin-bottom: 2rem;
-            text-align: left;
+        .login-body {
+            padding: 2rem;
         }
         .form-group {
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
         label {
             display: block;
-            font-weight: 600;
-            color: #555;
+            font-weight: 500;
             margin-bottom: 0.5rem;
-        }
-        input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-        input:focus {
-            outline: none;
-            border-color: #667eea;
+            color: var(--text);
+            font-size: 0.9rem;
         }
         .btn-login {
             width: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--accent);
             color: white;
-            padding: 14px;
+            padding: 0.875rem;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 500;
             cursor: pointer;
-            margin-top: 1rem;
+            transition: all 0.2s;
+        }
+        .btn-login:hover {
+            background: #2980B9;
+            transform: translateY(-1px);
         }
         .divider {
+            text-align: center;
             margin: 2rem 0;
-            color: #999;
             position: relative;
+            color: var(--text-muted);
+            font-size: 0.9rem;
         }
         .divider::before,
         .divider::after {
@@ -95,117 +238,115 @@
             top: 50%;
             width: 40%;
             height: 1px;
-            background: #e0e0e0;
+            background: var(--border);
         }
         .divider::before { left: 0; }
         .divider::after { right: 0; }
-        .oauth-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
         .oauth-btn {
+            width: 100%;
+            padding: 0.875rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 1rem;
-            padding: 14px 20px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            background: white;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
+            gap: 0.75rem;
+            font-weight: 500;
+            transition: all 0.2s;
             text-decoration: none;
-            color: #333;
+            color: var(--text);
+            margin-bottom: 0.75rem;
         }
         .oauth-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        .oauth-btn.google {
-            border-color: #4285f4;
-        }
-        .oauth-btn.google:hover {
-            background: #4285f4;
-            color: white;
-        }
-        .oauth-btn.github {
-            border-color: #333;
-        }
-        .oauth-btn.github:hover {
-            background: #333;
-            color: white;
+            border-color: var(--accent);
+            background: #F8F9FA;
         }
         .signup-link {
+            text-align: center;
             margin-top: 1.5rem;
-            color: #666;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.95rem;
         }
         .signup-link a {
-            color: #667eea;
+            color: var(--accent);
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 500;
+        }
+        .alert {
+            padding: 0.875rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        .alert-success {
+            background: #D5F5E3;
+            color: #27AE60;
+            border: 1px solid #A9DFBF;
+        }
+        .alert-error {
+            background: #FADBD8;
+            color: #E74C3C;
+            border: 1px solid #F5B7B1;
         }
     </style>
 </head>
 <body>
 <div class="login-container">
-    <h1>🧠 IQ Test Pro</h1>
-    <p class="subtitle">Sign in to start your IQ test</p>
-
-    <div th:if="${param.success}" class="alert alert-success">
-        Registration successful! Please login to continue.
+    <div class="login-header">
+        <h1>IQ Assessment Platform</h1>
+        <p>Professional cognitive evaluation system</p>
     </div>
 
-    <div th:if="${param.error}" class="alert alert-error">
-        Invalid username or password. Please try again.
-    </div>
-
-    <!-- Regular Login Form -->
-    <form th:action="@{/login}" method="post" class="login-form">
-        <div class="form-group">
-            <label for="username">Username</label>
-            <input type="text" id="username" name="username" required placeholder="Enter your username">
+    <div class="login-body">
+        <div th:if="${param.success}" class="alert alert-success">
+            Registration successful. Please sign in to continue.
         </div>
 
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" required placeholder="Enter your password">
+        <div th:if="${param.error}" class="alert alert-error">
+            Invalid credentials. Please try again.
         </div>
 
-        <button type="submit" class="btn-login">Login</button>
-    </form>
+        <form th:action="@{/login}" method="post">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required placeholder="Enter your username">
+            </div>
 
-    <p class="divider">OR</p>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required placeholder="Enter your password">
+            </div>
 
-    <!-- OAuth Login -->
-    <div class="oauth-buttons">
-        <a th:href="@{/oauth2/authorization/google}" class="oauth-btn google">
-            <svg width="24" height="24" viewBox="0 0 24 24">
-                <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <button type="submit" class="btn-login">Sign In</button>
+        </form>
+
+        <div class="divider">Or continue with</div>
+
+        <a th:href="@{/oauth2/authorization/google}" class="oauth-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
             </svg>
             Continue with Google
         </a>
 
-        <a th:href="@{/oauth2/authorization/github}" class="oauth-btn github">
-            <svg width="24" height="24" viewBox="0 0 24 24">
-                <path fill="currentColor" d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+        <a th:href="@{/oauth2/authorization/github}" class="oauth-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24">
+                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
             </svg>
             Continue with GitHub
         </a>
-    </div>
 
-    <div class="signup-link">
-        Don't have an account? <a th:href="@{/signup}">Sign up here</a>
+        <div class="signup-link">
+            Don't have an account? <a th:href="@{/signup}">Create account</a>
+        </div>
     </div>
-
-    <a th:href="@{/}" style="color: #667eea; text-decoration: none; font-weight: 600; display: block; margin-top: 1rem;">
-        ← Back to Home
-    </a>
 </div>
 </body>
 </html>
-

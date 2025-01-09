@@ -2,187 +2,200 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Sign Up - IQ Test</title>
+    <title>Create Account - IQ Assessment Platform</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            min-height: 100vh;
             padding: 2rem;
+            background: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
         }
-        .signup-card {
+        .signup-container {
             background: white;
-            border-radius: 20px;
-            padding: 3rem;
-            max-width: 500px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            max-width: 520px;
             width: 100%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
         }
-        h2 {
-            color: #667eea;
-            margin-bottom: 1.5rem;
+        .signup-header {
+            background: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
+            padding: 2.5rem 2rem;
             text-align: center;
+            color: white;
+        }
+        .signup-header h2 {
+            color: white;
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        .signup-header p {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.95rem;
+        }
+        .signup-body {
+            padding: 2rem;
         }
         .form-group {
             margin-bottom: 1.5rem;
-            position: relative;
         }
         label {
             display: block;
-            font-weight: 600;
-            color: #555;
+            font-weight: 500;
             margin-bottom: 0.5rem;
+            color: #2C3E50;
+            font-size: 0.9rem;
+        }
+        .required {
+            color: #E74C3C;
         }
         input, select {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border 0.3s;
+            padding: 0.75rem 1rem;
+            border: 1px solid #BDC3C7;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: all 0.2s;
         }
         input:focus, select:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #3498DB;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
         }
-        .error-message {
-            color: #ff4444;
+        .validation-message {
             font-size: 0.85rem;
-            margin-top: 0.3rem;
+            margin-top: 0.4rem;
             display: none;
         }
-        .error-message.show {
+        .validation-message.show {
             display: block;
         }
-        .success-message {
-            color: #00cc66;
-            font-size: 0.85rem;
-            margin-top: 0.3rem;
-            display: none;
+        .error {
+            color: #E74C3C;
         }
-        .success-message.show {
-            display: block;
-        }
-        .validation-icon {
-            position: absolute;
-            right: 12px;
-            top: 38px;
-            display: none;
-        }
-        .validation-icon.show {
-            display: block;
+        .success {
+            color: #27AE60;
         }
         .btn-submit {
             width: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #3498DB;
             color: white;
-            padding: 14px;
+            padding: 0.875rem;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 500;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.2s;
         }
-        .btn-submit:hover {
-            transform: translateY(-2px);
+        .btn-submit:hover:not(:disabled) {
+            background: #2980B9;
+            transform: translateY(-1px);
         }
         .btn-submit:disabled {
-            opacity: 0.6;
+            opacity: 0.5;
             cursor: not-allowed;
-        }
-        .alert {
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-        }
-        .alert-error {
-            background: #ffe6e6;
-            color: #cc0000;
-            border: 1px solid #ff9999;
         }
         .login-link {
             text-align: center;
             margin-top: 1.5rem;
-            color: #666;
+            padding-top: 1.5rem;
+            border-top: 1px solid #E5E7EB;
+            color: #7F8C8D;
+            font-size: 0.95rem;
         }
         .login-link a {
-            color: #667eea;
+            color: #3498DB;
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 500;
+        }
+        .alert-error {
+            background: #FADBD8;
+            color: #E74C3C;
+            border: 1px solid #F5B7B1;
+            padding: 0.875rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
         }
     </style>
 </head>
 <body>
-<div class="signup-card">
-    <h2>📝 Create Account</h2>
+<div class="signup-container">
+    <div class="signup-header">
+        <h2>Create Your Account</h2>
+        <p>Join the professional cognitive assessment platform</p>
+    </div>
 
-    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+    <div class="signup-body">
+        <div th:if="${error}" class="alert-error" th:text="${error}"></div>
 
-    <form th:action="@{/signup}" th:object="${signupRequest}" method="post" id="signupForm">
-        <div class="form-group">
-            <label for="username">Username *</label>
-            <input type="text" id="username" th:field="*{username}" required
-                   placeholder="Choose a username" minlength="3" maxlength="50">
-            <span class="validation-icon" id="usernameIcon"></span>
-            <span class="error-message" id="usernameError"></span>
-            <span class="success-message" id="usernameSuccess"></span>
+        <form th:action="@{/signup}" th:object="${signupRequest}" method="post" id="signupForm">
+            <div class="form-group">
+                <label for="username">Username <span class="required">*</span></label>
+                <input type="text" id="username" th:field="*{username}" required
+                       placeholder="Choose a unique username" minlength="3" maxlength="50">
+                <div class="validation-message error" id="usernameError"></div>
+                <div class="validation-message success" id="usernameSuccess"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address <span class="required">*</span></label>
+                <input type="email" id="email" th:field="*{email}" required
+                       placeholder="your.email@example.com">
+                <div class="validation-message error" id="emailError"></div>
+                <div class="validation-message success" id="emailSuccess"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password <span class="required">*</span></label>
+                <input type="password" id="password" th:field="*{password}" required
+                       placeholder="Minimum 6 characters" minlength="6">
+                <div class="validation-message error" id="passwordError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password <span class="required">*</span></label>
+                <input type="password" id="confirmPassword" th:field="*{confirmPassword}" required
+                       placeholder="Re-enter your password">
+                <div class="validation-message error" id="confirmPasswordError"></div>
+                <div class="validation-message success" id="confirmPasswordSuccess"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="age">Age <span class="required">*</span></label>
+                <input type="number" id="age" th:field="*{age}" min="10" max="120" required
+                       placeholder="Your age">
+            </div>
+
+            <div class="form-group">
+                <label for="country">Country</label>
+                <select id="country" th:field="*{country}">
+                    <option value="">Select your country (optional)</option>
+                    <option value="USA">United States</option>
+                    <option value="UK">United Kingdom</option>
+                    <option value="Canada">Canada</option>
+                    <option value="Australia">Australia</option>
+                    <option value="Germany">Germany</option>
+                    <option value="France">France</option>
+                    <option value="India">India</option>
+                    <option value="China">China</option>
+                    <option value="Japan">Japan</option>
+                    <option value="Brazil">Brazil</option>
+                    <option value="Uzbekistan">Uzbekistan</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-submit" id="submitBtn">Create Account</button>
+        </form>
+
+        <div class="login-link">
+            Already have an account? <a th:href="@{/login}">Sign in here</a>
         </div>
-
-        <div class="form-group">
-            <label for="email">Email Address *</label>
-            <input type="email" id="email" th:field="*{email}" required
-                   placeholder="your@email.com">
-            <span class="validation-icon" id="emailIcon"></span>
-            <span class="error-message" id="emailError"></span>
-            <span class="success-message" id="emailSuccess"></span>
-        </div>
-
-        <div class="form-group">
-            <label for="password">Password *</label>
-            <input type="password" id="password" th:field="*{password}" required
-                   placeholder="At least 6 characters" minlength="6">
-            <span class="error-message" id="passwordError"></span>
-        </div>
-
-        <div class="form-group">
-            <label for="confirmPassword">Confirm Password *</label>
-            <input type="password" id="confirmPassword" th:field="*{confirmPassword}" required
-                   placeholder="Re-enter your password">
-            <span class="error-message" id="confirmPasswordError"></span>
-            <span class="success-message" id="confirmPasswordSuccess"></span>
-        </div>
-
-        <div class="form-group">
-            <label for="age">Age *</label>
-            <input type="number" id="age" th:field="*{age}" min="10" max="120" required
-                   placeholder="Your age">
-        </div>
-
-        <div class="form-group">
-            <label for="country">Country</label>
-            <select id="country" th:field="*{country}">
-                <option value="">Select your country (optional)</option>
-                <option value="USA">United States</option>
-                <option value="UK">United Kingdom</option>
-                <option value="Canada">Canada</option>
-                <option value="Australia">Australia</option>
-                <option value="Germany">Germany</option>
-                <option value="France">France</option>
-                <option value="India">India</option>
-                <option value="Uzbekistan">Uzbekistan</option>
-                <option value="Other">Other</option>
-            </select>
-        </div>
-
-        <button type="submit" class="btn-submit" id="submitBtn">Create Account</button>
-    </form>
-
-    <div class="login-link">
-        Already have an account? <a th:href="@{/login}">Login here</a>
     </div>
 </div>
 
@@ -191,7 +204,6 @@
     let emailAvailable = false;
     let passwordsMatch = false;
 
-    // Username validation
     document.getElementById('username').addEventListener('blur', async function() {
         const username = this.value;
         if (username.length < 3) {
@@ -205,7 +217,7 @@
             const data = await response.json();
 
             if (data.available) {
-                showSuccess('username', 'Username is available ✓');
+                showSuccess('username', 'Username is available');
                 usernameAvailable = true;
             } else {
                 showError('username', 'Username is already taken');
@@ -217,13 +229,12 @@
         updateSubmitButton();
     });
 
-    // Email validation
     document.getElementById('email').addEventListener('blur', async function() {
         const email = this.value;
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         if (!emailRegex.test(email)) {
-            showError('email', 'Please enter a valid email');
+            showError('email', 'Please enter a valid email address');
             emailAvailable = false;
             return;
         }
@@ -233,7 +244,7 @@
             const data = await response.json();
 
             if (data.available) {
-                showSuccess('email', 'Email is available ✓');
+                showSuccess('email', 'Email is available');
                 emailAvailable = true;
             } else {
                 showError('email', 'Email is already registered');
@@ -245,7 +256,6 @@
         updateSubmitButton();
     });
 
-    // Password validation
     document.getElementById('password').addEventListener('input', function() {
         const password = this.value;
         if (password.length < 6) {
@@ -256,7 +266,6 @@
         }
     });
 
-    // Confirm password validation
     document.getElementById('confirmPassword').addEventListener('input', function() {
         checkPasswordMatch();
     });
@@ -274,7 +283,7 @@
         }
 
         if (password === confirmPassword && password.length >= 6) {
-            showSuccess('confirmPassword', 'Passwords match ✓');
+            showSuccess('confirmPassword', 'Passwords match');
             passwordsMatch = true;
         } else {
             showError('confirmPassword', 'Passwords do not match');
@@ -318,7 +327,6 @@
         }
     }
 
-    // Initial state
     updateSubmitButton();
 </script>
 </body>

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -162,11 +163,47 @@ public class TestController {
         }
 
         List<TestSession> sessions = sessionService.getUserSessions(userId);
+
+        for (TestSession session : sessions) {
+            LocalDateTime displayTime = session.getCompletedAt() != null
+                    ? session.getCompletedAt()
+                    : session.getStartedAt();
+            session.setDisplayDateTime(displayTime);
+        }
+
         model.addAttribute("sessions", sessions);
+        // Compute values in Java (not in Thymeleaf)
+        int totalTests = sessions.size();
+
+        int bestScore = sessions.stream()
+                .filter(s -> s.getIqScore() != null)
+                .mapToInt(TestSession::getIqScore)
+                .max()
+                .orElse(0);
+
+        double avgScore = sessions.stream()
+                .filter(s -> s.getIqScore() != null)
+                .mapToInt(TestSession::getIqScore)
+                .average()
+                .orElse(0);
+
+        double avgAccuracy = sessions.stream()
+                .filter(s -> s.getCorrectAnswers() != null && s.getTotalQuestions() != null && s.getTotalQuestions() > 0)
+                .mapToDouble(s -> s.getCorrectAnswers() * 100.0 / s.getTotalQuestions())
+                .average()
+                .orElse(0);
+
+        model.addAttribute("sessions", sessions);
+        model.addAttribute("totalTests", totalTests);
+        model.addAttribute("bestScore", bestScore);
+        model.addAttribute("avgScore", Math.round(avgScore));
+        model.addAttribute("avgAccuracy", Math.round(avgAccuracy));
+
         model.addAttribute("userName", httpSession.getAttribute("userName"));
         model.addAttribute("profilePicture", httpSession.getAttribute("profilePicture"));
 
         return "test-history";
     }
+
 }
 

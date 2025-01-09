@@ -22,6 +22,8 @@ public class TestSession {
     @JoinColumn(name = "user_id")
     private User user;
 
+    private LocalDateTime displayDateTime;
+
     @Column(name = "started_at")
     private LocalDateTime startedAt = LocalDateTime.now();
 
