@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Up - IQ Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .signup-card {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h2 {
+            color: #667eea;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 0.5rem;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border 0.3s;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .error-message {
+            color: #ff4444;
+            font-size: 0.85rem;
+            margin-top: 0.3rem;
+            display: none;
+        }
+        .error-message.show {
+            display: block;
+        }
+        .success-message {
+            color: #00cc66;
+            font-size: 0.85rem;
+            margin-top: 0.3rem;
+            display: none;
+        }
+        .success-message.show {
+            display: block;
+        }
+        .validation-icon {
+            position: absolute;
+            right: 12px;
+            top: 38px;
+            display: none;
+        }
+        .validation-icon.show {
+            display: block;
+        }
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+        }
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        .alert-error {
+            background: #ffe6e6;
+            color: #cc0000;
+            border: 1px solid #ff9999;
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #666;
+        }
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+<div class="signup-card">
+    <h2>📝 Create Account</h2>
+
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <form th:action="@{/signup}" th:object="${signupRequest}" method="post" id="signupForm">
+        <div class="form-group">
+            <label for="username">Username *</label>
+            <input type="text" id="username" th:field="*{username}" required
+                   placeholder="Choose a username" minlength="3" maxlength="50">
+            <span class="validation-icon" id="usernameIcon"></span>
+            <span class="error-message" id="usernameError"></span>
+            <span class="success-message" id="usernameSuccess"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email Address *</label>
+            <input type="email" id="email" th:field="*{email}" required
+                   placeholder="your@email.com">
+            <span class="validation-icon" id="emailIcon"></span>
+            <span class="error-message" id="emailError"></span>
+            <span class="success-message" id="emailSuccess"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password *</label>
+            <input type="password" id="password" th:field="*{password}" required
+                   placeholder="At least 6 characters" minlength="6">
+            <span class="error-message" id="passwordError"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="confirmPassword">Confirm Password *</label>
+            <input type="password" id="confirmPassword" th:field="*{confirmPassword}" required
+                   placeholder="Re-enter your password">
+            <span class="error-message" id="confirmPasswordError"></span>
+            <span class="success-message" id="confirmPasswordSuccess"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="age">Age *</label>
+            <input type="number" id="age" th:field="*{age}" min="10" max="120" required
+                   placeholder="Your age">
+        </div>
+
+        <div class="form-group">
+            <label for="country">Country</label>
+            <select id="country" th:field="*{country}">
+                <option value="">Select your country (optional)</option>
+                <option value="USA">United States</option>
+                <option value="UK">United Kingdom</option>
+                <option value="Canada">Canada</option>
+                <option value="Australia">Australia</option>
+                <option value="Germany">Germany</option>
+                <option value="France">France</option>
+                <option value="India">India</option>
+                <option value="Uzbekistan">Uzbekistan</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn-submit" id="submitBtn">Create Account</button>
+    </form>
+
+    <div class="login-link">
+        Already have an account? <a th:href="@{/login}">Login here</a>
+    </div>
+</div>
+
+<script>
+    let usernameAvailable = false;
+    let emailAvailable = false;
+    let passwordsMatch = false;
+
+    // Username validation
+    document.getElementById('username').addEventListener('blur', async function() {
+        const username = this.value;
+        if (username.length < 3) {
+            showError('username', 'Username must be at least 3 characters');
+            usernameAvailable = false;
+            return;
+        }
+
+        try {
+            const response = await fetch(`/check-username?username=${encodeURIComponent(username)}`);
+            const data = await response.json();
+
+            if (data.available) {
+                showSuccess('username', 'Username is available ✓');
+                usernameAvailable = true;
+            } else {
+                showError('username', 'Username is already taken');
+                usernameAvailable = false;
+            }
+        } catch (error) {
+            console.error('Error checking username:', error);
+        }
+        updateSubmitButton();
+    });
+
+    // Email validation
+    document.getElementById('email').addEventListener('blur', async function() {
+        const email = this.value;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailRegex.test(email)) {
+            showError('email', 'Please enter a valid email');
+            emailAvailable = false;
+            return;
+        }
+
+        try {
+            const response = await fetch(`/check-email?email=${encodeURIComponent(email)}`);
+            const data = await response.json();
+
+            if (data.available) {
+                showSuccess('email', 'Email is available ✓');
+                emailAvailable = true;
+            } else {
+                showError('email', 'Email is already registered');
+                emailAvailable = false;
+            }
+        } catch (error) {
+            console.error('Error checking email:', error);
+        }
+        updateSubmitButton();
+    });
+
+    // Password validation
+    document.getElementById('password').addEventListener('input', function() {
+        const password = this.value;
+        if (password.length < 6) {
+            showError('password', 'Password must be at least 6 characters');
+        } else {
+            hideError('password');
+            checkPasswordMatch();
+        }
+    });
+
+    // Confirm password validation
+    document.getElementById('confirmPassword').addEventListener('input', function() {
+        checkPasswordMatch();
+    });
+
+    function checkPasswordMatch() {
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+
+        if (confirmPassword === '') {
+            hideError('confirmPassword');
+            hideSuccess('confirmPassword');
+            passwordsMatch = false;
+            updateSubmitButton();
+            return;
+        }
+
+        if (password === confirmPassword && password.length >= 6) {
+            showSuccess('confirmPassword', 'Passwords match ✓');
+            passwordsMatch = true;
+        } else {
+            showError('confirmPassword', 'Passwords do not match');
+            passwordsMatch = false;
+        }
+        updateSubmitButton();
+    }
+
+    function showError(field, message) {
+        document.getElementById(field + 'Error').textContent = message;
+        document.getElementById(field + 'Error').classList.add('show');
+        if (document.getElementById(field + 'Success')) {
+            document.getElementById(field + 'Success').classList.remove('show');
+        }
+    }
+
+    function showSuccess(field, message) {
+        if (document.getElementById(field + 'Success')) {
+            document.getElementById(field + 'Success').textContent = message;
+            document.getElementById(field + 'Success').classList.add('show');
+        }
+        document.getElementById(field + 'Error').classList.remove('show');
+    }
+
+    function hideError(field) {
+        document.getElementById(field + 'Error').classList.remove('show');
+    }
+
+    function hideSuccess(field) {
+        if (document.getElementById(field + 'Success')) {
+            document.getElementById(field + 'Success').classList.remove('show');
+        }
+    }
+
+    function updateSubmitButton() {
+        const submitBtn = document.getElementById('submitBtn');
+        if (usernameAvailable && emailAvailable && passwordsMatch) {
+            submitBtn.disabled = false;
+        } else {
+            submitBtn.disabled = true;
+        }
+    }
+
+    // Initial state
+    updateSubmitButton();
+</script>
+</body>
+</html>

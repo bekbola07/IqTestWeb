@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>IQ Test - Home</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+        .hero {
+            text-align: center;
+            color: white;
+            max-width: 700px;
+            padding: 2rem;
+        }
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2.5rem;
+            opacity: 0.95;
+        }
+        .btn-large {
+            background: white;
+            color: #667eea;
+            padding: 18px 50px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-large:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        .feature {
+            background: rgba(255,255,255,0.1);
+            padding: 1.5rem;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        .feature h3 { margin-bottom: 0.5rem; }
+        .user-badge {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .user-badge img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+        .logout-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+<!-- User Badge if logged in -->
+<div sec:authorize="isAuthenticated()" class="user-badge">
+    <img th:src="${session.profilePicture}" alt="Profile">
+    <span th:text="${session.userName}">User</span>
+    <form th:action="@{/logout}" method="post" style="margin: 0;">
+        <button type="submit" class="logout-btn">Logout</button>
+    </form>
+</div>
+
+<div class="hero">
+    <h1>🧠 Discover Your IQ</h1>
+    <p>Take our comprehensive IQ test and discover your cognitive abilities. Get instant results with detailed analysis.</p>
+
+    <div sec:authorize="isAuthenticated()">
+        <a th:href="@{/test/start}" class="btn-large">Start IQ Test Now</a>
+        <br><br>
+        <a th:href="@{/dashboard}" style="color: white; text-decoration: underline;">View Dashboard</a>
+    </div>
+
+    <div sec:authorize="!isAuthenticated()">
+        <a th:href="@{/login}" class="btn-large">Sign In to Start</a>
+    </div>
+
+    <div class="features">
+        <div class="feature">
+            <h3>⚡ Quick</h3>
+            <p>15 minutes test</p>
+        </div>
+        <div class="feature">
+            <h3>📊 Accurate</h3>
+            <p>Scientifically validated</p>
+        </div>
+        <div class="feature">
+            <h3>🎯 Instant</h3>
+            <p>Immediate results</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

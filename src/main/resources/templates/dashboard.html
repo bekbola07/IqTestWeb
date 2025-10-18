@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - IQ Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem;
+        }
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .navbar h1 {
+            color: #667eea;
+            margin: 0;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 1rem;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .stat {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .logout-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="navbar">
+    <h1>🧠 IQ Test Pro</h1>
+    <div class="user-info">
+        <img th:src="${profilePicture}" alt="Profile">
+        <span th:text="${userName}">User Name</span>
+        <form th:action="@{/logout}" method="post" style="margin: 0;">
+            <button type="submit" class="logout-btn">Logout</button>
+        </form>
+    </div>
+</div>
+
+<div class="dashboard-grid">
+    <div class="card">
+        <h2>📝 Start New Test</h2>
+        <p>Ready to test your IQ? Take a comprehensive test and get instant results.</p>
+        <a th:href="@{/test/start}" class="btn">Start Test Now</a>
+    </div>
+
+    <div class="card">
+        <h2>📊 Your Statistics</h2>
+        <p class="stat">--</p>
+        <p>Tests completed</p>
+        <a th:href="@{/test/history}" class="btn">View History</a>
+    </div>
+
+    <div class="card">
+        <h2>🏆 Best Score</h2>
+        <p class="stat">--</p>
+        <p>Your highest IQ score</p>
+    </div>
+
+    <div class="card">
+        <h2>⚙️ Profile Settings</h2>
+        <p>Manage your account and preferences.</p>
+        <a href="#" class="btn">Edit Profile</a>
+    </div>
+</div>
+</body>
+</html>

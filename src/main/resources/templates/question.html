@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Question - IQ Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .user-badge {
+            background: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .user-badge img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+        .progress-bar {
+            background: rgba(255,255,255,0.3);
+            height: 8px;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: white;
+            height: 100%;
+            transition: width 0.3s;
+        }
+        .question-card {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .question-header {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .question-text {
+            font-size: 1.4rem;
+            color: #333;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        .question-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+        }
+        .options {
+            display: grid;
+            gap: 1rem;
+        }
+        .option {
+            background: #f8f9fa;
+            padding: 1.2rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        .option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+            transform: translateX(5px);
+        }
+        .option input[type="radio"] {
+            margin-right: 1rem;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        .option-text {
+            font-size: 1.1rem;
+            flex: 1;
+        }
+        .btn-next {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 14px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 2rem;
+            float: right;
+        }
+        .btn-next:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+    <script>
+        function enableSubmit() {
+            document.getElementById('submitBtn').disabled = false;
+        }
+    </script>
+</head>
+<body>
+<div class="test-container">
+    <div class="user-badge">
+        <img th:src="${profilePicture}" alt="Profile">
+        <span th:text="${userName}">Test Taker</span>
+    </div>
+
+    <div class="progress-bar">
+        <div class="progress-fill" th:style="'width: ' + ${progress} + '%'"></div>
+    </div>
+
+    <div class="question-card">
+        <div class="question-header">
+            Question <span th:text="${currentIndex + 1}">1</span> of <span th:text="${totalQuestions}">20</span>
+        </div>
+
+        <h2 class="question-text" th:text="${question.questionText}">What comes next in the sequence?</h2>
+
+        <img th:if="${question.questionImageUrl}"
+             th:src="@{${question.questionImageUrl}}"
+             class="question-image"
+             alt="Question image">
+
+        <form th:action="@{/test/submit-answer}" method="post">
+            <input type="hidden" name="questionId" th:value="${question.questionId}">
+            <input type="hidden" name="nextIndex" th:value="${currentIndex + 1}">
+
+            <div class="options">
+                <label th:each="option : ${options}" class="option">
+                    <input type="radio"
+                           name="optionId"
+                           th:value="${option.optionId}"
+                           onclick="enableSubmit()"
+                           required>
+                    <span class="option-text" th:text="${option.optionText}">Option text</span>
+                </label>
+            </div>
+
+            <button type="submit" id="submitBtn" class="btn-next" disabled>
+                Next Question →
+            </button>
+        </form>
+    </div>
+</div>
+</body>
+</html>
