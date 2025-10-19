@@ -4,22 +4,23 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import org.example.iqtestweb.entity.User;
 import org.example.iqtestweb.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
 @Component
+@RequiredArgsConstructor
 public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -40,10 +41,12 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
 
         if (userOpt.isPresent()) {
             HttpSession session = request.getSession();
-            session.setAttribute("userId", userOpt.get().getUserId());
-            session.setAttribute("userEmail", userOpt.get().getEmail());
-            session.setAttribute("userName", userOpt.get().getUsername());
-            session.setAttribute("profilePicture", userOpt.get().getProfilePictureUrl());
+            User user = userOpt.get();
+            session.setAttribute("userId", user.getUserId());
+            session.setAttribute("userEmail", user.getEmail());
+            session.setAttribute("userName", user.getUsername());
+            session.setAttribute("profilePicture", user.getProfilePictureUrl());
+            session.setAttribute("userRole", user.getRole().name());
         }
 
         setDefaultTargetUrl("/dashboard");

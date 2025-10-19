@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Question - Admin</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .navbar h1 {
+            color: #667eea;
+            margin: 0;
+        }
+        .navbar a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 2rem 2rem;
+        }
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 3rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h2 {
+            color: #667eea;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 0.5rem;
+        }
+        label .required {
+            color: #ff4444;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border 0.3s;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .options-container {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+        .options-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .options-header h3 {
+            color: #667eea;
+            margin: 0;
+        }
+        .option-input {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            align-items: center;
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            transition: border 0.3s;
+        }
+        .option-input:hover {
+            border-color: #667eea;
+        }
+        .option-number {
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .option-input input[type="text"] {
+            flex: 1;
+            margin: 0;
+        }
+        .option-input input[type="radio"] {
+            width: auto;
+            cursor: pointer;
+        }
+        .correct-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+            color: #00cc66;
+            font-weight: 600;
+        }
+        .btn-add-option {
+            background: #667eea;
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: transform 0.2s;
+        }
+        .btn-add-option:hover {
+            transform: translateY(-2px);
+        }
+        .btn-remove-option {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: none;
+        }
+        .option-input:hover .btn-remove-option {
+            display: block;
+        }
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 14px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 1rem;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+        }
+        .help-text {
+            font-size: 0.85rem;
+            color: #999;
+            margin-top: 0.3rem;
+        }
+        .preview-section {
+            background: #f0f4ff;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 2rem;
+            border: 2px dashed #667eea;
+        }
+        .preview-section h3 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+        .preview-question {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            min-height: 100px;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <h1>➕ Add New Question</h1>
+    <div>
+        <a th:href="@{/admin/questions}">← Back to Questions</a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="card">
+        <h2>Create New IQ Test Question</h2>
+        <form th:action="@{/admin/questions/add}" method="post" id="questionForm">
+
+            <div class="form-group">
+                <label for="questionText">Question Text <span class="required">*</span></label>
+                <textarea id="questionText" name="questionText" required
+                          placeholder="Enter your question here... (e.g., What comes next in the sequence: 2, 4, 8, 16, ?)"></textarea>
+                <div class="help-text">Write a clear and concise question</div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="questionType">Question Type</label>
+                    <select id="questionType" name="questionType">
+                        <option value="TEXT">Text Only</option>
+                        <option value="IMAGE">Image Only</option>
+                        <option value="MIXED">Text + Image</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="difficultyLevel">Difficulty Level <span class="required">*</span></label>
+                    <select id="difficultyLevel" name="difficultyLevel" required>
+                        <option value="">Select difficulty</option>
+                        <option value="EASY">😊 Easy</option>
+                        <option value="MEDIUM">🤔 Medium</option>
+                        <option value="HARD">😰 Hard</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="points">Points</label>
+                    <input type="number" id="points" name="points" value="1" min="1" max="10">
+                    <div class="help-text">Points awarded for correct answer</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="timeLimitSeconds">Time Limit (seconds)</label>
+                    <input type="number" id="timeLimitSeconds" name="timeLimitSeconds" value="60" min="10" max="300">
+                    <div class="help-text">Time allowed to answer</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="questionImageUrl">Image URL (optional)</label>
+                <input type="text" id="questionImageUrl" name="questionImageUrl"
+                       placeholder="https://example.com/image.jpg">
+                <div class="help-text">Add an image URL if your question includes a visual</div>
+            </div>
+
+            <div class="form-group">
+                <label>Answer Options <span class="required">*</span></label>
+                <div class="options-container">
+                    <div class="options-header">
+                        <h3>Options</h3>
+                        <span style="color: #999; font-size: 0.9rem;">Select the correct answer</span>
+                    </div>
+
+                    <div id="optionsContainer">
+                        <div class="option-input">
+                            <span class="option-number">1</span>
+                            <input type="text" name="optionTexts" placeholder="Enter option 1" required>
+                            <input type="radio" name="correctOptionIndex" value="0" required>
+                            <span class="correct-label">✓ Correct</span>
+                        </div>
+                        <div class="option-input">
+                            <span class="option-number">2</span>
+                            <input type="text" name="optionTexts" placeholder="Enter option 2" required>
+                            <input type="radio" name="correctOptionIndex" value="1">
+                            <span class="correct-label">✓ Correct</span>
+                        </div>
+                        <div class="option-input">
+                            <span class="option-number">3</span>
+                            <input type="text" name="optionTexts" placeholder="Enter option 3" required>
+                            <input type="radio" name="correctOptionIndex" value="2">
+                            <span class="correct-label">✓ Correct</span>
+                        </div>
+                        <div class="option-input">
+                            <span class="option-number">4</span>
+                            <input type="text" name="optionTexts" placeholder="Enter option 4" required>
+                            <input type="radio" name="correctOptionIndex" value="3">
+                            <span class="correct-label">✓ Correct</span>
+                            <button type="button" class="btn-remove-option" onclick="removeOption(this)">✕</button>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn-add-option" onclick="addOption()">
+                        ➕ Add Another Option
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">✓ Create Question</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    let optionCount = 4;
+
+    function addOption() {
+        const container = document.getElementById('optionsContainer');
+        const newOption = document.createElement('div');
+        newOption.className = 'option-input';
+        newOption.innerHTML = `
+                <span class="option-number">${optionCount + 1}</span>
+                <input type="text" name="optionTexts" placeholder="Enter option ${optionCount + 1}" required>
+                <input type="radio" name="correctOptionIndex" value="${optionCount}">
+                <span class="correct-label">✓ Correct</span>
+                <button type="button" class="btn-remove-option" onclick="removeOption(this)">✕</button>
+            `;
+        container.appendChild(newOption);
+        optionCount++;
+        updateOptionNumbers();
+    }
+
+    function removeOption(button) {
+        const optionsContainer = document.getElementById('optionsContainer');
+        const optionInputs = optionsContainer.querySelectorAll('.option-input');
+
+        // Prevent removing if only 2 options left
+        if (optionInputs.length <= 2) {
+            alert('You must have at least 2 options!');
+            return;
+        }
+
+        button.closest('.option-input').remove();
+        optionCount--;
+        updateOptionNumbers();
+        updateRadioValues();
+    }
+
+    function updateOptionNumbers() {
+        const optionInputs = document.querySelectorAll('.option-input');
+        optionInputs.forEach((option, index) => {
+            const numberSpan = option.querySelector('.option-number');
+            numberSpan.textContent = index + 1;
+
+            const textInput = option.querySelector('input[type="text"]');
+            textInput.placeholder = `Enter option ${index + 1}`;
+        });
+    }
+
+    function updateRadioValues() {
+        const radios = document.querySelectorAll('input[name="correctOptionIndex"]');
+        radios.forEach((radio, index) => {
+            radio.value = index;
+        });
+    }
+
+    // Form validation
+    document.getElementById('questionForm').addEventListener('submit', function(e) {
+        const questionText = document.getElementById('questionText').value.trim();
+        const difficultyLevel = document.getElementById('difficultyLevel').value;
+        const optionTexts = document.querySelectorAll('input[name="optionTexts"]');
+        const correctOption = document.querySelector('input[name="correctOptionIndex"]:checked');
+
+        if (!questionText) {
+            e.preventDefault();
+            alert('Please enter a question text');
+            return;
+        }
+
+        if (!difficultyLevel) {
+            e.preventDefault();
+            alert('Please select a difficulty level');
+            return;
+        }
+
+        // Check if all option fields are filled
+        let allFilled = true;
+        optionTexts.forEach(input => {
+            if (!input.value.trim()) {
+                allFilled = false;
+            }
+        });
+
+        if (!allFilled) {
+            e.preventDefault();
+            alert('Please fill in all option fields');
+            return;
+        }
+
+        if (!correctOption) {
+            e.preventDefault();
+            alert('Please select the correct answer');
+            return;
+        }
+    });
+</script>
+</body>
+</html>

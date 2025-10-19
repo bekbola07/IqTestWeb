@@ -90,7 +90,6 @@
     </style>
 </head>
 <body>
-<!-- User Badge if logged in -->
 <div sec:authorize="isAuthenticated()" class="user-badge">
     <img th:src="${session.profilePicture}" alt="Profile">
     <span th:text="${session.userName}">User</span>

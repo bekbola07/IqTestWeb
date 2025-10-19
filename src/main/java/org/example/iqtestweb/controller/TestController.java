@@ -1,7 +1,7 @@
 package org.example.iqtestweb.controller;
 
 import jakarta.servlet.http.HttpSession;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.example.iqtestweb.entity.AnswerOption;
 import org.example.iqtestweb.entity.Question;
 import org.example.iqtestweb.entity.TestSession;
@@ -17,7 +17,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/test")
-@NoArgsConstructor(force = true)
+@RequiredArgsConstructor
 class TestController {
     private final QuestionService questionService;
 

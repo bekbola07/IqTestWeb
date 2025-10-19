@@ -1,22 +1,24 @@
 package org.example.iqtestweb.service;
 
+import lombok.RequiredArgsConstructor;
 import org.example.iqtestweb.entity.User;
+import org.example.iqtestweb.entity.enums.UserRole;
 import org.example.iqtestweb.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -55,8 +57,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             newUser.setOauthProvider(provider);
             newUser.setOauthId(oauthId);
             newUser.setEmail(email);
-            newUser.setUsername(name);
+            newUser.setUsername(generateUniqueUsername(name));
             newUser.setProfilePictureUrl(picture);
+            newUser.setRole(UserRole.USER);
             newUser.setCreatedAt(LocalDateTime.now());
             newUser.setLastLogin(LocalDateTime.now());
 
@@ -67,5 +70,19 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             userRepository.save(user);
         }
     }
+
+    private String generateUniqueUsername(String baseName) {
+        String username = baseName.replaceAll("\\s+", "").toLowerCase();
+        if (!userRepository.existsByUsername(username)) {
+            return username;
+        }
+
+        int counter = 1;
+        while (userRepository.existsByUsername(username + counter)) {
+            counter++;
+        }
+        return username + counter;
+    }
+
 }
 

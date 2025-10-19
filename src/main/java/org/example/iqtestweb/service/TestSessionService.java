@@ -1,15 +1,12 @@
 package org.example.iqtestweb.service;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.example.iqtestweb.entity.*;
-import org.example.iqtestweb.entity.TestSession;
-import org.example.iqtestweb.entity.User;
-import org.example.iqtestweb.entity.UserAnswer;
 import org.example.iqtestweb.repository.AnswerOptionRepository;
 import org.example.iqtestweb.repository.QuestionRepository;
 import org.example.iqtestweb.repository.TestSessionRepository;
 import org.example.iqtestweb.repository.UserAnswerRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -17,18 +14,16 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class TestSessionService {
-    @Autowired
-    private TestSessionRepository sessionRepository;
 
-    @Autowired
-    private UserAnswerRepository userAnswerRepository;
+    private final TestSessionRepository sessionRepository;
 
-    @Autowired
-    private QuestionRepository questionRepository;
+    private final UserAnswerRepository userAnswerRepository;
 
-    @Autowired
-    private AnswerOptionRepository answerOptionRepository;
+    private final QuestionRepository questionRepository;
+
+    private final AnswerOptionRepository answerOptionRepository;
 
     @Transactional
     public TestSession startSession(User user) {
@@ -89,5 +84,9 @@ public class TestSessionService {
 
     public List<TestSession> getUserSessions(Long userId) {
         return sessionRepository.findByUserUserId(userId);
+    }
+
+    public List<TestSession> getAllSessions() {
+        return sessionRepository.findAllByOrderByCompletedAtDesc();
     }
 }

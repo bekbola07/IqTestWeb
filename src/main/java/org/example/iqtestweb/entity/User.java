@@ -1,9 +1,13 @@
 package org.example.iqtestweb.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import org.example.iqtestweb.entity.enums.UserRole;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,14 +21,20 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
+    @Email
     private String email;
 
+    @Column(unique = true, nullable = false)
+    @Size(min = 3, max = 50)
     private String username;
+
+    @Column(name = "password_hash")
+    private String passwordHash;
+
     private Integer age;
     private String country;
 
-    // OAuth fields
     @Column(name = "oauth_provider")
     private String oauthProvider; // "google", "github", "local"
 
@@ -34,6 +44,9 @@ public class User {
     @Column(name = "profile_picture_url")
     private String profilePictureUrl;
 
+    @Enumerated(EnumType.STRING)
+    private UserRole role = UserRole.USER;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -42,4 +55,5 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<TestSession> testSessions;
+
 }

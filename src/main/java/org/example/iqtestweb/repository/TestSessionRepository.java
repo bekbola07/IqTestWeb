@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface TestSessionRepository extends JpaRepository<TestSession, Long> {
     List<TestSession> findByUserUserId(Long userId);
+    List<TestSession> findAllByOrderByCompletedAtDesc();
 }

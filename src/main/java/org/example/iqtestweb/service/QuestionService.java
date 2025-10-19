@@ -1,23 +1,33 @@
 package org.example.iqtestweb.service;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.example.iqtestweb.entity.AnswerOption;
 import org.example.iqtestweb.entity.Question;
+import org.example.iqtestweb.entity.QuestionCategory;
 import org.example.iqtestweb.repository.AnswerOptionRepository;
+import org.example.iqtestweb.repository.QuestionCategoryRepository;
 import org.example.iqtestweb.repository.QuestionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
+@RequiredArgsConstructor
 public class QuestionService {
-    @Autowired
-    private QuestionRepository questionRepository;
 
-    @Autowired
-    private AnswerOptionRepository answerOptionRepository;
+    private final QuestionRepository questionRepository;
+
+    private final AnswerOptionRepository answerOptionRepository;
+
+    private final QuestionCategoryRepository categoryRepository;
 
     public List<Question> getAllActiveQuestions() {
         return questionRepository.findByIsActiveTrue();
+    }
+
+    public List<Question> getAllQuestions() {
+        return questionRepository.findAll();
     }
 
     public Question getQuestionById(Long id) {
@@ -28,8 +38,22 @@ public class QuestionService {
         return answerOptionRepository.findByQuestionQuestionId(questionId);
     }
 
+    public List<QuestionCategory> getAllCategories() {
+        return categoryRepository.findAll();
+    }
+
     @Transactional
     public Question saveQuestion(Question question) {
         return questionRepository.save(question);
+    }
+
+    @Transactional
+    public void deleteQuestion(Long id) {
+        questionRepository.deleteById(id);
+    }
+
+    @Transactional
+    public QuestionCategory saveCategory(QuestionCategory category) {
+        return categoryRepository.save(category);
     }
 }
