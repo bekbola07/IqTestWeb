@@ -3,7 +3,10 @@ package org.example.iqtestweb.controller;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.example.iqtestweb.entity.*;
+import org.example.iqtestweb.entity.AnswerOption;
+import org.example.iqtestweb.entity.Question;
+import org.example.iqtestweb.entity.TestSession;
+import org.example.iqtestweb.entity.User;
 import org.example.iqtestweb.service.QuestionService;
 import org.example.iqtestweb.service.TestSessionService;
 import org.example.iqtestweb.service.UserService;
@@ -74,7 +77,6 @@ class AdminController {
         }
 
         model.addAttribute("question", new Question());
-        model.addAttribute("categories", questionService.getAllCategories());
         model.addAttribute("userName", session.getAttribute("userName"));
         return "admin/add-question";
     }
@@ -114,7 +116,6 @@ class AdminController {
 
         Question question = questionService.getQuestionById(id);
         model.addAttribute("question", question);
-        model.addAttribute("categories", questionService.getAllCategories());
         model.addAttribute("userName", session.getAttribute("userName"));
         return "admin/edit-question";
     }
@@ -146,37 +147,5 @@ class AdminController {
         model.addAttribute("sessions", sessionService.getAllSessions());
         model.addAttribute("userName", session.getAttribute("userName"));
         return "admin/sessions";
-    }
-
-    @GetMapping("/categories")
-    public String listCategories(Model model, HttpSession session) {
-        String userRole = (String) session.getAttribute("userRole");
-        if (!"ADMIN".equals(userRole)) {
-            return "redirect:/dashboard";
-        }
-
-        model.addAttribute("categories", questionService.getAllCategories());
-        model.addAttribute("userName", session.getAttribute("userName"));
-        return "admin/categories";
-    }
-
-    @GetMapping("/categories/add")
-    public String showAddCategoryForm(Model model, HttpSession session) {
-        String userRole = (String) session.getAttribute("userRole");
-        if (!"ADMIN".equals(userRole)) {
-            return "redirect:/dashboard";
-        }
-
-        model.addAttribute("category", new QuestionCategory());
-        model.addAttribute("userName", session.getAttribute("userName"));
-        return "admin/add-category";
-    }
-
-    @PostMapping("/categories/add")
-    public String addCategory(@ModelAttribute QuestionCategory category,
-                              RedirectAttributes redirectAttributes) {
-        questionService.saveCategory(category);
-        redirectAttributes.addFlashAttribute("success", "Category added successfully!");
-        return "redirect:/admin/categories";
     }
 }

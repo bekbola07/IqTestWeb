@@ -4,7 +4,6 @@ package org.example.iqtestweb.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.iqtestweb.entity.enums.DifficultyLevel;
 import org.example.iqtestweb.entity.enums.QuestionType;
 
 import java.time.LocalDateTime;
@@ -19,10 +18,6 @@ public class Question {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long questionId;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private QuestionCategory category;
-
     @Column(columnDefinition = "TEXT")
     private String questionText;
 
@@ -30,9 +25,6 @@ public class Question {
 
     @Enumerated(EnumType.STRING)
     private QuestionType questionType = QuestionType.TEXT;
-
-    @Enumerated(EnumType.STRING)
-    private DifficultyLevel difficultyLevel;
 
     private Integer timeLimitSeconds = 60;
     private Integer points = 1;

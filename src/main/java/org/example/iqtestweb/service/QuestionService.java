@@ -4,9 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.iqtestweb.entity.AnswerOption;
 import org.example.iqtestweb.entity.Question;
-import org.example.iqtestweb.entity.QuestionCategory;
 import org.example.iqtestweb.repository.AnswerOptionRepository;
-import org.example.iqtestweb.repository.QuestionCategoryRepository;
 import org.example.iqtestweb.repository.QuestionRepository;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +17,6 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
 
     private final AnswerOptionRepository answerOptionRepository;
-
-    private final QuestionCategoryRepository categoryRepository;
 
     public List<Question> getAllActiveQuestions() {
         return questionRepository.findByIsActiveTrue();
@@ -38,10 +34,6 @@ public class QuestionService {
         return answerOptionRepository.findByQuestionQuestionId(questionId);
     }
 
-    public List<QuestionCategory> getAllCategories() {
-        return categoryRepository.findAll();
-    }
-
     @Transactional
     public Question saveQuestion(Question question) {
         return questionRepository.save(question);
@@ -50,10 +42,5 @@ public class QuestionService {
     @Transactional
     public void deleteQuestion(Long id) {
         questionRepository.deleteById(id);
-    }
-
-    @Transactional
-    public QuestionCategory saveCategory(QuestionCategory category) {
-        return categoryRepository.save(category);
     }
 }

@@ -11,51 +11,61 @@
             margin: 0;
             padding: 0;
         }
+
         .navbar {
             background: white;
             padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
+
         .navbar h1 {
             color: #667eea;
             margin: 0;
         }
+
         .navbar a {
             color: #667eea;
             text-decoration: none;
             font-weight: 600;
         }
+
         .container {
             max-width: 900px;
             margin: 2rem auto;
             padding: 0 2rem 2rem;
         }
+
         .card {
             background: white;
             border-radius: 15px;
             padding: 3rem;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
         }
+
         h2 {
             color: #667eea;
             margin-bottom: 2rem;
             text-align: center;
         }
+
         .form-group {
             margin-bottom: 1.5rem;
         }
+
         label {
             display: block;
             font-weight: 600;
             color: #555;
             margin-bottom: 0.5rem;
         }
+
         label .required {
             color: #ff4444;
         }
+
         input, select, textarea {
             width: 100%;
             padding: 12px;
@@ -65,35 +75,42 @@
             font-family: inherit;
             transition: border 0.3s;
         }
+
         input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: #667eea;
         }
+
         textarea {
             min-height: 100px;
             resize: vertical;
         }
+
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 1rem;
         }
+
         .options-container {
             background: #f8f9fa;
             padding: 1.5rem;
             border-radius: 10px;
             margin-top: 1rem;
         }
+
         .options-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1rem;
         }
+
         .options-header h3 {
             color: #667eea;
             margin: 0;
         }
+
         .option-input {
             display: flex;
             gap: 1rem;
@@ -105,9 +122,11 @@
             border: 2px solid #e0e0e0;
             transition: border 0.3s;
         }
+
         .option-input:hover {
             border-color: #667eea;
         }
+
         .option-number {
             background: #667eea;
             color: white;
@@ -120,14 +139,17 @@
             font-weight: bold;
             flex-shrink: 0;
         }
+
         .option-input input[type="text"] {
             flex: 1;
             margin: 0;
         }
+
         .option-input input[type="radio"] {
             width: auto;
             cursor: pointer;
         }
+
         .correct-label {
             display: flex;
             align-items: center;
@@ -136,6 +158,7 @@
             color: #00cc66;
             font-weight: 600;
         }
+
         .btn-add-option {
             background: #667eea;
             color: white;
@@ -149,9 +172,11 @@
             gap: 0.5rem;
             transition: transform 0.2s;
         }
+
         .btn-add-option:hover {
             transform: translateY(-2px);
         }
+
         .btn-remove-option {
             background: #ff4444;
             color: white;
@@ -162,9 +187,11 @@
             font-size: 0.9rem;
             display: none;
         }
+
         .option-input:hover .btn-remove-option {
             display: block;
         }
+
         .btn-submit {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -178,30 +205,15 @@
             width: 100%;
             transition: transform 0.2s;
         }
+
         .btn-submit:hover {
             transform: translateY(-2px);
         }
+
         .help-text {
             font-size: 0.85rem;
             color: #999;
             margin-top: 0.3rem;
-        }
-        .preview-section {
-            background: #f0f4ff;
-            padding: 1.5rem;
-            border-radius: 10px;
-            margin-top: 2rem;
-            border: 2px dashed #667eea;
-        }
-        .preview-section h3 {
-            color: #667eea;
-            margin-bottom: 1rem;
-        }
-        .preview-question {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            min-height: 100px;
         }
     </style>
 </head>
@@ -236,28 +248,16 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="difficultyLevel">Difficulty Level <span class="required">*</span></label>
-                    <select id="difficultyLevel" name="difficultyLevel" required>
-                        <option value="">Select difficulty</option>
-                        <option value="EASY">😊 Easy</option>
-                        <option value="MEDIUM">🤔 Medium</option>
-                        <option value="HARD">😰 Hard</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
                     <label for="points">Points</label>
                     <input type="number" id="points" name="points" value="1" min="1" max="10">
                     <div class="help-text">Points awarded for correct answer</div>
                 </div>
+            </div>
 
-                <div class="form-group">
-                    <label for="timeLimitSeconds">Time Limit (seconds)</label>
-                    <input type="number" id="timeLimitSeconds" name="timeLimitSeconds" value="60" min="10" max="300">
-                    <div class="help-text">Time allowed to answer</div>
-                </div>
+            <div class="form-group">
+                <label for="timeLimitSeconds">Time Limit (seconds)</label>
+                <input type="number" id="timeLimitSeconds" name="timeLimitSeconds" value="60" min="10" max="300">
+                <div class="help-text">Time allowed to answer</div>
             </div>
 
             <div class="form-group">
@@ -337,7 +337,6 @@
         const optionsContainer = document.getElementById('optionsContainer');
         const optionInputs = optionsContainer.querySelectorAll('.option-input');
 
-        // Prevent removing if only 2 options left
         if (optionInputs.length <= 2) {
             alert('You must have at least 2 options!');
             return;
@@ -367,10 +366,8 @@
         });
     }
 
-    // Form validation
-    document.getElementById('questionForm').addEventListener('submit', function(e) {
+    document.getElementById('questionForm').addEventListener('submit', function (e) {
         const questionText = document.getElementById('questionText').value.trim();
-        const difficultyLevel = document.getElementById('difficultyLevel').value;
         const optionTexts = document.querySelectorAll('input[name="optionTexts"]');
         const correctOption = document.querySelector('input[name="correctOptionIndex"]:checked');
 
@@ -380,13 +377,6 @@
             return;
         }
 
-        if (!difficultyLevel) {
-            e.preventDefault();
-            alert('Please select a difficulty level');
-            return;
-        }
-
-        // Check if all option fields are filled
         let allFilled = true;
         optionTexts.forEach(input => {
             if (!input.value.trim()) {

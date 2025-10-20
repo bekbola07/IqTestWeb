@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+>
 <head>
     <meta charset="UTF-8">
     <title>Dashboard - IQ Test</title>
@@ -12,6 +12,7 @@
             margin: 0;
             padding: 2rem;
         }
+
         .navbar {
             background: white;
             padding: 1rem 2rem;
@@ -20,22 +21,32 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 2rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
+
         .navbar h1 {
             color: #667eea;
             margin: 0;
         }
+
         .user-info {
             display: flex;
             align-items: center;
             gap: 1rem;
         }
+
         .user-info img {
             width: 40px;
             height: 40px;
             border-radius: 50%;
+            border: 2px solid #667eea;
         }
+
+        .user-name {
+            font-weight: 600;
+            color: #333;
+        }
+
         .logout-btn {
             background: #ff4444;
             color: white;
@@ -44,7 +55,13 @@
             border-radius: 20px;
             cursor: pointer;
             font-weight: 600;
+            transition: transform 0.2s;
         }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+        }
+
         .admin-badge {
             background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
             color: white;
@@ -56,6 +73,7 @@
             align-items: center;
             gap: 0.3rem;
         }
+
         .dashboard-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -63,16 +81,19 @@
             max-width: 1200px;
             margin: 0 auto;
         }
+
         .card {
             background: white;
             border-radius: 15px;
             padding: 2rem;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
             transition: transform 0.3s;
         }
+
         .card:hover {
             transform: translateY(-5px);
         }
+
         .card h2 {
             color: #667eea;
             margin-bottom: 1rem;
@@ -80,11 +101,13 @@
             align-items: center;
             gap: 0.5rem;
         }
+
         .card p {
             color: #666;
             line-height: 1.6;
             margin-bottom: 1.5rem;
         }
+
         .btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -99,31 +122,38 @@
             font-weight: 600;
             transition: transform 0.2s;
         }
+
         .btn:hover {
             transform: translateY(-2px);
         }
+
         .btn-admin {
             background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
         }
+
         .stat {
             font-size: 2.5rem;
             font-weight: bold;
             color: #667eea;
             margin: 0.5rem 0;
         }
+
         .admin-card {
             border: 3px solid #ff6b6b;
             background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
         }
+
         .admin-card h2 {
             color: #ff6b6b;
         }
+
         .admin-features {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 0.8rem;
             margin-top: 1rem;
         }
+
         .admin-feature {
             background: white;
             padding: 0.8rem;
@@ -131,7 +161,9 @@
             font-size: 0.9rem;
             color: #666;
             border: 1px solid #ffe0e0;
+            text-align: center;
         }
+
         .icon {
             font-size: 2.5rem;
             margin-bottom: 1rem;
@@ -144,7 +176,7 @@
     <h1>🧠 IQ Test Pro</h1>
     <div class="user-info">
         <img th:src="${profilePicture}" alt="Profile" th:if="${profilePicture}">
-        <span th:text="${userName}">User Name</span>
+        <span class="user-name" th:text="${userName}">User Name</span>
         <span th:if="${userRole == 'ADMIN'}" class="admin-badge">
                 🔧 ADMIN
             </span>
@@ -159,11 +191,11 @@
     <div class="card admin-card" th:if="${userRole == 'ADMIN'}">
         <span class="icon">🔧</span>
         <h2>Admin Control Panel</h2>
-        <p>Manage the entire IQ Test platform - users, questions, categories, and view all test sessions.</p>
+        <p>Manage the entire IQ Test platform - users, questions, and view all test sessions.</p>
         <div class="admin-features">
             <div class="admin-feature">👥 Manage Users</div>
             <div class="admin-feature">❓ Manage Questions</div>
-            <div class="admin-feature">📂 Categories</div>
+            <div class="admin-feature">➕ Add Questions</div>
             <div class="admin-feature">📊 View Sessions</div>
         </div>
         <a th:href="@{/admin/dashboard}" class="btn btn-admin">Go to Admin Dashboard</a>

@@ -11,51 +11,61 @@
             margin: 0;
             padding: 0;
         }
+
         .navbar {
             background: white;
             padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
+
         .navbar h1 {
             color: #667eea;
             margin: 0;
         }
+
         .navbar a {
             color: #667eea;
             text-decoration: none;
             font-weight: 600;
         }
+
         .container {
             max-width: 900px;
             margin: 2rem auto;
             padding: 0 2rem 2rem;
         }
+
         .card {
             background: white;
             border-radius: 15px;
             padding: 3rem;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
         }
+
         h2 {
             color: #667eea;
             margin-bottom: 2rem;
             text-align: center;
         }
+
         .form-group {
             margin-bottom: 1.5rem;
         }
+
         label {
             display: block;
             font-weight: 600;
             color: #555;
             margin-bottom: 0.5rem;
         }
+
         label .required {
             color: #ff4444;
         }
+
         input, select, textarea {
             width: 100%;
             padding: 12px;
@@ -64,30 +74,36 @@
             font-size: 14px;
             font-family: inherit;
         }
+
         input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: #667eea;
         }
+
         textarea {
             min-height: 120px;
             resize: vertical;
         }
+
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 1rem;
         }
+
         .options-section {
             background: #f8f9fa;
             padding: 1.5rem;
             border-radius: 10px;
             margin-top: 1rem;
         }
+
         .options-section h3 {
             color: #667eea;
             margin-bottom: 1rem;
             font-size: 1.1rem;
         }
+
         .option-item {
             background: white;
             padding: 1rem;
@@ -95,26 +111,20 @@
             margin-bottom: 1rem;
             border: 2px solid #e0e0e0;
         }
+
         .option-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 0.5rem;
         }
+
         .option-header label {
             margin: 0;
             font-size: 0.9rem;
             color: #667eea;
         }
-        .correct-checkbox {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .correct-checkbox input[type="checkbox"] {
-            width: auto;
-            margin: 0;
-        }
+
         .correct-indicator {
             background: #00cc66;
             color: white;
@@ -123,6 +133,7 @@
             font-size: 0.75rem;
             font-weight: 600;
         }
+
         .btn-submit {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -135,24 +146,29 @@
             margin-top: 1rem;
             width: 100%;
         }
+
         .btn-submit:hover {
             transform: translateY(-2px);
         }
+
         .toggle-active {
             display: flex;
             align-items: center;
             gap: 1rem;
         }
+
         .switch {
             position: relative;
             width: 50px;
             height: 26px;
         }
+
         .switch input {
             opacity: 0;
             width: 0;
             height: 0;
         }
+
         .slider {
             position: absolute;
             cursor: pointer;
@@ -164,6 +180,7 @@
             transition: .4s;
             border-radius: 34px;
         }
+
         .slider:before {
             position: absolute;
             content: "";
@@ -175,9 +192,11 @@
             transition: .4s;
             border-radius: 50%;
         }
+
         input:checked + .slider {
             background-color: #667eea;
         }
+
         input:checked + .slider:before {
             transform: translateX(24px);
         }
@@ -194,7 +213,8 @@
 <div class="container">
     <div class="card">
         <h2>Edit Question Details</h2>
-        <form th:action="@{/admin/questions/edit/{id}(id=${question.questionId})}" th:object="${question}" method="post">
+        <form th:action="@{/admin/questions/edit/{id}(id=${question.questionId})}" th:object="${question}"
+              method="post">
 
             <div class="form-group">
                 <label for="questionText">Question Text <span class="required">*</span></label>
@@ -213,25 +233,14 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="difficultyLevel">Difficulty Level <span class="required">*</span></label>
-                    <select id="difficultyLevel" th:field="*{difficultyLevel}" required>
-                        <option value="EASY">Easy</option>
-                        <option value="MEDIUM">Medium</option>
-                        <option value="HARD">Hard</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
                     <label for="points">Points</label>
                     <input type="number" id="points" th:field="*{points}" min="1" max="10">
                 </div>
+            </div>
 
-                <div class="form-group">
-                    <label for="timeLimitSeconds">Time Limit (seconds)</label>
-                    <input type="number" id="timeLimitSeconds" th:field="*{timeLimitSeconds}" min="10" max="300">
-                </div>
+            <div class="form-group">
+                <label for="timeLimitSeconds">Time Limit (seconds)</label>
+                <input type="number" id="timeLimitSeconds" th:field="*{timeLimitSeconds}" min="10" max="300">
             </div>
 
             <div class="form-group">
@@ -249,12 +258,13 @@
                 <span>Active</span>
             </div>
 
-            <div class="options-section" th:if="${question.answerOptions != null and !#lists.isEmpty(question.answerOptions)}">
+            <div class="options-section"
+                 th:if="${question.answerOptions != null and !#lists.isEmpty(question.answerOptions)}">
                 <h3>Answer Options</h3>
                 <div th:each="option, iterStat : ${question.answerOptions}" class="option-item">
                     <div class="option-header">
                         <label th:text="'Option ' + ${iterStat.index + 1}">Option 1</label>
-                        <div class="correct-checkbox">
+                        <div>
                             <span th:if="${option.isCorrect}" class="correct-indicator">✓ CORRECT</span>
                         </div>
                     </div>
