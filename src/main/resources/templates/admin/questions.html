@@ -136,6 +136,22 @@
             text-decoration: none;
             font-size: 0.9rem;
         }
+        .badge-easy {
+            background: #99ff99;
+            color: #006600;
+        }
+        .badge-medium {
+            background: #ffcc99;
+            color: #cc6600;
+        }
+        .badge-hard {
+            background: #ff9999;
+            color: #cc0000;
+        }
+        .badge-active {
+            background: #99ccff;
+            color: #0066cc;
+        }
     </style>
 </head>
 <body>
@@ -158,6 +174,7 @@
                 <th>ID</th>
                 <th>Question</th>
                 <th>Type</th>
+                <th>Difficulty level</th>
                 <th>Points</th>
                 <th>Status</th>
                 <th>Actions</th>
@@ -168,6 +185,11 @@
                 <td th:text="${question.questionId}">1</td>
                 <td th:text="${#strings.abbreviate(question.questionText, 80)}">Question text...</td>
                 <td th:text="${question.questionType}">TEXT</td>
+                <td>
+                            <span class="badge"
+                                  th:classappend="${question.difficultyLevel.name() == 'EASY'} ? 'badge-easy' : (${question.difficultyLevel.name() == 'MEDIUM'} ? 'badge-medium' : 'badge-hard')"
+                                  th:text="${question.difficultyLevel}">EASY</span>
+                </td>
                 <td th:text="${question.points}">1</td>
                 <td>
                             <span th:classappend="${question.isActive} ? 'badge-active' : 'badge-inactive'"

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Category - Admin</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .navbar h1 {
+            color: #667eea;
+            margin: 0;
+        }
+        .navbar a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .container {
+            max-width: 700px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 3rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h2 {
+            color: #667eea;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 0.5rem;
+        }
+        label .required {
+            color: #ff4444;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border 0.3s;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .char-count {
+            text-align: right;
+            font-size: 0.85rem;
+            color: #999;
+            margin-top: 0.3rem;
+        }
+        .difficulty-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+        .difficulty-option {
+            position: relative;
+        }
+        .difficulty-option input[type="radio"] {
+            display: none;
+        }
+        .difficulty-label {
+            display: block;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        .difficulty-option input[type="radio"]:checked + .difficulty-label {
+            border-color: #667eea;
+            background: #f0f4ff;
+            color: #667eea;
+        }
+        .difficulty-label:hover {
+            border-color: #667eea;
+        }
+        .difficulty-label.easy {
+            color: #006600;
+        }
+        .difficulty-label.medium {
+            color: #cc6600;
+        }
+        .difficulty-label.hard {
+            color: #cc0000;
+        }
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 14px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1rem;
+            transition: transform 0.2s;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+        }
+        .help-text {
+            font-size: 0.85rem;
+            color: #999;
+            margin-top: 0.3rem;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <h1>➕ Add New Category</h1>
+    <div>
+        <a th:href="@{/admin/categories}">← Back to Categories</a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="card">
+        <h2>Create New Question Category</h2>
+            <form th:action="@{/admin/categories/add}" th:object="${category}" method="post">
+            <div class="form-group">
+                <label for="categoryName">Category Name <span class="required">*</span></label>
+                <input type="text" id="categoryName" th:field="*{categoryName}" required
+                       placeholder="e.g., Logical Reasoning, Pattern Recognition"
+                       maxlength="100">
+                <div class="help-text">Give your category a clear, descriptive name</div>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" th:field="*{description}"
+                          placeholder="Describe what type of questions this category will contain..."
+                          maxlength="500"
+                          oninput="updateCharCount(this)"></textarea>
+                <div class="char-count" id="charCount">0 / 500</div>
+            </div>
+
+            <div class="form-group">
+                <label>Difficulty Level <span class="required">*</span></label>
+                <div class="difficulty-options">
+                    <div class="difficulty-option">
+                        <input type="radio" id="easy" th:field="*{difficultyLevel}" value="EASY" required>
+                        <label for="easy" class="difficulty-label easy">
+                            😊 Easy
+                        </label>
+                    </div>
+                    <div class="difficulty-option">
+                        <input type="radio" id="medium" th:field="*{difficultyLevel}" value="MEDIUM">
+                        <label for="medium" class="difficulty-label medium">
+                            🤔 Medium
+                        </label>
+                    </div>
+                    <div class="difficulty-option">
+                        <input type="radio" id="hard" th:field="*{difficultyLevel}" value="HARD">
+                        <label for="hard" class="difficulty-label hard">
+                            😰 Hard
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">✓ Create Category</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function updateCharCount(textarea) {
+        const count = textarea.value.length;
+        const max = textarea.getAttribute('maxlength');
+        document.getElementById('charCount').textContent = count + ' / ' + max;
+    }
+
+    // Initialize char count on page load
+    window.onload = function() {
+        const textarea = document.getElementById('description');
+        if (textarea) {
+            updateCharCount(textarea);
+        }
+    };
+</script>
+</body>
+</html>

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.example.iqtestweb.entity.enums.DifficultyLevel;
 import org.example.iqtestweb.entity.enums.QuestionType;
 
 import java.time.LocalDateTime;
@@ -22,6 +23,13 @@ public class Question {
 
     @Column(columnDefinition = "TEXT")
     private String questionText;
+
+    @Enumerated(EnumType.STRING)
+    private DifficultyLevel difficultyLevel;
+
+    @ManyToOne
+    @JoinColumn(name = "category")
+    private QuestionCategory questionCategory;
 
     private String questionImageUrl;
 
