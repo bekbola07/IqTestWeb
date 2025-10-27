@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Results - IQ Test</title>
+    <title>Test Results - IQ Test</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, sans-serif;
@@ -12,9 +12,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            margin: 0;
         }
         .results-container {
-            max-width: 600px;
+            max-width: 700px;
             width: 100%;
         }
         .results-card {
@@ -35,25 +36,76 @@
             width: 50px;
             height: 50px;
             border-radius: 50%;
+            border: 3px solid #667eea;
+        }
+        .user-info .user-details {
+            text-align: left;
+        }
+        .user-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #333;
+        }
+        .user-email {
+            font-size: 0.9rem;
+            color: #999;
         }
         h1 {
             color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+        .completion-badge {
+            background: #00cc66;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            display: inline-block;
             margin-bottom: 2rem;
+            font-weight: 600;
         }
         .iq-score {
             font-size: 5rem;
             font-weight: bold;
             color: #667eea;
             margin: 1rem 0;
+            line-height: 1;
         }
         .score-label {
             font-size: 1.2rem;
             color: #666;
+            margin-bottom: 1rem;
+        }
+        .category-badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-weight: bold;
             margin-bottom: 2rem;
+        }
+        .category-genius {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #996600;
+        }
+        .category-superior {
+            background: linear-gradient(135deg, #00ff88 0%, #00cc66 100%);
+            color: #006633;
+        }
+        .category-high {
+            background: linear-gradient(135deg, #66ff99 0%, #33cc66 100%);
+            color: #006600;
+        }
+        .category-average {
+            background: linear-gradient(135deg, #99ccff 0%, #6699ff 100%);
+            color: #003366;
+        }
+        .category-below {
+            background: linear-gradient(135deg, #ffaa88 0%, #ff8866 100%);
+            color: #cc3300;
         }
         .stats {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(3, 1fr);
             gap: 1.5rem;
             margin: 2rem 0;
         }
@@ -70,12 +122,30 @@
         .stat-label {
             color: #666;
             margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+        .interpretation {
+            background: #f0f4ff;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 2rem;
+            text-align: left;
+            border-left: 4px solid #667eea;
+        }
+        .interpretation h3 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+        .interpretation p {
+            color: #666;
+            line-height: 1.6;
         }
         .buttons {
             display: flex;
             gap: 1rem;
             justify-content: center;
             margin-top: 2rem;
+            flex-wrap: wrap;
         }
         .btn {
             padding: 12px 30px;
@@ -86,6 +156,10 @@
             text-decoration: none;
             display: inline-block;
             font-weight: 600;
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
         }
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -96,55 +170,99 @@
             color: #667eea;
             border: 2px solid #667eea;
         }
-        .interpretation {
-            background: #f0f4ff;
-            padding: 1.5rem;
+        .accuracy-bar {
+            width: 100%;
+            height: 10px;
+            background: #e0e0e0;
             border-radius: 10px;
-            margin-top: 2rem;
-            text-align: left;
+            overflow: hidden;
+            margin-top: 0.5rem;
         }
-        .interpretation h3 {
-            color: #667eea;
-            margin-bottom: 0.5rem;
+        .accuracy-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 1s ease-out;
+        }
+        @keyframes scoreReveal {
+            from {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        .iq-score {
+            animation: scoreReveal 0.5s ease-out;
         }
     </style>
 </head>
 <body>
 <div class="results-container">
     <div class="results-card">
-        <div class="user-info">
-            <img th:src="${profilePicture}" alt="Profile">
-            <h3 th:text="${userName}">User Name</h3>
+        <!-- User Info -->
+        <div class="user-info" th:if="${userName}">
+            <img th:src="${profilePicture}" alt="Profile" th:if="${profilePicture}">
+            <div class="user-details">
+                <div class="user-name" th:text="${userName}">User Name</div>
+                <div class="user-email" th:text="${userEmail}" th:if="${userEmail}">user@email.com</div>
+            </div>
         </div>
 
         <h1>🎉 Test Completed!</h1>
+        <div class="completion-badge">✓ Successfully Completed</div>
 
-        <div class="iq-score" th:text="${session.iqScore}">120</div>
+        <!-- IQ Score -->
+        <div class="iq-score" th:text="${iqScore != null ? iqScore : 'N/A'}">120</div>
         <div class="score-label">Your IQ Score</div>
 
+        <!-- Category Badge -->
+        <div th:if="${category}"
+             class="category-badge"
+             th:classappend="${iqScore >= 130} ? 'category-genius' :
+                                (${iqScore >= 120} ? 'category-superior' :
+                                (${iqScore >= 110} ? 'category-high' :
+                                (${iqScore >= 90} ? 'category-average' : 'category-below')))"
+             th:text="${category}">Category</div>
+
+        <!-- Statistics -->
         <div class="stats">
             <div class="stat-box">
-                <div class="stat-value" th:text="${session.correctAnswers}">15</div>
+                <div class="stat-value" th:text="${correctAnswers != null ? correctAnswers : 0}">15</div>
                 <div class="stat-label">Correct Answers</div>
             </div>
             <div class="stat-box">
-                <div class="stat-value" th:text="${session.totalQuestions}">20</div>
+                <div class="stat-value" th:text="${totalQuestions != null ? totalQuestions : 0}">20</div>
                 <div class="stat-label">Total Questions</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" th:text="${timeTaken != null ? (timeTaken / 60) + ' min' : 'N/A'}">15 min</div>
+                <div class="stat-label">Time Taken</div>
             </div>
         </div>
 
-        <div class="interpretation">
-            <h3>Score Interpretation</h3>
-            <p th:if="${session.iqScore >= 130}">🌟 Exceptional! Your score indicates very superior intelligence.</p>
-            <p th:if="${session.iqScore >= 120 and session.iqScore < 130}">⭐ Excellent! Your score indicates superior intelligence.</p>
-            <p th:if="${session.iqScore >= 110 and session.iqScore < 120}">✨ Great! Your score indicates high average intelligence.</p>
-            <p th:if="${session.iqScore >= 90 and session.iqScore < 110}">👍 Good! Your score indicates average intelligence.</p>
-            <p th:if="${session.iqScore < 90}">Keep practicing! Intelligence can be improved with training.</p>
+        <!-- Accuracy Bar -->
+        <div th:if="${accuracy != null}">
+            <div style="text-align: left; font-weight: 600; color: #667eea; margin-bottom: 0.5rem;">
+                Accuracy: <span th:text="${accuracy} + '%'">75%</span>
+            </div>
+            <div class="accuracy-bar">
+                <div class="accuracy-fill" th:style="'width: ' + ${accuracy} + '%'"></div>
+            </div>
         </div>
 
+        <!-- Interpretation -->
+        <div class="interpretation" th:if="${interpretation}">
+            <h3>📊 Score Interpretation</h3>
+            <p th:text="${interpretation}">Your score interpretation will appear here.</p>
+        </div>
+
+        <!-- Action Buttons -->
         <div class="buttons">
             <a th:href="@{/dashboard}" class="btn btn-primary">Back to Dashboard</a>
-            <a th:href="@{/test/start}" class="btn btn-secondary">Take Again</a>
+            <a th:href="@{/test/start}" class="btn btn-secondary">Take Another Test</a>
+            <a th:href="@{/test/history}" class="btn btn-secondary">View History</a>
         </div>
     </div>
 </div>

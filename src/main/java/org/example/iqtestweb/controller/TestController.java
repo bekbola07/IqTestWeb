@@ -18,7 +18,8 @@ import java.util.List;
 @Controller
 @RequestMapping("/test")
 @RequiredArgsConstructor
-class TestController {
+
+public class TestController {
     private final QuestionService questionService;
 
     private final TestSessionService sessionService;
@@ -48,6 +49,11 @@ class TestController {
 
         List<Question> questions = questionService.getAllActiveQuestions();
 
+        if (questions.isEmpty()) {
+            model.addAttribute("error", "No active questions available");
+            return "error";
+        }
+
         if (index >= questions.size()) {
             return "redirect:/test/complete";
         }
@@ -72,6 +78,11 @@ class TestController {
                                @RequestParam int nextIndex,
                                HttpSession httpSession) {
         Long sessionId = (Long) httpSession.getAttribute("sessionId");
+
+        if (sessionId == null) {
+            return "redirect:/test/start";
+        }
+
         sessionService.submitAnswer(sessionId, questionId, optionId);
         return "redirect:/test/question/" + nextIndex;
     }
@@ -79,12 +90,65 @@ class TestController {
     @GetMapping("/complete")
     public String completeTest(HttpSession httpSession, Model model) {
         Long sessionId = (Long) httpSession.getAttribute("sessionId");
+
+        if (sessionId == null) {
+            return "redirect:/dashboard";
+        }
+
+        // Complete the session and calculate score
         TestSession completedSession = sessionService.completeSession(sessionId);
 
+        if (completedSession == null) {
+            model.addAttribute("error", "Session not found");
+            return "redirect:/dashboard";
+        }
+
+        // Add all necessary data to model
         model.addAttribute("session", completedSession);
         model.addAttribute("userName", httpSession.getAttribute("userName"));
         model.addAttribute("profilePicture", httpSession.getAttribute("profilePicture"));
+        model.addAttribute("userEmail", httpSession.getAttribute("userEmail"));
 
+        // Calculate accuracy percentage
+        if (completedSession.getTotalQuestions() != null && completedSession.getTotalQuestions() > 0) {
+            double accuracy = (completedSession.getCorrectAnswers() * 100.0) / completedSession.getTotalQuestions();
+            model.addAttribute("accuracy", Math.round(accuracy));
+        } else {
+            model.addAttribute("accuracy", 0);
+        }
+
+        // Add interpretation text based on score
+        Integer iqScore = completedSession.getIqScore();
+        if (iqScore != null) {
+            String interpretation;
+            String category;
+
+            if (iqScore >= 130) {
+                category = "Genius";
+                interpretation = "Exceptional! Your score indicates very superior intelligence. You're in the top 2% of the population.";
+            } else if (iqScore >= 120) {
+                category = "Superior";
+                interpretation = "Excellent! Your score indicates superior intelligence. You're in the top 10% of the population.";
+            } else if (iqScore >= 110) {
+                category = "High Average";
+                interpretation = "Great! Your score indicates high average intelligence. You're performing above average.";
+            } else if (iqScore >= 90) {
+                category = "Average";
+                interpretation = "Good! Your score indicates average intelligence. This is where most people score.";
+            } else {
+                category = "Below Average";
+                interpretation = "Keep practicing! Intelligence can be improved with training and practice.";
+            }
+
+            model.addAttribute("category", category);
+            model.addAttribute("iqScore", iqScore);
+            model.addAttribute("interpretation", interpretation);
+            model.addAttribute("correctAnswers", completedSession.getCorrectAnswers());
+            model.addAttribute("totalQuestions", completedSession.getTotalQuestions());
+            model.addAttribute("timeTaken", completedSession.getTimeTakenSeconds());
+        }
+
+        // Remove session from HttpSession
         httpSession.removeAttribute("sessionId");
 
         return "results";
@@ -100,7 +164,9 @@ class TestController {
         List<TestSession> sessions = sessionService.getUserSessions(userId);
         model.addAttribute("sessions", sessions);
         model.addAttribute("userName", httpSession.getAttribute("userName"));
+        model.addAttribute("profilePicture", httpSession.getAttribute("profilePicture"));
 
         return "test-history";
     }
 }
+

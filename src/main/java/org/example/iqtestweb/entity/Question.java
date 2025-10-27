@@ -4,6 +4,7 @@ package org.example.iqtestweb.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.example.iqtestweb.entity.enums.QuestionType;
 
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ import java.util.List;
 @Table(name = "questions")
 @Data
 @NoArgsConstructor
+@ToString(exclude = {"answerOptions"})
 public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

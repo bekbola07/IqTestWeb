@@ -3,6 +3,7 @@ package org.example.iqtestweb.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
 @Table(name = "test_sessions")
 @Data
 @NoArgsConstructor
+@ToString(exclude = {"userAnswers"})
 public class TestSession {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
