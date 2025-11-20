@@ -56,4 +56,13 @@ public class QuestionService {
     public QuestionCategory saveCategory(QuestionCategory category) {
         return categoryRepository.save(category);
     }
+
+    public void saveAnswerOption(AnswerOption option) {
+        answerOptionRepository.save(option);
+    }
+
+    public List<Question> getQuestionsByCategoryId(Long categoryId) {
+
+        return questionRepository.getQuestionsByQuestionCategory_CategoryId(categoryId);
+    }
 }

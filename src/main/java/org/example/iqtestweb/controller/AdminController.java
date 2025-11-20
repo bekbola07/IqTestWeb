@@ -4,6 +4,7 @@ package org.example.iqtestweb.controller;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.example.iqtestweb.entity.*;
+import org.example.iqtestweb.entity.dto.CategoryDTO;
 import org.example.iqtestweb.service.QuestionService;
 import org.example.iqtestweb.service.TestSessionService;
 import org.example.iqtestweb.service.UserService;
@@ -88,18 +89,18 @@ class AdminController {
         Question savedQuestion = questionService.saveQuestion(question);
 
         List<AnswerOption> savedAnswerOptions = new ArrayList<>();
+        questionService.saveQuestion(savedQuestion);
         for (int i = 0; i < optionTexts.size(); i++) {
             AnswerOption option = new AnswerOption();
             option.setQuestion(savedQuestion);
             option.setOptionText(optionTexts.get(i));
             option.setIsCorrect(i == correctOptionIndex);
             option.setOptionOrder(i);
+            questionService.saveAnswerOption(option);
 //            savedQuestion.getAnswerOptions().add(option);
             savedAnswerOptions.add(option);
         }
-        savedQuestion.setAnswerOptions(savedAnswerOptions);
 
-        questionService.saveQuestion(savedQuestion);
         redirectAttributes.addFlashAttribute("success", "Question added successfully!");
         return "redirect:/admin/questions";
     }
@@ -153,7 +154,15 @@ class AdminController {
             return "redirect:/dashboard";
         }
 
-        model.addAttribute("categories", questionService.getAllCategories());
+        List<CategoryDTO> categoryDTOS = new ArrayList<>();
+        List<QuestionCategory> categories = questionService.getAllCategories();
+
+        for (QuestionCategory category : categories) {
+            categoryDTOS.add(new CategoryDTO(category, questionService.getQuestionsByCategoryId(category.getCategoryId())));
+        }
+
+
+        model.addAttribute("categories", categoryDTOS);
         model.addAttribute("userName", session.getAttribute("userName"));
         return "admin/categories";
     }

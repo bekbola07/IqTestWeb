@@ -35,6 +35,4 @@ public class TestSession {
     private Integer iqScore;
     private Integer timeTakenSeconds;
 
-    @OneToMany(mappedBy = "session", cascade = CascadeType.ALL)
-    private List<UserAnswer> userAnswers;
 }

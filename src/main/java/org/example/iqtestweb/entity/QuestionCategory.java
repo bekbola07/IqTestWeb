@@ -23,7 +23,4 @@ public class QuestionCategory {
 
     @Enumerated(EnumType.STRING)
     private DifficultyLevel difficultyLevel;
-
-    @OneToMany(mappedBy = "questionCategory", cascade = CascadeType.ALL)
-    private List<Question> questions;
 }

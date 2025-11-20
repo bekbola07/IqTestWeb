@@ -55,7 +55,4 @@ public class User {
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<TestSession> testSessions;
-
 }
