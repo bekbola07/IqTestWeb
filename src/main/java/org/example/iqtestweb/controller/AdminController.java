@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.example.iqtestweb.entity.*;
 import org.example.iqtestweb.entity.dto.CategoryDTO;
+import org.example.iqtestweb.entity.dto.QuestionDTO;
 import org.example.iqtestweb.service.QuestionService;
 import org.example.iqtestweb.service.TestSessionService;
 import org.example.iqtestweb.service.UserService;
@@ -74,7 +75,10 @@ class AdminController {
             return "redirect:/dashboard";
         }
 
+        List<QuestionCategory> categories = questionService.getAllCategories();
+
         model.addAttribute("question", new Question());
+        model.addAttribute("categories", categories);
         model.addAttribute("userName", session.getAttribute("userName"));
         return "admin/add-question";
     }
@@ -113,7 +117,14 @@ class AdminController {
         }
 
         Question question = questionService.getQuestionById(id);
-        model.addAttribute("question", question);
+
+        List<AnswerOption> optionsForQuestion = questionService.getOptionsForQuestion(question.getQuestionId());
+        QuestionDTO questionDTO = new QuestionDTO(question, optionsForQuestion);
+
+        List<QuestionCategory> categories = questionService.getAllCategories();
+
+        model.addAttribute("question", questionDTO);
+        model.addAttribute("categories", categories);
         model.addAttribute("userName", session.getAttribute("userName"));
         return "admin/edit-question";
     }

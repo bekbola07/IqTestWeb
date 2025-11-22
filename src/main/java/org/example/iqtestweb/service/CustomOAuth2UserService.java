@@ -50,26 +50,43 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             picture = (String) attributes.get("avatar_url");
         }
 
+        Optional<User> emailUser = userRepository.findByEmail(email);
+
+        if (emailUser.isPresent()) {
+            User user = emailUser.get();
+
+            if (user.getOauthId() == null) {
+                user.setOauthProvider(provider);
+                user.setOauthId(oauthId);
+            }
+
+            user.setLastLogin(LocalDateTime.now());
+            userRepository.save(user);
+            return;
+        }
+
         Optional<User> existingUser = userRepository.findByOauthProviderAndOauthId(provider, oauthId);
 
-        if (existingUser.isEmpty()) {
-            User newUser = new User();
-            newUser.setOauthProvider(provider);
-            newUser.setOauthId(oauthId);
-            newUser.setEmail(email);
-            newUser.setUsername(generateUniqueUsername(name));
-            newUser.setProfilePictureUrl(picture);
-            newUser.setRole(UserRole.USER);
-            newUser.setCreatedAt(LocalDateTime.now());
-            newUser.setLastLogin(LocalDateTime.now());
-
-            userRepository.save(newUser);
-        } else {
+        if (existingUser.isPresent()) {
             User user = existingUser.get();
             user.setLastLogin(LocalDateTime.now());
             userRepository.save(user);
+            return;
         }
+
+        User newUser = new User();
+        newUser.setOauthProvider(provider);
+        newUser.setOauthId(oauthId);
+        newUser.setEmail(email);
+        newUser.setUsername(generateUniqueUsername(name));
+        newUser.setProfilePictureUrl(picture);
+        newUser.setRole(UserRole.USER);
+        newUser.setCreatedAt(LocalDateTime.now());
+        newUser.setLastLogin(LocalDateTime.now());
+
+        userRepository.save(newUser);
     }
+
 
     private String generateUniqueUsername(String baseName) {
         String username = baseName.replaceAll("\\s+", "").toLowerCase();
