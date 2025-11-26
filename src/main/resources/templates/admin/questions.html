@@ -9,181 +9,169 @@
             font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
             background: #F5F7FA;
             color: #2C3E50;
+            display: flex;
+            overflow: hidden;
+        }
+        .sidebar {
+            width: 260px;
+            background: #2C3E50;
+            color: white;
+            height: 100vh;
+            padding: 1.5rem;
+            flex-shrink: 0;
+            transition: width 0.3s ease, padding 0.3s ease;
+            overflow-x: hidden;
+        }
+        .sidebar-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .sidebar-menu a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 0.875rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background: #34495E;
+        }
+        .main-content {
+            flex-grow: 1;
+            height: 100vh;
+            overflow-y: auto;
         }
         .navbar {
             background: white;
             padding: 1.25rem 2rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             border-bottom: 1px solid #E5E7EB;
-        }
-        .navbar-content {
-            max-width: 1600px;
-            margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .navbar h1 {
-            color: #2C3E50;
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .sidebar-toggle-btn {
+            background: none;
+            border: none;
             font-size: 1.5rem;
-            font-weight: 600;
+            cursor: pointer;
         }
         .nav-actions {
             display: flex;
-            gap: 1rem;
+            gap: 1.5rem;
             align-items: center;
         }
-        .btn-add {
-            background: #3498DB;
-            color: white !important;;
-            padding: 0.625rem 1.5rem;
+        .btn-logout {
+            background: #E74C3C;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.4rem;
             border-radius: 6px;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.95rem;
+            cursor: pointer;
+            font-weight: 600;
         }
-        .navbar a {
-            color: #3498DB;
-            text-decoration: none;
-            font-weight: 500;
+        body.sidebar-closed .sidebar {
+            width: 0;
+            padding: 0;
         }
         .container {
-            max-width: 1600px;
-            margin: 0 auto;
             padding: 2.5rem 2rem;
-        }
-        .card {
-            background: white;
-            border-radius: 10px;
-            padding: 2rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            border: 1px solid #E5E7EB;
-        }
-        .alert {
-            padding: 0.875rem 1rem;
-            border-radius: 6px;
-            margin-bottom: 1.5rem;
-            background: #D5F5E3;
-            color: #1E8449;
-            border: 1px solid #A9DFBF;
-            font-size: 0.9rem;
-        }
-        h2 {
-            color: #2C3E50;
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
         }
         table {
             width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
+            border-collapse: collapse;
+            margin-top: 2rem;
+        }
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #E5E7EB;
         }
         th {
             background: #F8F9FA;
-            padding: 0.875rem 1rem;
-            text-align: left;
-            font-weight: 600;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #7F8C8D;
-            border-bottom: 2px solid #E5E7EB;
-        }
-        td {
-            padding: 1rem;
-            border-bottom: 1px solid #E5E7EB;
-            font-size: 0.95rem;
-        }
-        tbody tr:hover {
-            background: #F8F9FA;
-        }
-        .badge {
-            padding: 0.35rem 0.75rem;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-        .badge-active { background: #D6EAF8; color: #1E5A8E; }
-        .badge-inactive { background: #E5E7EB; color: #7F8C8D; }
-        .actions {
-            display: flex;
-            gap: 0.5rem;
         }
         .btn {
-            padding: 0.4rem 0.875rem;
-            border-radius: 4px;
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-        .btn-edit {
             background: #3498DB;
             color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            text-decoration: none;
+            margin-right: 0.5rem;
         }
-        .btn-delete {
+        .btn-danger {
             background: #E74C3C;
-            color: white;
         }
     </style>
 </head>
 <body>
-<nav class="navbar">
-    <div class="navbar-content">
-        <h1>Question Management</h1>
-        <div class="nav-actions">
-            <a th:href="@{/admin/questions/add}" class="btn-add">Add Question</a>
-            <a th:href="@{/admin/dashboard}">← Back to Admin</a>
+
+<div class="sidebar">
+    <div class="sidebar-header">Admin Panel</div>
+    <nav class="sidebar-menu">
+        <a th:href="@{/admin/dashboard}">Dashboard</a>
+        <a th:href="@{/admin/users}">User Management</a>
+        <a th:href="@{/admin/categories}">Categories</a>
+        <a th:href="@{/admin/questions}" class="active">Questions</a>
+        <a th:href="@{/admin/sessions}">Assessments</a>
+    </nav>
+</div>
+
+<div class="main-content">
+    <nav class="navbar">
+        <div class="navbar-left">
+            <button id="sidebarToggle" class="sidebar-toggle-btn">☰</button>
         </div>
-    </div>
-</nav>
-
-<div class="container">
-    <div class="card">
-        <div th:if="${success}" class="alert" th:text="${success}"></div>
-
-        <h2>Question Bank</h2>
+        <div class="nav-actions">
+            <span style="color: #7F8C8D; font-weight: 600;" th:text="${userName}">Admin User</span>
+            <a th:href="@{/dashboard}">User Dashboard</a>
+            <form th:action="@{/logout}" method="post" style="margin: 0;">
+                <button type="submit" class="btn-logout">Sign Out</button>
+            </form>
+        </div>
+    </nav>
+    <div class="container">
+        <h1>Question Management</h1>
+        <a th:href="@{/admin/questions/add}" class="btn" style="margin-top: 1rem; display: inline-block;">Add New Question</a>
         <table>
             <thead>
-            <tr>
-                <th>ID</th>
-                <th>Question</th>
-                <th>Category</th>
-                <th>Type</th>
-                <th>Difficulty level</th>
-                <th>Points</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
+                <tr>
+                    <th>ID</th>
+                    <th>Text</th>
+                    <th>Category</th>
+                    <th>Actions</th>
+                </tr>
             </thead>
             <tbody>
-            <tr th:each="question : ${questions}">
-                <td th:text="${question.questionId}">1</td>
-                <td th:text="${#strings.abbreviate(question.questionText, 90)}">Question text...</td>
-                <td th:text="${question.questionCategory?.categoryName ?: '-'}">Category</td>
-                <td th:text="${question.questionType}">TEXT</td>
-                <td>
-                    <span th:classappend="${question.difficultyLevel.name() == 'EASY'} ? 'badge-easy' : (${question.difficultyLevel.name() == 'MEDIUM'} ? 'badge-medium' : 'badge-hard')"
-                           th:text="${question.difficultyLevel}">EASY</span>
-                </td>
-                <td th:text="${question.points}">1</td>
-                <td>
-                            <span class="badge"
-                                  th:classappend="${question.isActive} ? 'badge-active' : 'badge-inactive'"
-                                  th:text="${question.isActive} ? 'Active' : 'Inactive'">Active</span>
-                </td>
-                <td>
-                    <div class="actions">
-                        <a th:href="@{/admin/questions/edit/{id}(id=${question.questionId})}" class="btn btn-edit">Edit</a>
-                        <a th:href="@{/admin/questions/delete/{id}(id=${question.questionId})}"
-                           class="btn btn-delete"
-                           onclick="return confirm('Are you sure you want to delete this question?')">Delete</a>
-                    </div>
-                </td>
-            </tr>
+                <tr th:each="question : ${questions}">
+                    <td th:text="${question.questionId}"></td>
+                    <td th:text="${question.questionText}"></td>
+                    <td th:text="${question.questionCategory.categoryName}"></td>
+                    <td>
+                        <a th:href="@{/admin/questions/edit/{id}(id=${question.questionId})}" class="btn">Edit</a>
+                        <a th:href="@{/admin/questions/delete/{id}(id=${question.questionId})}" class="btn btn-danger">Delete</a>
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>
 </div>
+
+<script>
+    document.getElementById('sidebarToggle').addEventListener('click', function() {
+        document.body.classList.toggle('sidebar-closed');
+    });
+</script>
+
 </body>
 </html>

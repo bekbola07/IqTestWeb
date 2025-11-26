@@ -10,12 +10,14 @@
             background: #F5F7FA;
             color: #2C3E50;
         }
+
         .navbar {
             background: white;
             padding: 1.25rem 2rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             border-bottom: 1px solid #E5E7EB;
         }
+
         .navbar-content {
             max-width: 1000px;
             margin: 0 auto;
@@ -23,37 +25,44 @@
             justify-content: space-between;
             align-items: center;
         }
+
         .navbar h1 {
             color: #2C3E50;
             font-size: 1.5rem;
             font-weight: 600;
         }
+
         .navbar a {
             color: #3498DB;
             text-decoration: none;
             font-weight: 500;
         }
+
         .container {
             max-width: 1000px;
             margin: 0 auto;
             padding: 2.5rem 2rem;
         }
+
         .card {
             background: white;
             border-radius: 10px;
             padding: 2.5rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             border: 1px solid #E5E7EB;
         }
+
         h2 {
             color: #2C3E50;
             font-size: 1.5rem;
             font-weight: 600;
             margin-bottom: 2rem;
         }
+
         .form-group {
             margin-bottom: 1.5rem;
         }
+
         label {
             display: block;
             font-weight: 500;
@@ -61,9 +70,11 @@
             color: #2C3E50;
             font-size: 0.9rem;
         }
+
         .required {
             color: #E74C3C;
         }
+
         input, select, textarea {
             width: 100%;
             padding: 0.75rem 1rem;
@@ -73,20 +84,24 @@
             font-family: inherit;
             transition: all 0.2s;
         }
+
         input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: #3498DB;
             box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
         }
+
         textarea {
             min-height: 100px;
             resize: vertical;
         }
+
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 1rem;
         }
+
         .options-section {
             background: #F8F9FA;
             padding: 1.5rem;
@@ -94,17 +109,20 @@
             margin-top: 1rem;
             border: 1px solid #E5E7EB;
         }
+
         .options-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1rem;
         }
+
         .options-header h3 {
             color: #2C3E50;
             font-size: 1rem;
             font-weight: 600;
         }
+
         .option-input {
             display: flex;
             gap: 1rem;
@@ -115,6 +133,7 @@
             border-radius: 6px;
             border: 1px solid #E5E7EB;
         }
+
         .option-number {
             width: 32px;
             height: 32px;
@@ -128,20 +147,24 @@
             flex-shrink: 0;
             font-size: 0.9rem;
         }
+
         .option-input input[type="text"] {
             flex: 1;
             margin: 0;
         }
+
         .option-input input[type="radio"] {
             width: auto;
             cursor: pointer;
             accent-color: #3498DB;
         }
+
         .correct-label {
             color: #27AE60;
             font-weight: 500;
             font-size: 0.9rem;
         }
+
         .btn-add-option {
             background: #3498DB;
             color: white;
@@ -152,6 +175,7 @@
             font-weight: 500;
             font-size: 0.9rem;
         }
+
         .btn-remove {
             background: #E74C3C;
             color: white;
@@ -161,6 +185,7 @@
             cursor: pointer;
             font-size: 0.85rem;
         }
+
         .btn-submit {
             background: #3498DB;
             color: white;
@@ -173,13 +198,59 @@
             width: 100%;
             margin-top: 1.5rem;
         }
+
         .btn-submit:hover {
             background: #2980B9;
         }
+
         .help-text {
             font-size: 0.85rem;
             color: #7F8C8D;
             margin-top: 0.4rem;
+        }
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        .switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #BDC3C7;
+            transition: .3s;
+            border-radius: 26px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #27AE60;
+        }
+        input:checked + .slider:before {
+            transform: translateX(24px);
         }
     </style>
 </head>
@@ -194,27 +265,34 @@
 <div class="container">
     <div class="card">
         <h2>Create Assessment Question</h2>
-        <form th:action="@{/admin/questions/add}" method="post" id="questionForm">
+        <form th:action="@{/admin/questions/add}" th:object="${question}" method="post" id="questionForm">
 
             <div class="form-group">
+                <label for="questionType">Question Type</label>
+                <select id="questionType" th:field="*{questionType}">
+                    <option value="TEXT">Text Only</option>
+                    <option value="IMAGE">Image Only</option>
+                    <option value="MIXED">Text + Image</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="questionTextField">
                 <label for="questionText">Question Text <span class="required">*</span></label>
-                <textarea id="questionText" name="questionText" required
+                <textarea id="questionText" th:field="*{questionText}" required
                           placeholder="Enter the question text..."></textarea>
                 <div class="help-text">Write a clear and concise question</div>
             </div>
 
+            <div class="form-group" id="questionImageUrlField">
+                <label for="questionImageUrl">Image URL (optional)</label>
+                <input type="text" id="questionImageUrl" th:field="*{questionImageUrl}"
+                       placeholder="https://example.com/image.jpg">
+            </div>
+
             <div class="form-row">
                 <div class="form-group">
-                    <label for="questionType">Question Type</label>
-                    <select id="questionType" name="questionType">
-                        <option value="TEXT">Text Only</option>
-                        <option value="IMAGE">Image Only</option>
-                        <option value="MIXED">Text + Image</option>
-                    </select>
-                </div>
-                <div class="form-group">
                     <label for="difficultyLevel">Difficulty Level <span class="required">*</span></label>
-                    <select id="difficultyLevel" name="difficultyLevel" required>
+                    <select id="difficultyLevel" th:field="*{difficultyLevel}" required>
                         <option value="">Select difficulty</option>
                         <option value="EASY">😊 Easy</option>
                         <option value="MEDIUM">🤔 Medium</option>
@@ -223,7 +301,7 @@
                 </div>
                 <div class="form-group">
                     <label for="questionCategory">Category <span class="required">*</span></label>
-                    <select id="questionCategory" name="questionCategory" required>
+                    <select id="questionCategory" th:field="*{questionCategory}" required>
                         <option value="">Select category</option>
                         <option th:each="cat : ${categories}"
                                 th:value="${cat.categoryId}"
@@ -231,28 +309,29 @@
                         </option>
                     </select>
                 </div>
-
             </div>
 
             <div class="form-row">
 
                 <div class="form-group">
                     <label for="points">Points</label>
-                    <input type="number" id="points" name="points" value="1" min="1" max="10">
+                    <input type="number" id="points" th:field="*{points}" value="1" min="1" max="10">
                     <div class="help-text">Points awarded for correct answer</div>
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="timeLimitSeconds">Time Limit (seconds)</label>
-                <input type="number" id="timeLimitSeconds" name="timeLimitSeconds" value="60" min="10" max="300">
+                <input type="number" id="timeLimitSeconds" th:field="*{timeLimitSeconds}" value="60" min="10" max="300">
                 <div class="help-text">Maximum time allowed to answer</div>
             </div>
 
-            <div class="form-group">
-                <label for="questionImageUrl">Image URL (optional)</label>
-                <input type="text" id="questionImageUrl" name="questionImageUrl"
-                       placeholder="https://example.com/image.jpg">
+            <div class="toggle-switch">
+                <label class="switch">
+                    <input type="checkbox" th:field="*{isActive}">
+                    <span class="slider"></span>
+                </label>
+                <span style="font-weight: 500; color: #2C3E50;">Question is active</span>
             </div>
 
             <div class="form-group">
@@ -267,24 +346,31 @@
                         <div class="option-input">
                             <span class="option-number">1</span>
                             <input type="text" name="optionTexts" placeholder="Enter option 1" required>
+                            <input type="text" name="optionImageUrls" placeholder="Image URL (optional)">
                             <input type="radio" name="correctOptionIndex" value="0" required>
                             <span class="correct-label">Correct</span>
                         </div>
+
                         <div class="option-input">
                             <span class="option-number">2</span>
                             <input type="text" name="optionTexts" placeholder="Enter option 2" required>
+                            <input type="text" name="optionImageUrls" placeholder="Image URL (optional)">
                             <input type="radio" name="correctOptionIndex" value="1">
                             <span class="correct-label">Correct</span>
                         </div>
+
                         <div class="option-input">
                             <span class="option-number">3</span>
                             <input type="text" name="optionTexts" placeholder="Enter option 3" required>
+                            <input type="text" name="optionImageUrls" placeholder="Image URL (optional)">
                             <input type="radio" name="correctOptionIndex" value="2">
                             <span class="correct-label">Correct</span>
                         </div>
+
                         <div class="option-input">
                             <span class="option-number">4</span>
                             <input type="text" name="optionTexts" placeholder="Enter option 4" required>
+                            <input type="text" name="optionImageUrls" placeholder="Image URL (optional)">
                             <input type="radio" name="correctOptionIndex" value="3">
                             <span class="correct-label">Correct</span>
                         </div>
@@ -294,61 +380,71 @@
                 </div>
             </div>
 
+
             <button type="submit" class="btn-submit">Create Question</button>
         </form>
     </div>
 </div>
 
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const questionType = document.getElementById('questionType');
+        const questionTextField = document.getElementById('questionTextField');
+        const questionImageUrlField = document.getElementById('questionImageUrlField');
+        const optionsContainer = document.getElementById('optionsContainer');
+
+        function toggleFields() {
+            const selectedType = questionType.value;
+
+            const isText = selectedType === 'TEXT' || selectedType === 'MIXED';
+            const isImage = selectedType === 'IMAGE' || selectedType === 'MIXED';
+
+            // Toggle question text and image URL fields
+            questionTextField.style.display = isText ? '' : 'none';
+            questionTextField.querySelector('textarea').required = isText;
+
+            questionImageUrlField.style.display = isImage ? '' : 'none';
+            questionImageUrlField.querySelector('input').required = isImage;
+
+            // Toggle answer option text and image URL fields
+            const optionTextInputs = optionsContainer.querySelectorAll('input[name="optionTexts"]');
+            const optionImageUrlInputs = optionsContainer.querySelectorAll('input[name="optionImageUrls"]');
+
+            optionTextInputs.forEach(input => {
+                input.style.display = isText ? '' : 'none';
+                input.required = isText;
+            });
+            optionImageUrlInputs.forEach(input => {
+                input.style.display = isImage ? '' : 'none';
+                input.required = isImage;
+            });
+        }
+
+        questionType.addEventListener('change', toggleFields);
+        toggleFields(); // Initial call
+    });
+
     let optionCount = 4;
 
     function addOption() {
-        const container = document.getElementById('optionsContainer');
-        const newOption = document.createElement('div');
-        newOption.className = 'option-input';
-        newOption.innerHTML = `
-                <span class="option-number">${optionCount + 1}</span>
-                <input type="text" name="optionTexts" placeholder="Enter option ${optionCount + 1}" required>
-                <input type="radio" name="correctOptionIndex" value="${optionCount}">
-                <span class="correct-label">Correct</span>
-                <button type="button" class="btn-remove" onclick="removeOption(this)">Remove</button>
-            `;
-        container.appendChild(newOption);
-        optionCount++;
-        updateOptionNumbers();
-    }
+        const container = document.getElementById("optionsContainer");
+        const optionCount = container.children.length;
+        const newOptionNumber = optionCount + 1;
 
-    function removeOption(button) {
-        const optionsContainer = document.getElementById('optionsContainer');
-        const optionInputs = optionsContainer.querySelectorAll('.option-input');
+        const div = document.createElement("div");
+        div.classList.add("option-input");
 
-        if (optionInputs.length <= 2) {
-            alert('You must have at least 2 options');
-            return;
-        }
+        div.innerHTML = `
+            <span class="option-number">${newOptionNumber}</span>
+            <input type="text" name="optionTexts" placeholder="Enter option ${newOptionNumber}" required>
+            <input type="text" name="optionImageUrls" placeholder="Image URL (optional)">
+            <input type="radio" name="correctOptionIndex" value="${optionCount}">
+            <span class="correct-label">Correct</span>
+        `;
 
-        button.closest('.option-input').remove();
-        optionCount--;
-        updateOptionNumbers();
-        updateRadioValues();
-    }
-
-    function updateOptionNumbers() {
-        const optionInputs = document.querySelectorAll('.option-input');
-        optionInputs.forEach((option, index) => {
-            const numberSpan = option.querySelector('.option-number');
-            numberSpan.textContent = index + 1;
-
-            const textInput = option.querySelector('input[type="text"]');
-            textInput.placeholder = `Enter option ${index + 1}`;
-        });
-    }
-
-    function updateRadioValues() {
-        const radios = document.querySelectorAll('input[name="correctOptionIndex"]');
-        radios.forEach((radio, index) => {
-            radio.value = index;
-        });
+        container.appendChild(div);
+        // After adding a new option, re-apply the visibility rules
+        document.getElementById('questionType').dispatchEvent(new Event('change'));
     }
 </script>
 </body>

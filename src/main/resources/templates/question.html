@@ -122,6 +122,12 @@
             flex: 1;
             color: #2C3E50;
         }
+        .option-image {
+            max-width: 100px;
+            height: auto;
+            border-radius: 4px;
+            margin-left: 1rem;
+        }
         .btn-next {
             background: #3498DB;
             color: white;
@@ -170,9 +176,9 @@
     <div class="question-card">
         <div class="question-number">Question <span th:text="${currentIndex + 1}">1</span></div>
 
-        <div class="question-text" th:text="${question.questionText}">What comes next in the sequence?</div>
+        <div th:if="${question.questionType.name() == 'TEXT' or question.questionType.name() == 'MIXED'}" class="question-text" th:text="${question.questionText}">What comes next in the sequence?</div>
 
-        <img th:if="${question.questionImageUrl}"
+        <img th:if="${question.questionType.name() == 'IMAGE' or question.questionType.name() == 'MIXED'}"
              th:src="@{${question.questionImageUrl}}"
              class="question-image"
              alt="Question visual">
@@ -188,7 +194,8 @@
                            th:value="${option.optionId}"
                            onclick="document.getElementById('submitBtn').disabled=false"
                            required>
-                    <span class="option-text" th:text="${option.optionText}">Option text</span>
+                    <span th:if="${question.questionType.name() == 'TEXT' or question.questionType.name() == 'MIXED'}" class="option-text" th:text="${option.optionText}">Option text</span>
+                    <img th:if="${question.questionType.name() == 'IMAGE' or question.questionType.name() == 'MIXED'}" th:src="@{${option.imageUrl}}" class="option-image" alt="Option visual">
                 </label>
             </div>
 

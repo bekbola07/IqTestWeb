@@ -2,286 +2,167 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Manage Categories - Admin</title>
+    <title>Category Management - Admin</title>
     <style>
-        /* General Reset and Base Styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
-            /* UPDATED BACKGROUND: Soft, professional gray-blue gradient */
-            background: linear-gradient(135deg, #f0f4f8 0%, #e0e7ee 100%);
-            min-height: 100vh;
-            margin: 0;
-            padding: 0;
-            line-height: 1.6;
-            color: #333;
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background: #F5F7FA;
+            color: #2C3E50;
+            display: flex;
+            overflow: hidden;
         }
-
-        /* UPDATED NAVBAR STYLING */
+        .sidebar {
+            width: 260px;
+            background: #2C3E50;
+            color: white;
+            height: 100vh;
+            padding: 1.5rem;
+            flex-shrink: 0;
+            transition: width 0.3s ease, padding 0.3s ease;
+            overflow-x: hidden;
+        }
+        .sidebar-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .sidebar-menu a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 0.875rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background: #34495E;
+        }
+        .main-content {
+            flex-grow: 1;
+            height: 100vh;
+            overflow-y: auto;
+        }
         .navbar {
-            /* Deep Navy Blue for contrast and professionalism */
-            background: #1e3a8a; /* Deep Navy */
-            padding: 1rem 2rem;
+            background: white;
+            padding: 1.25rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-bottom: 1px solid #E5E7EB;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            position: sticky;
-            top: 0;
-            z-index: 10;
         }
-        .navbar h1 {
-            /* White text for high visibility */
-            color: white;
-            margin: 0;
-            font-size: 1.8rem;
-            font-weight: 700;
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .sidebar-toggle-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
         }
         .nav-actions {
             display: flex;
             gap: 1.5rem;
             align-items: center;
         }
-        .navbar a {
-            /* Light accent color for regular links */
-            color: #93c5fd; /* Light Blue */
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.2s;
-        }
-        .navbar a:hover {
+        .btn-logout {
+            background: #E74C3C;
             color: white;
-        }
-
-        /* Primary Button (Updated to match the new color scheme) */
-        .btn-add {
-            /* Bright accent color for the primary CTA */
-            background: #f59e0b; /* Amber/Orange */
-            color: #1e3a8a; /* Navy text on bright button */
-            padding: 0.75rem 1.8rem;
-            border-radius: 25px;
-            font-weight: 700;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(245, 158, 11, 0.4);
-        }
-        .btn-add:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(245, 158, 11, 0.6);
-        }
-
-        /* Main Layout */
-        .container {
-            max-width: 1300px;
-            margin: 3rem auto;
-            padding: 0 2rem;
-        }
-        .card {
-            background: white;
-            border-radius: 18px;
-            padding: 2.5rem;
-            box-shadow: 0 15px 50px rgba(0,0,0,0.1);
-        }
-
-        /* Alerts/Messages */
-        .alert {
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 2rem;
-            font-weight: 500;
-        }
-        .alert-success {
-            background: #e6f7e6;
-            color: #1a751a;
-            border: 1px solid #99e699;
-        }
-
-        h2 {
-            /* Color changed to match Navy theme */
-            color: #1e3a8a;
-            margin-bottom: 2rem;
-            font-size: 2rem;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
-        }
-
-        /* Category Grid */
-        .categories-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-
-        /* Individual Category Card */
-        .category-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 15px;
-            border: 1px solid #e0e0e0;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            position: relative;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
-        }
-        .category-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-            border-color: #1e3a8a; /* Navy border on hover */
-        }
-
-        /* Action buttons on card */
-        .card-actions {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            display: flex;
-            gap: 0.5rem;
-        }
-        .action-btn {
-            background: none;
             border: none;
-            color: #999;
+            padding: 0.6rem 1.4rem;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 1rem;
-            transition: color 0.2s;
-            padding: 5px;
-            border-radius: 5px;
-        }
-        .action-btn:hover {
-            background: #f0f0f0;
-        }
-        .action-btn.edit:hover {
-            color: #1e3a8a;
-        }
-        .action-btn.delete:hover {
-            color: #d9534f;
-        }
-
-        .category-card h3 {
-            color: #1e3a8a; /* Navy heading */
-            margin-bottom: 0.5rem;
-            font-size: 1.4rem;
             font-weight: 600;
         }
-        .category-card p {
-            color: #666;
-            margin-bottom: 1.5rem;
-            font-size: 0.95rem;
+        body.sidebar-closed .sidebar {
+            width: 0;
+            padding: 0;
         }
-
-        /* Footer/Metadata */
-        .category-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 1.5rem;
-            padding-top: 1rem;
-            border-top: 1px dashed #eee;
+        .container {
+            padding: 2.5rem 2rem;
         }
-
-        /* Badges - Colors remain standard for status/difficulty */
-        .badge {
-            padding: 0.5rem 1.2rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            text-transform: uppercase;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
         }
-        .badge-easy {
-            background: #d4edda;
-            color: #155724;
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #E5E7EB;
         }
-        .badge-medium {
-            background: #fff3cd;
-            color: #856404;
+        th {
+            background: #F8F9FA;
         }
-        .badge-hard {
-            background: #f8d7da;
-            color: #721c24;
+        .btn {
+            background: #3498DB;
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            text-decoration: none;
         }
-
-        .question-count {
-            color: #999;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 5rem;
-            color: #b0b0b0;
-            background: #f9f9f9;
-            border: 2px dashed #e0e0e0;
-            border-radius: 10px;
-        }
-        .empty-state-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            color: #1e3a8a;
-        }
-        .empty-state h3 {
-            color: #666;
-            font-size: 1.5rem;
-        }
-        .empty-state p {
-            color: #999;
-        }
-
-        /* Utility Class for Icons (simulating a library) */
-        .icon-plus:before { content: '+ '; }
-        .icon-back:before { content: '← '; }
-        .icon-edit:before { content: '✎'; }
-        .icon-delete:before { content: '⨉'; }
-        .icon-empty:before { content: '📦'; }
-
     </style>
 </head>
 <body>
-<nav class="navbar">
-    <h1><span class="icon-dashboard">📂</span> Manage Categories</h1>
-    <div class="nav-actions">
-        <a th:href="@{/admin/categories/add}" class="btn-add"><span class="icon-plus"></span>Add New Category</a>
-        <a th:href="@{/admin/dashboard}"><span class="icon-back"></span>Back to Admin</a>
-    </div>
-</nav>
 
-<div class="container">
-    <div class="card">
-        <div th:if="${success}" class="alert alert-success" th:text="${success}">Category successfully created!</div>
+<div class="sidebar">
+    <div class="sidebar-header">Admin Panel</div>
+    <nav class="sidebar-menu">
+        <a th:href="@{/admin/dashboard}">Dashboard</a>
+        <a th:href="@{/admin/users}">User Management</a>
+        <a th:href="@{/admin/categories}" class="active">Categories</a>
+        <a th:href="@{/admin/questions}">Questions</a>
+        <a th:href="@{/admin/sessions}">Assessments</a>
+    </nav>
+</div>
 
-        <h2>Question Categories</h2>
-
-        <div th:if="${#lists.isEmpty(categories)}" class="empty-state">
-            <div class="empty-state-icon"><span class="icon-empty"></span></div>
-            <h3>No Categories Yet</h3>
-            <p>Start by creating your first question category</p>
+<div class="main-content">
+    <nav class="navbar">
+        <div class="navbar-left">
+            <button id="sidebarToggle" class="sidebar-toggle-btn">☰</button>
         </div>
-
-        <div class="categories-grid" th:if="${!#lists.isEmpty(categories)}">
-            <div th:each="category : ${categories}" class="category-card">
-
-                <div class="card-actions">
-                    <a th:href="@{/admin/categories/edit/{id}(id=${category.categoryId})}" title="Edit Category" class="action-btn edit">
-                        <span class="icon-edit"></span>
-                    </a>
-                    <a th:href="@{/admin/categories/delete/{id}(id=${category.categoryId})}" title="Delete Category" class="action-btn delete"
-                       onclick="return confirm('Are you sure you want to delete this category?');">
-                        <span class="icon-delete"></span>
-                    </a>
-                </div>
-
-                <h3 th:text="${category.categoryName}">Logical Reasoning</h3>
-                <p th:text="${category.description}">Test your logical thinking abilities and pattern recognition skills.</p>
-
-                <div class="category-footer">
-                        <span class="badge"
-                              th:classappend="${category.difficultyLevel.name() == 'EASY'} ? 'badge-easy' : (${category.difficultyLevel.name() == 'MEDIUM'} ? 'badge-medium' : 'badge-hard')"
-                              th:text="${category.difficultyLevel}">MEDIUM</span>
-                    <span class="question-count" th:text="${category.questions != null ? category.questions.size() : 0} + ' questions'">5 questions</span>
-                </div>
-            </div>
+        <div class="nav-actions">
+            <span style="color: #7F8C8D; font-weight: 600;" th:text="${userName}">Admin User</span>
+            <a th:href="@{/dashboard}">User Dashboard</a>
+            <form th:action="@{/logout}" method="post" style="margin: 0;">
+                <button type="submit" class="btn-logout">Sign Out</button>
+            </form>
         </div>
+    </nav>
+    <div class="container">
+        <h1>Category Management</h1>
+        <a th:href="@{/admin/categories/add}" class="btn" style="margin-top: 1rem; display: inline-block;">Add New Category</a>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Question Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="category : ${categories}">
+                    <td th:text="${category.categoryId}"></td>
+                    <td th:text="${category.categoryName}"></td>
+                    <td th:text="${category.questions.size()}"></td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
+
+<script>
+    document.getElementById('sidebarToggle').addEventListener('click', function() {
+        document.body.classList.toggle('sidebar-closed');
+    });
+</script>
+
 </body>
 </html>

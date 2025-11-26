@@ -10,27 +10,84 @@
             font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
             background: #F5F7FA;
             color: #2C3E50;
+            display: flex; /* Keep this */
+            overflow: hidden; /* Prevent scrollbar issues when sidebar is closed */
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: #2C3E50;
+            color: white;
+            height: 100vh;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0; /* Prevent shrinking */
+            transition: width 0.3s ease, padding 0.3s ease;
+            overflow-x: hidden; /* Hide content when width is 0 */
+        }
+        .sidebar-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-align: center;
+            white-space: nowrap; /* Prevent text wrap */
+        }
+        .sidebar-menu a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 0.875rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            transition: background 0.2s;
+            white-space: nowrap; /* Prevent text wrap */
+        }
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background: #34495E;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex-grow: 1;
+            height: 100vh;
+            overflow-y: auto;
         }
 
         /* Navbar */
         .navbar {
             background: white;
             padding: 1.25rem 2rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Slightly better shadow */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             border-bottom: 1px solid #E5E7EB;
-        }
-        .navbar-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
+            display: flex; /* Make it a flex container */
+            justify-content: space-between; /* Push toggle/brand to left, actions to right */
             align-items: center;
         }
-        .navbar h1 {
-            color: #2C3E50;
-            font-size: 1.6rem; /* Slightly larger heading */
-            font-weight: 700;
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
+        .navbar-brand {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #2C3E50; /* Use primary color */
+            white-space: nowrap;
+        }
+        .sidebar-toggle-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #2C3E50; /* Match navbar text color */
+            padding: 0.5rem;
+            line-height: 1; /* Align icon vertically */
+        }
+
+        /* Nav actions and logout button styles */
         .nav-actions {
             display: flex;
             gap: 1.5rem;
@@ -46,16 +103,14 @@
         .nav-actions a:hover {
             color: #2980B9;
         }
-
-        /* Enhanced Logout Button Styling */
         .btn-logout {
-            background: #E74C3C; /* Primary red */
+            background: #E74C3C;
             color: white;
             border: none;
-            padding: 0.6rem 1.4rem; /* Slightly more padding */
+            padding: 0.6rem 1.4rem;
             border-radius: 6px;
             cursor: pointer;
-            font-weight: 600; /* Bolder text */
+            font-weight: 600;
             font-size: 0.9rem;
             transition: background 0.2s;
         }
@@ -63,124 +118,62 @@
             background: #C0392B;
         }
 
-        /* Container */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2.5rem 2rem;
+        /* Sidebar Closed State */
+        body.sidebar-closed .sidebar {
+            width: 0;
+            padding: 0;
+        }
+        body.sidebar-closed .sidebar-header,
+        body.sidebar-closed .sidebar-menu a {
+            opacity: 0; /* Hide text */
+            pointer-events: none; /* Disable clicks */
         }
 
-        /* Stats Grid */
+        /* Container and stats grid (existing styles) */
+        .container {
+            padding: 2.5rem 2rem;
+        }
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1.5rem;
-            margin-bottom: 2.5rem;
         }
         .stat-card {
             background: white;
             border-radius: 10px;
             padding: 1.75rem;
-            /* Enhanced box shadow for better elevation */
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
             border: 1px solid #E5E7EB;
-            display: flex;
-            align-items: center;
-            gap: 1.25rem;
-        }
-
-        /* Icon Styling Update */
-        .stat-icon {
-            width: 56px;
-            height: 56px;
-            /* Background remains light, but icon color uses primary accent */
-            background: #EBF5FB;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            flex-shrink: 0;
-            color: #3498DB; /* Set icon color to primary blue */
-        }
-        .stat-content {
-            flex: 1;
         }
         .stat-value {
-            font-size: 2.25rem; /* Slightly larger value */
+            font-size: 2.25rem;
             font-weight: 700;
-            color: #2C3E50;
-            line-height: 1;
         }
         .stat-label {
             color: #7F8C8D;
             font-size: 0.95rem;
-            font-weight: 500;
-            margin-top: 0.25rem;
-        }
-
-        /* Section Card (Administrative Actions) */
-        .section-card {
-            background: white;
-            border-radius: 10px;
-            padding: 2rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08); /* Consistent shadow */
-            border: 1px solid #E5E7EB;
-        }
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-        .section-header h2 {
-            color: #2C3E50;
-            font-size: 1.5rem;
-            font-weight: 600;
-            border-bottom: 2px solid #F5F7FA; /* Subtle underline */
-            padding-bottom: 5px;
-        }
-        .actions-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 1rem;
-        }
-        .action-btn {
-            background: white;
-            border: 1px solid #E5E7EB;
-            padding: 1.25rem;
-            border-radius: 8px;
-            text-decoration: none;
-            color: #2C3E50;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            transition: all 0.2s;
-            font-weight: 600; /* Bolder text */
-        }
-        .action-btn:hover {
-            border-color: #3498DB;
-            background: #EBF5FB;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.15); /* Slightly bigger hover shadow */
-        }
-        .action-icon {
-            width: 42px;
-            height: 42px;
-            background: #F8F9FA;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            color: #3498DB; /* Set icon color to primary blue */
         }
     </style>
 </head>
 <body>
-<nav class="navbar">
-    <div class="navbar-content">
-        <h1>IQ Platform Administration Panel</h1>
+
+<div class="sidebar">
+    <div class="sidebar-header">Admin Panel</div>
+    <nav class="sidebar-menu">
+        <a th:href="@{/admin/dashboard}" class="active">Dashboard</a>
+        <a th:href="@{/admin/users}">User Management</a>
+        <a th:href="@{/admin/categories}">Categories</a>
+        <a th:href="@{/admin/questions}">Questions</a>
+        <a th:href="@{/admin/sessions}">Assessments</a>
+    </nav>
+</div>
+
+<div class="main-content">
+    <nav class="navbar">
+        <div class="navbar-left">
+            <button id="sidebarToggle" class="sidebar-toggle-btn">☰</button>
+            <span class="navbar-brand">Admin Panel</span>
+        </div>
         <div class="nav-actions">
             <span style="color: #7F8C8D; font-weight: 600;" th:text="${userName}">Admin User</span>
             <a th:href="@{/dashboard}">User Dashboard</a>
@@ -188,75 +181,38 @@
                 <button type="submit" class="btn-logout">Sign Out</button>
             </form>
         </div>
-    </div>
-</nav>
+    </nav>
 
-<div class="container">
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-icon">👥</div>
-            <div class="stat-content">
-                <div class="stat-value" th:text="${totalUsers}">1,234</div>
-                <div class="stat-label">Registered Users</div>
+    <div class="container">
+        <h1>Dashboard</h1>
+        <div class="stats-grid" style="margin-top: 2rem;">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-value" th:text="${totalUsers}">0</div>
+                    <div class="stat-label">Registered Users</div>
+                </div>
             </div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-icon">📋</div>
-            <div class="stat-content">
-                <div class="stat-value" th:text="${totalQuestions}">500</div>
-                <div class="stat-label">Question Bank Items</div>
+            <div class="stat-card">
+                <div>
+                    <div class="stat-value" th:text="${totalQuestions}">0</div>
+                    <div class="stat-label">Question Bank Items</div>
+                </div>
             </div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-icon">📊</div>
-            <div class="stat-content">
-                <div class="stat-value" th:text="${totalTests}">25,000</div>
-                <div class="stat-label">Completed Assessments</div>
+            <div class="stat-card">
+                <div>
+                    <div class="stat-value" th:text="${totalTests}">0</div>
+                    <div class="stat-label">Completed Assessments</div>
+                </div>
             </div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-icon">⭐</div>
-            <div class="stat-content">
-                <div class="stat-value">5.0</div>
-                <div class="stat-label">Average Rating</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="section-card">
-        <div class="section-header">
-            <h2>Administrative Actions</h2>
-        </div>
-        <div class="actions-grid">
-            <a th:href="@{/admin/users}" class="action-btn">
-                <div class="action-icon">👥</div>
-                <div>User Management</div>
-            </a>
-            <a th:href="@{/admin/questions}" class="action-btn">
-                <div class="action-icon">📋</div>
-                <div>Question Management</div>
-            </a>
-            <a th:href="@{/admin/questions/add}" class="action-btn">
-                <div class="action-icon">➕</div>
-                <div>Add New Question</div>
-            </a>
-            <a th:href="@{/admin/categories}" class="action-btn">
-                <div class="action-icon">📂</div>
-                <div>Manage Categories</div>
-            </a>
-            <a th:href="@{/admin/sessions}" class="action-btn">
-                <div class="action-icon">📊</div>
-                <div>Assessment Sessions</div>
-            </a>
-            <a th:href="@{/admin/settings}" class="action-btn">
-                <div class="action-icon">⚙️</div>
-                <div>System Settings</div>
-            </a>
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById('sidebarToggle').addEventListener('click', function() {
+        document.body.classList.toggle('sidebar-closed');
+    });
+</script>
+
 </body>
 </html>

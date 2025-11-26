@@ -11,6 +11,8 @@ import org.example.iqtestweb.repository.QuestionRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -64,5 +66,36 @@ public class QuestionService {
     public List<Question> getQuestionsByCategoryId(Long categoryId) {
 
         return questionRepository.getQuestionsByQuestionCategory_CategoryId(categoryId);
+    }
+    @Transactional
+    public void updateQuestion(Long id, Question updatedQuestion) {
+        Question existingQuestion = questionRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Question not found with id: " + id));
+
+        // Update the main question details
+        existingQuestion.setQuestionText(updatedQuestion.getQuestionText());
+        existingQuestion.setQuestionType(updatedQuestion.getQuestionType());
+        existingQuestion.setPoints(updatedQuestion.getPoints());
+        existingQuestion.setDifficultyLevel(updatedQuestion.getDifficultyLevel());
+        existingQuestion.setQuestionCategory(updatedQuestion.getQuestionCategory());
+        existingQuestion.setTimeLimitSeconds(updatedQuestion.getTimeLimitSeconds());
+        existingQuestion.setQuestionImageUrl(updatedQuestion.getQuestionImageUrl());
+        existingQuestion.setIsActive(updatedQuestion.getIsActive());
+
+        // Create a map of updated options by their ID for efficient lookup
+        Map<Long, AnswerOption> updatedOptionsMap = updatedQuestion.getAnswerOptions().stream()
+                .collect(Collectors.toMap(AnswerOption::getOptionId, option -> option));
+
+        // Iterate over the existing options and update them with the new values
+        for (AnswerOption existingOption : existingQuestion.getAnswerOptions()) {
+            AnswerOption updatedOption = updatedOptionsMap.get(existingOption.getOptionId());
+            if (updatedOption != null) {
+                existingOption.setOptionText(updatedOption.getOptionText());
+                existingOption.setIsCorrect(updatedOption.getIsCorrect());
+                existingOption.setImageUrl(updatedOption.getImageUrl());
+            }
+        }
+
+        questionRepository.save(existingQuestion);
     }
 }

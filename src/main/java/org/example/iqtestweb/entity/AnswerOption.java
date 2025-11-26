@@ -1,6 +1,7 @@
 package org.example.iqtestweb.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "answer_options")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class AnswerOption {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,7 +22,21 @@ public class AnswerOption {
     @Column(columnDefinition = "TEXT")
     private String optionText;
 
-    private String optionImageUrl;
+    private String imageUrl;
     private Boolean isCorrect = false;
     private Integer optionOrder;
+
+    public AnswerOption(Question question, String optionText, Boolean isCorrect, Integer optionOrder) {
+        this.question = question;
+        this.optionText = optionText;
+        this.isCorrect = isCorrect;
+        this.optionOrder = optionOrder;
+    }
+     public AnswerOption(Question question, String optionText, String imageUrl, Boolean isCorrect, Integer optionOrder) {
+        this.question = question;
+        this.optionText = optionText;
+        this.imageUrl = imageUrl;
+        this.isCorrect = isCorrect;
+        this.optionOrder = optionOrder;
+    }
 }

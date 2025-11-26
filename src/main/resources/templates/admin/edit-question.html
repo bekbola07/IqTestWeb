@@ -122,42 +122,24 @@
         input:checked + .slider:before {
             transform: translateX(24px);
         }
-        .options-display {
+        .options-edit {
             background: #F8F9FA;
             padding: 1.5rem;
             border-radius: 8px;
             border: 1px solid #E5E7EB;
+            margin-top: 2rem;
         }
-        .options-display h3 {
+        .options-edit h3 {
             color: #2C3E50;
-            font-size: 1rem;
+            font-size: 1.2rem;
             font-weight: 600;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
-        .option-item {
-            background: white;
-            padding: 1rem;
-            border-radius: 6px;
-            margin-bottom: 0.75rem;
-            border: 1px solid #E5E7EB;
+        .options-edit .option-item {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .option-label {
-            font-size: 0.85rem;
-            color: #7F8C8D;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.02em;
-        }
-        .correct-badge {
-            background: #D5F5E3;
-            color: #1E8449;
-            padding: 0.3rem 0.75rem;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 600;
+            gap: 1rem;
+            align-items: flex-end;
+            margin-bottom: 1rem;
         }
         .btn-submit {
             background: #3498DB;
@@ -170,15 +152,6 @@
             cursor: pointer;
             width: 100%;
             margin-top: 1.5rem;
-        }
-        .info-note {
-            background: #EBF5FB;
-            color: #1E5A8E;
-            padding: 1rem;
-            border-radius: 6px;
-            margin-top: 1rem;
-            font-size: 0.9rem;
-            border-left: 3px solid #3498DB;
         }
     </style>
 </head>
@@ -196,26 +169,30 @@
         <form th:action="@{/admin/questions/edit/{id}(id=${question.questionId})}" th:object="${question}" method="post">
 
             <div class="form-group">
+                <label for="questionType">Question Type</label>
+                <select id="questionType" th:field="*{questionType}">
+                    <option value="TEXT">Text Only</option>
+                    <option value="IMAGE">Image Only</option>
+                    <option value="MIXED">Text + Image</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="questionTextField">
                 <label for="questionText">Question Text</label>
                 <textarea id="questionText" th:field="*{questionText}" required></textarea>
             </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="questionType">Question Type</label>
-                    <select id="questionType" th:field="*{questionType}">
-                        <option value="TEXT">Text Only</option>
-                        <option value="IMAGE">Image Only</option>
-                        <option value="MIXED">Text + Image</option>
-                    </select>
-                </div>
+            <div class="form-group" id="questionImageUrlField">
+                <label for="questionImageUrl">Image URL</label>
+                <input type="text" id="questionImageUrl" th:field="*{questionImageUrl}"
+                       placeholder="https://example.com/image.jpg">
+            </div>
 
+            <div class="form-row">
                 <div class="form-group">
                     <label for="points">Points</label>
                     <input type="number" id="points" th:field="*{points}" min="1" max="10">
                 </div>
-            </div>
-            <div class="form-row">
                 <div class="form-group">
                     <label for="difficultyLevel">Difficulty Level <span class="required">*</span></label>
                     <select id="difficultyLevel" th:field="*{difficultyLevel}" required>
@@ -225,7 +202,8 @@
                         <option value="HARD">😰 Hard</option>
                     </select>
                 </div>
-
+            </div>
+            <div class="form-row">
                 <div class="form-group">
                     <label for="questionCategory">Category <span class="required">*</span></label>
                     <select id="questionCategory" th:field="*{questionCategory.categoryId}" required>
@@ -236,18 +214,10 @@
                         </option>
                     </select>
                 </div>
-            </div>
-
-
-            <div class="form-group">
-                <label for="timeLimitSeconds">Time Limit (seconds)</label>
-                <input type="number" id="timeLimitSeconds" th:field="*{timeLimitSeconds}" min="10" max="300">
-            </div>
-
-            <div class="form-group">
-                <label for="questionImageUrl">Image URL</label>
-                <input type="text" id="questionImageUrl" th:field="*{questionImageUrl}"
-                       placeholder="https://example.com/image.jpg">
+                <div class="form-group">
+                    <label for="timeLimitSeconds">Time Limit (seconds)</label>
+                    <input type="number" id="timeLimitSeconds" th:field="*{timeLimitSeconds}" min="10" max="300">
+                </div>
             </div>
 
             <div class="toggle-switch">
@@ -258,17 +228,22 @@
                 <span style="font-weight: 500; color: #2C3E50;">Question is active</span>
             </div>
 
-            <div class="options-display" th:if="${question.answerOptions != null and !#lists.isEmpty(question.answerOptions)}">
-                <h3>Answer Options</h3>
-                <div th:each="option, iterStat : ${question.answerOptions}" class="option-item">
-                    <div>
-                        <div class="option-label" th:text="'Option ' + ${iterStat.index + 1}">Option 1</div>
-                        <div style="color: #2C3E50; margin-top: 0.25rem;" th:text="${option.optionText}">Option text</div>
+            <div class="options-edit" th:if="${question.answerOptions != null and !#lists.isEmpty(question.answerOptions)}">
+                <h3>Edit Answer Options</h3>
+                <div th:each="option, iterStat : *{answerOptions}" class="option-item">
+                    <input type="hidden" th:field="*{answerOptions[__${iterStat.index}__].optionId}" />
+                    <div class="form-group" style="flex-grow: 1;">
+                        <label th:for="${'optionText' + iterStat.index}">Option Text</label>
+                        <input type="text" th:id="${'optionText' + iterStat.index}" th:field="*{answerOptions[__${iterStat.index}__].optionText}" />
                     </div>
-                    <span th:if="${option.isCorrect}" class="correct-badge">CORRECT</span>
-                </div>
-                <div class="info-note">
-                    Note: To modify answer options, you need to delete and recreate the question.
+                    <div class="form-group" style="flex-grow: 1;">
+                        <label th:for="${'optionImageUrl' + iterStat.index}">Image URL</label>
+                        <input type="text" th:id="${'optionImageUrl' + iterStat.index}" th:field="*{answerOptions[__${iterStat.index}__].imageUrl}" />
+                    </div>
+                    <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem; padding-top: 1.5rem;">
+                        <input type="checkbox" th:id="${'isCorrect' + iterStat.index}" th:field="*{answerOptions[__${iterStat.index}__].isCorrect}" />
+                        <label th:for="${'isCorrect' + iterStat.index}">Correct</label>
+                    </div>
                 </div>
             </div>
 
@@ -276,5 +251,45 @@
         </form>
     </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const questionType = document.getElementById('questionType');
+        const questionTextField = document.getElementById('questionTextField');
+        const questionImageUrlField = document.getElementById('questionImageUrlField');
+        const optionsEdit = document.querySelector('.options-edit');
+
+        function toggleFields() {
+            const selectedType = questionType.value;
+
+            const isText = selectedType === 'TEXT' || selectedType === 'MIXED';
+            const isImage = selectedType === 'IMAGE' || selectedType === 'MIXED';
+
+            // Toggle question text and image URL fields
+            questionTextField.style.display = isText ? '' : 'none';
+            questionTextField.querySelector('textarea').required = isText;
+
+            questionImageUrlField.style.display = isImage ? '' : 'none';
+            questionImageUrlField.querySelector('input').required = isImage;
+
+            if (optionsEdit) {
+                // Toggle answer option text and image URL fields
+                const optionTextInputs = optionsEdit.querySelectorAll('input[type="text"][id^="optionText"]');
+                const optionImageUrlInputs = optionsEdit.querySelectorAll('input[type="text"][id^="optionImageUrl"]');
+
+                optionTextInputs.forEach(input => {
+                    input.closest('.form-group').style.display = isText ? '' : 'none';
+                    input.required = isText;
+                });
+                optionImageUrlInputs.forEach(input => {
+                    input.closest('.form-group').style.display = isImage ? '' : 'none';
+                    input.required = isImage;
+                });
+            }
+        }
+
+        questionType.addEventListener('change', toggleFields);
+        toggleFields(); // Initial call
+    });
+</script>
 </body>
 </html>

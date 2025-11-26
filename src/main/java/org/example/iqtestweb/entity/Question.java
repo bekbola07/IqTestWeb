@@ -15,7 +15,7 @@ import java.util.List;
 @Table(name = "questions")
 @Data
 @NoArgsConstructor
-@ToString(exclude = {"answerOptions"})
+@ToString(exclude = "answerOptions")
 public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,4 +42,7 @@ public class Question {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<AnswerOption> answerOptions = new java.util.ArrayList<>();
 }

@@ -2,240 +2,161 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Test Sessions - Admin</title>
+    <title>Assessment Sessions - Admin</title>
     <style>
-        /* Define color variables for consistency */
-        :root {
-            --dark-navbar: #2C3E50;
-            --primary-accent: #3498DB;
-            --background-light: #F0F4F8;
-            --text-color: #333;
-            --border-color: #E5E7EB;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
-            /* UPDATED BACKGROUND: Soft, professional gray */
-            background: var(--background-light);
-            min-height: 100vh;
-            margin: 0;
-            padding: 0;
-            color: var(--text-color);
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background: #F5F7FA;
+            color: #2C3E50;
+            display: flex;
+            overflow: hidden;
         }
-
-        /* UPDATED NAVBAR: Dark, high-contrast header */
+        .sidebar {
+            width: 260px;
+            background: #2C3E50;
+            color: white;
+            height: 100vh;
+            padding: 1.5rem;
+            flex-shrink: 0;
+            transition: width 0.3s ease, padding 0.3s ease;
+            overflow-x: hidden;
+        }
+        .sidebar-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .sidebar-menu a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 0.875rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background: #34495E;
+        }
+        .main-content {
+            flex-grow: 1;
+            height: 100vh;
+            overflow-y: auto;
+        }
         .navbar {
-            background: var(--dark-navbar);
-            padding: 1rem 2rem;
+            background: white;
+            padding: 1.25rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-bottom: 1px solid #E5E7EB;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            position: sticky;
-            top: 0;
-            z-index: 10;
         }
-        .navbar h1 {
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .sidebar-toggle-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        .nav-actions {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        .btn-logout {
+            background: #E74C3C;
             color: white;
-            margin: 0;
-            font-size: 1.6rem;
+            border: none;
+            padding: 0.6rem 1.4rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
         }
-        .navbar a {
-            color: #93c5fd; /* Light blue link color */
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.2s;
+        body.sidebar-closed .sidebar {
+            width: 0;
+            padding: 0;
         }
-        .navbar a:hover {
-            color: white;
-        }
-
         .container {
-            max-width: 1400px;
-            margin: 3rem auto;
-            padding: 0 2rem;
-        }
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 2.5rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            overflow-x: auto;
-            border: 1px solid var(--border-color);
-        }
-        h2 {
-            /* Changed to primary accent blue */
-            color: var(--primary-accent);
-            margin-bottom: 2rem;
-            font-size: 1.8rem;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 10px;
+            padding: 2.5rem 2rem;
         }
         table {
             width: 100%;
-            border-collapse: separate; /* Use separate for rounded corners on header */
-            border-spacing: 0;
-            min-width: 1100px;
+            border-collapse: collapse;
+            margin-top: 2rem;
         }
-        th {
-            /* UPDATED TABLE HEADER: Clean, solid color with a subtle gradient */
-            background: var(--primary-accent);
-            color: white;
+        th, td {
             padding: 1rem;
             text-align: left;
-            font-weight: 600;
-            font-size: 0.95rem;
-            /* Apply border radius only to the top row */
+            border-bottom: 1px solid #E5E7EB;
         }
-        table thead tr:first-child th:first-child {
-            border-top-left-radius: 8px;
-        }
-        table thead tr:first-child th:last-child {
-            border-top-right-radius: 8px;
-        }
-
-        td {
-            padding: 1rem;
-            border-bottom: 1px solid var(--border-color);
-            vertical-align: middle;
-            font-size: 0.9rem;
-        }
-        tbody tr:last-child td {
-            border-bottom: none;
-        }
-        tbody tr:hover {
-            background: #fcfdff;
-        }
-
-        /* Score Badges */
-        .score-badge {
-            padding: 0.4rem 1rem;
-            border-radius: 4px;
-            font-weight: 700;
-            display: inline-block;
-            text-align: center;
-            min-width: 65px;
-            font-size: 0.85rem;
-        }
-        .score-genius { background: #fff3c4; color: #a17800; border: 1px solid #ffdb58; }
-        .score-superior { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .score-high { background: #cceeff; color: #004d66; border: 1px solid #b3e6ff; }
-        .score-average { background: #fdfdff; color: #4a6572; border: 1px solid #e0e0e0; }
-        .score-low { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-
-        /* Status Styling */
-        .status-completed { color: #155724; font-weight: 600; }
-        .status-progress { color: #d9534f; font-weight: 600; }
-
-        /* User Cell */
-        .user-cell {
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-        }
-        .user-avatar {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background: var(--primary-accent);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 1rem;
-            flex-shrink: 0;
-        }
-
-        /* Accuracy Display */
-        .accuracy-display {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            min-width: 120px;
-        }
-        .accuracy-bar {
-            width: 60px;
-            height: 6px;
-            background: #e0e0e0;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        .accuracy-fill {
-            height: 100%;
-            background: var(--primary-accent); /* Use solid primary color */
-            transition: width 0.3s;
+        th {
+            background: #F8F9FA;
         }
     </style>
 </head>
 <body>
-<nav class="navbar">
-    <h1>📊 Test Sessions Analytics</h1>
-    <div>
-        <a th:href="@{/admin/dashboard}">← Back to Admin</a>
-    </div>
-</nav>
 
-<div class="container">
-    <div class="card">
-        <h2>All Test Sessions</h2>
+<div class="sidebar">
+    <div class="sidebar-header">Admin Panel</div>
+    <nav class="sidebar-menu">
+        <a th:href="@{/admin/dashboard}">Dashboard</a>
+        <a th:href="@{/admin/users}">User Management</a>
+        <a th:href="@{/admin/categories}">Categories</a>
+        <a th:href="@{/admin/questions}">Questions</a>
+        <a th:href="@{/admin/sessions}" class="active">Assessments</a>
+    </nav>
+</div>
+
+<div class="main-content">
+    <nav class="navbar">
+        <div class="navbar-left">
+            <button id="sidebarToggle" class="sidebar-toggle-btn">☰</button>
+        </div>
+        <div class="nav-actions">
+            <span style="color: #7F8C8D; font-weight: 600;" th:text="${userName}">Admin User</span>
+            <a th:href="@{/dashboard}">User Dashboard</a>
+            <form th:action="@{/logout}" method="post" style="margin: 0;">
+                <button type="submit" class="btn-logout">Sign Out</button>
+            </form>
+        </div>
+    </nav>
+    <div class="container">
+        <h1>Assessment Sessions</h1>
         <table>
             <thead>
-            <tr>
-                <th>ID</th>
-                <th>User</th>
-                <th>Started</th>
-                <th>Completed</th>
-                <th>Status</th>
-                <th>Accuracy</th>
-                <th>IQ Score</th>
-                <th>Time (Min)</th>
-            </tr>
+                <tr>
+                    <th>ID</th>
+                    <th>User</th>
+                    <th>Score</th>
+                    <th>Completed At</th>
+                </tr>
             </thead>
             <tbody>
-            <tr th:each="user_session : ${sessions}">
-                <td th:text="'#' + user_session.sessionId">#1001</td>
-                <td>
-                    <div class="user-cell">
-                        <div class="user-avatar"
-                             th:text="${#strings.substring(user_session.user.username, 0, 1).toUpperCase()}">J</div>
-                        <span th:text="${user_session.user.username}">johndoe</span>
-                    </div>
-                </td>
-                <td th:text="${#temporals.format(user_session.startedAt, 'MMM dd, HH:mm')}">Jan 01, 10:00</td>
-                <td th:text="${user_session.completedAt != null ? #temporals.format(user_session.completedAt, 'MMM dd, HH:mm') : '—'}">Jan 01, 10:15</td>
-                <td>
-                    <span th:classappend="${user_session.completedAt != null} ? 'status-completed' : 'status-progress'"
-                          th:text="${user_session.completedAt != null} ? '✓ Completed' : '⏳ In Progress'">✓ Completed</span>
-                </td>
-                <td>
-                    <div th:if="${user_session.totalQuestions != null and user_session.totalQuestions > 0}" class="accuracy-display">
-                        <span th:text="${user_session.correctAnswers} + '/' + user_session.totalQuestions">15/20</span>
-                        <div class="accuracy-bar">
-                            <div class="accuracy-fill"
-                                 th:style="|width: ${user_session.correctAnswers * 100 / user_session.totalQuestions}%|"
-                            ></div>
-                        </div>
-                    </div>
-                    <span th:if="${user_session.totalQuestions == null or user_session.totalQuestions == 0}">—</span>
-                </td>
-                <td>
-                    <span th:if="${user_session.iqScore != null}"
-                          class="score-badge"
-                          th:classappend="${
-                              user_session.iqScore >= 130 ? 'score-genius' :
-                              user_session.iqScore >= 120 ? 'score-superior' :
-                              user_session.iqScore >= 110 ? 'score-high' :
-                              user_session.iqScore >= 90 ? 'score-average' : 'score-low'
-                          }"
-                          th:text="${user_session.iqScore}">120</span>
-                    <span th:if="${user_session.iqScore == null}">—</span>
-                </td>
-                <td th:text="${user_session.timeTakenSeconds != null ? #numbers.formatInteger(user_session.timeTakenSeconds / 60, 0) + ' min' : '—'}">15 min</td>
-            </tr>
+                <tr th:each="user_session : ${sessions}">
+                    <td th:text="${user_session.sessionId}"></td>
+                    <td th:text="${user_session.user.username}"></td>
+                    <td th:text="${user_session.iqScore}"></td>
+                    <td th:text="${#temporals.format(user_session.displayDateTime, 'dd-MMM-yyyy HH:mm')}"></td>
+                </tr>
             </tbody>
         </table>
     </div>
 </div>
+
+<script>
+    document.getElementById('sidebarToggle').addEventListener('click', function() {
+        document.body.classList.toggle('sidebar-closed');
+    });
+</script>
+
 </body>
 </html>

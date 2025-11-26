@@ -5,7 +5,6 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.example.iqtestweb.entity.*;
 import org.example.iqtestweb.entity.dto.CategoryDTO;
-import org.example.iqtestweb.entity.dto.QuestionDTO;
 import org.example.iqtestweb.service.QuestionService;
 import org.example.iqtestweb.service.TestSessionService;
 import org.example.iqtestweb.service.UserService;
@@ -16,6 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin")
@@ -27,11 +27,6 @@ class AdminController {
 
     @GetMapping("/dashboard")
     public String adminDashboard(Model model, HttpSession session) {
-        String userRole = (String) session.getAttribute("userRole");
-        if (!"ADMIN".equals(userRole)) {
-            return "redirect:/dashboard";
-        }
-
         List<User> users = userService.getAllUsers();
         List<Question> questions = questionService.getAllQuestions();
         List<TestSession> sessions = sessionService.getAllSessions();
@@ -46,11 +41,6 @@ class AdminController {
 
     @GetMapping("/users")
     public String listUsers(Model model, HttpSession session) {
-        String userRole = (String) session.getAttribute("userRole");
-        if (!"ADMIN".equals(userRole)) {
-            return "redirect:/dashboard";
-        }
-
         model.addAttribute("users", userService.getAllUsers());
         model.addAttribute("userName", session.getAttribute("userName"));
         return "admin/users";
@@ -58,11 +48,6 @@ class AdminController {
 
     @GetMapping("/questions")
     public String listQuestions(Model model, HttpSession session) {
-        String userRole = (String) session.getAttribute("userRole");
-        if (!"ADMIN".equals(userRole)) {
-            return "redirect:/dashboard";
-        }
-
         model.addAttribute("questions", questionService.getAllQuestions());
         model.addAttribute("userName", session.getAttribute("userName"));
         return "admin/questions";
@@ -70,11 +55,6 @@ class AdminController {
 
     @GetMapping("/questions/add")
     public String showAddQuestionForm(Model model, HttpSession session) {
-        String userRole = (String) session.getAttribute("userRole");
-        if (!"ADMIN".equals(userRole)) {
-            return "redirect:/dashboard";
-        }
-
         List<QuestionCategory> categories = questionService.getAllCategories();
 
         model.addAttribute("question", new Question());
@@ -84,26 +64,20 @@ class AdminController {
     }
 
     @PostMapping("/questions/add")
-    public String addQuestion(@ModelAttribute Question question,
+    public String addQuestion(@ModelAttribute("question") Question question,
                               @RequestParam List<String> optionTexts,
+                              @RequestParam List<String> optionImageUrls,
                               @RequestParam int correctOptionIndex,
                               RedirectAttributes redirectAttributes) {
 
-        question.setIsActive(true);
-        Question savedQuestion = questionService.saveQuestion(question);
-
-        List<AnswerOption> savedAnswerOptions = new ArrayList<>();
-        questionService.saveQuestion(savedQuestion);
+        List<AnswerOption> answerOptions = new ArrayList<>();
         for (int i = 0; i < optionTexts.size(); i++) {
-            AnswerOption option = new AnswerOption();
-            option.setQuestion(savedQuestion);
-            option.setOptionText(optionTexts.get(i));
-            option.setIsCorrect(i == correctOptionIndex);
-            option.setOptionOrder(i);
-            questionService.saveAnswerOption(option);
-//            savedQuestion.getAnswerOptions().add(option);
-            savedAnswerOptions.add(option);
+            String imageUrl = (optionImageUrls.size() > i) ? optionImageUrls.get(i) : null;
+            AnswerOption option = new AnswerOption(question, optionTexts.get(i), imageUrl, i == correctOptionIndex, i);
+            answerOptions.add(option);
         }
+        question.setAnswerOptions(answerOptions);
+        questionService.saveQuestion(question);
 
         redirectAttributes.addFlashAttribute("success", "Question added successfully!");
         return "redirect:/admin/questions";
@@ -111,19 +85,10 @@ class AdminController {
 
     @GetMapping("/questions/edit/{id}")
     public String showEditQuestionForm(@PathVariable Long id, Model model, HttpSession session) {
-        String userRole = (String) session.getAttribute("userRole");
-        if (!"ADMIN".equals(userRole)) {
-            return "redirect:/dashboard";
-        }
-
         Question question = questionService.getQuestionById(id);
-
-        List<AnswerOption> optionsForQuestion = questionService.getOptionsForQuestion(question.getQuestionId());
-        QuestionDTO questionDTO = new QuestionDTO(question, optionsForQuestion);
-
         List<QuestionCategory> categories = questionService.getAllCategories();
 
-        model.addAttribute("question", questionDTO);
+        model.addAttribute("question", question);
         model.addAttribute("categories", categories);
         model.addAttribute("userName", session.getAttribute("userName"));
         return "admin/edit-question";
@@ -133,8 +98,8 @@ class AdminController {
     public String editQuestion(@PathVariable Long id,
                                @ModelAttribute Question question,
                                RedirectAttributes redirectAttributes) {
-        question.setQuestionId(id);
-        questionService.saveQuestion(question);
+
+        questionService.updateQuestion(id, question);
         redirectAttributes.addFlashAttribute("success", "Question updated successfully!");
         return "redirect:/admin/questions";
     }
@@ -148,11 +113,6 @@ class AdminController {
 
     @GetMapping("/sessions")
     public String listSessions(Model model, HttpSession session) {
-        String userRole = (String) session.getAttribute("userRole");
-        if (!"ADMIN".equals(userRole)) {
-            return "redirect:/dashboard";
-        }
-
         model.addAttribute("sessions", sessionService.getAllSessions());
         model.addAttribute("userName", session.getAttribute("userName"));
         return "admin/sessions";
@@ -160,18 +120,13 @@ class AdminController {
 
     @GetMapping("/categories")
     public String listCategories(Model model, HttpSession session) {
-        String userRole = (String) session.getAttribute("userRole");
-        if (!"ADMIN".equals(userRole)) {
-            return "redirect:/dashboard";
-        }
-
-        List<CategoryDTO> categoryDTOS = new ArrayList<>();
         List<QuestionCategory> categories = questionService.getAllCategories();
 
-        for (QuestionCategory category : categories) {
-            categoryDTOS.add(new CategoryDTO(category, questionService.getQuestionsByCategoryId(category.getCategoryId())));
-        }
-
+        // This approach avoids the N+1 query problem of fetching questions for each category individually.
+        // A more advanced solution would be a custom query in the repository.
+        List<CategoryDTO> categoryDTOS = categories.stream()
+                .map(category -> new CategoryDTO(category, questionService.getQuestionsByCategoryId(category.getCategoryId())))
+                .collect(Collectors.toList());
 
         model.addAttribute("categories", categoryDTOS);
         model.addAttribute("userName", session.getAttribute("userName"));
@@ -180,11 +135,6 @@ class AdminController {
 
     @GetMapping("/categories/add")
     public String showAddCategoryForm(Model model, HttpSession session) {
-        String userRole = (String) session.getAttribute("userRole");
-        if (!"ADMIN".equals(userRole)) {
-            return "redirect:/dashboard";
-        }
-
         model.addAttribute("category", new QuestionCategory());
         model.addAttribute("userName", session.getAttribute("userName"));
         return "admin/add-category";
