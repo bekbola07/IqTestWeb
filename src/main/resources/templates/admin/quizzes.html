@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Assessment Sessions - Admin</title>
+    <title>Quiz Management - Admin</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -105,7 +105,7 @@
 </head>
 <body>
 
-<div th:replace="~{admin/fragments :: sidebar('sessions')}"></div>
+<div th:replace="~{admin/fragments :: sidebar('quizzes')}"></div>
 
 <div class="main-content">
     <nav class="navbar">
@@ -121,22 +121,22 @@
         </div>
     </nav>
     <div class="container">
-        <h1>Assessment Sessions</h1>
+        <h1>Quiz Management</h1>
         <table>
             <thead>
                 <tr>
                     <th>ID</th>
+                    <th>Name</th>
+                    <th>Type</th>
                     <th>User</th>
-                    <th>Score</th>
-                    <th>Completed At</th>
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="user_session : ${sessions}">
-                    <td th:text="${user_session.sessionId}"></td>
-                    <td th:text="${user_session.user.username}"></td>
-                    <td th:text="${user_session.iqScore}"></td>
-                    <td th:text="${#temporals.format(user_session.getCompletedAt(), 'dd-MMM-yyyy HH:mm')}"></td>
+                <tr th:each="quiz : ${quizzes}">
+                    <td th:text="${quiz.id}"></td>
+                    <td th:text="${quiz.name}"></td>
+                    <td th:text="${quiz.quizType.name}"></td>
+                    <td th:text="${quiz.user.username}"></td>
                 </tr>
             </tbody>
         </table>

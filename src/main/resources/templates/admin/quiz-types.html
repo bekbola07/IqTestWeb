@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Assessment Sessions - Admin</title>
+    <title>Quiz Type Management - Admin</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -101,11 +101,22 @@
         th {
             background: #F8F9FA;
         }
+        .btn {
+            background: #3498DB;
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            text-decoration: none;
+            margin-right: 0.5rem;
+        }
+        .btn-danger {
+            background: #E74C3C;
+        }
     </style>
 </head>
 <body>
 
-<div th:replace="~{admin/fragments :: sidebar('sessions')}"></div>
+<div th:replace="~{admin/fragments :: sidebar('quiz-types')}"></div>
 
 <div class="main-content">
     <nav class="navbar">
@@ -121,22 +132,24 @@
         </div>
     </nav>
     <div class="container">
-        <h1>Assessment Sessions</h1>
+        <h1>Quiz Type Management</h1>
+        <a th:href="@{/admin/quiz-types/add}" class="btn" style="margin-top: 1rem; display: inline-block;">Add New Quiz Type</a>
         <table>
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>User</th>
-                    <th>Score</th>
-                    <th>Completed At</th>
+                    <th>Name</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="user_session : ${sessions}">
-                    <td th:text="${user_session.sessionId}"></td>
-                    <td th:text="${user_session.user.username}"></td>
-                    <td th:text="${user_session.iqScore}"></td>
-                    <td th:text="${#temporals.format(user_session.getCompletedAt(), 'dd-MMM-yyyy HH:mm')}"></td>
+                <tr th:each="quizType : ${quizTypes}">
+                    <td th:text="${quizType.id}"></td>
+                    <td th:text="${quizType.name}"></td>
+                    <td>
+                        <a th:href="@{/admin/quiz-types/edit/{id}(id=${quizType.id})}" class="btn">Edit</a>
+                        <a th:href="@{/admin/quiz-types/delete/{id}(id=${quizType.id})}" class="btn btn-danger">Delete</a>
+                    </td>
                 </tr>
             </tbody>
         </table>

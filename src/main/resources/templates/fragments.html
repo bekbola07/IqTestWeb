@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- User Dashboard Header -->
+<div th:fragment="user-header(backLink)">
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a th:href="${backLink}" class="btn btn-secondary" style="padding: 0.5rem 1rem;">&larr; Back</a>
+            <h1>IQ Assessment Platform</h1>
+            <div class="user-section">
+                <div class="user-info">
+                    <img th:src="${session.profilePicture}" alt="Profile" class="user-avatar" th:if="${session.profilePicture}">
+                    <span style="font-weight: 500;" th:text="${session.userName}">User</span>
+                    <span th:if="${session.userRole == 'ADMIN'}" class="admin-badge">ADMIN</span>
+                </div>
+                <form th:action="@{/logout}" method="post" style="margin: 0;">
+                    <button type="submit" class="btn btn-secondary" style="padding: 0.5rem 1rem;">Sign Out</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+</div>
+
+</body>
+</html>

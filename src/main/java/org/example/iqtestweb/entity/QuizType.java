@@ -1,29 +1,22 @@
 package org.example.iqtestweb.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.iqtestweb.entity.enums.DifficultyLevel;
 import org.example.iqtestweb.entity.enums.Status;
 
-import java.util.List;
-
 @Entity
-@Table(name = "question_categories")
+@Table(name = "quiz_types")
 @Data
 @NoArgsConstructor
-public class QuestionCategory {
+@AllArgsConstructor
+public class QuizType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long categoryId;
+    private Long id;
 
-    private String categoryName;
-
-    @Column(columnDefinition = "TEXT")
-    private String description;
-
-    @Enumerated(EnumType.STRING)
-    private DifficultyLevel difficultyLevel;
+    private String name;
 
     @Enumerated(EnumType.STRING)
     private Status status = Status.ACTIVE;

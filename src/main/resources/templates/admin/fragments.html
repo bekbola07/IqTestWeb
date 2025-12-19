@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- Sidebar Fragment -->
+<div th:fragment="sidebar(activePage)" class="sidebar">
+    <div class="sidebar-header">Admin Panel</div>
+    <nav class="sidebar-menu">
+        <a th:href="@{/admin/dashboard}" th:class="${activePage == 'dashboard'} ? 'active'">Dashboard</a>
+        <a th:href="@{/admin/users}" th:class="${activePage == 'users'} ? 'active'">User Management</a>
+        <a th:href="@{/admin/categories}" th:class="${activePage == 'categories'} ? 'active'">Categories</a>
+        <a th:href="@{/admin/sessions}" th:class="${activePage == 'sessions'} ? 'active'">Assessments</a>
+        <a th:href="@{/admin/quiz-types}" th:class="${activePage == 'quiz-types'} ? 'active'">Quiz Types</a>
+        <a th:href="@{/admin/quizzes}" th:class="${activePage == 'quizzes'} ? 'active'">Quizzes</a>
+    </nav>
+</div>
+
+</body>
+</html>

@@ -5,6 +5,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.iqtestweb.entity.User;
 import org.example.iqtestweb.entity.dto.SignupRequest;
+import org.example.iqtestweb.entity.enums.Status;
 import org.example.iqtestweb.entity.enums.UserRole;
 import org.example.iqtestweb.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -56,10 +58,20 @@ public class UserService {
     }
 
     public List<User> getAllUsers() {
-        return userRepository.findAll();
+        return userRepository.findAll().stream()
+                .filter(user -> user.getStatus() == Status.ACTIVE)
+                .collect(Collectors.toList());
     }
 
     public User updateUser(User user) {
         return userRepository.save(user);
+    }
+
+    @Transactional
+    public void deleteUser(Long id) {
+        userRepository.findById(id).ifPresent(user -> {
+            user.setStatus(Status.DELETED);
+            userRepository.save(user);
+        });
     }
 }

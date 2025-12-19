@@ -26,10 +26,7 @@ public class TestSessionService {
     private final AnswerOptionRepository answerOptionRepository;
 
     @Transactional
-    public TestSession startSession(User user) {
-        TestSession session = new TestSession();
-        session.setUser(user);
-        session.setStartedAt(LocalDateTime.now());
+    public TestSession saveSession(TestSession session) {
         return sessionRepository.save(session);
     }
 

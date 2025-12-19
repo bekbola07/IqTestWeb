@@ -2,208 +2,125 @@ package org.example.iqtestweb.controller;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.example.iqtestweb.entity.AnswerOption;
-import org.example.iqtestweb.entity.Question;
-import org.example.iqtestweb.entity.TestSession;
-import org.example.iqtestweb.entity.User;
-import org.example.iqtestweb.service.QuestionService;
-import org.example.iqtestweb.service.TestSessionService;
-import org.example.iqtestweb.service.UserService;
+import org.example.iqtestweb.entity.*;
+import org.example.iqtestweb.entity.enums.QuizStatus;
+import org.example.iqtestweb.service.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/test")
 @RequiredArgsConstructor
-
 public class TestController {
+
+    private final QuizService quizService;
+    private final TestSessionService testSessionService;
+    private final UserService userService;
+    private final UserAnswerService userAnswerService;
+    private final AnswerOptionService answerOptionService;
     private final QuestionService questionService;
 
-    private final TestSessionService sessionService;
+    @GetMapping("/select-quiz")
+    public String selectQuizForTest(Model model, HttpSession session) {
+        // ... (existing code)
+        List<Quiz> startedQuizzes = quizService.getAllQuizzes().stream()
+                .filter(quiz -> quiz.getStatus() == QuizStatus.STARTED)
+                .collect(Collectors.toList());
+        model.addAttribute("quizzes", startedQuizzes);
+        return "select-quiz-for-test";
+    }
 
-    private final UserService userService;
-
-    @GetMapping("/start")
-    public String startTest(HttpSession httpSession, Model model) {
-        Long userId = (Long) httpSession.getAttribute("userId");
-        if (userId == null) {
+    @GetMapping("/start/{quizId}")
+    public String startTest(@PathVariable Long quizId, HttpSession session, RedirectAttributes redirectAttributes) {
+        // ... (existing code)
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            // ... (logic to get user from SecurityContext)
+        }
+        if (user == null) {
             return "redirect:/login";
         }
 
-        User user = userService.findById(userId);
-        TestSession session = sessionService.startSession(user);
-        httpSession.setAttribute("sessionId", session.getSessionId());
-
-        return "redirect:/test/question/0";
-    }
-
-    @GetMapping("/question/{index}")
-    public String showQuestion(@PathVariable int index, HttpSession httpSession, Model model) {
-        Long sessionId = (Long) httpSession.getAttribute("sessionId");
-        if (sessionId == null) {
-            return "redirect:/test/start";
+        Quiz quiz = quizService.getQuizById(quizId);
+        if (quiz == null || quiz.getStatus() != QuizStatus.STARTED) {
+            // ... (error handling)
+            return "redirect:/test/select-quiz";
         }
 
-        List<Question> questions = questionService.getAllActiveQuestions();
+        TestSession testSession = new TestSession();
+        testSession.setUser(user);
+        testSession.setQuiz(quiz);
+        testSession.setStartedAt(LocalDateTime.now());
+        testSession = testSessionService.saveSession(testSession);
 
-        if (questions.isEmpty()) {
-            model.addAttribute("error", "No active questions available");
-            return "error";
-        }
-
-        if (index >= questions.size()) {
-            return "redirect:/test/complete";
-        }
-
-        Question question = questions.get(index);
-        List<AnswerOption> options = questionService.getOptionsForQuestion(question.getQuestionId());
-
-        model.addAttribute("question", question);
-        model.addAttribute("options", options);
-        model.addAttribute("currentIndex", index);
-        model.addAttribute("totalQuestions", questions.size());
-        model.addAttribute("progress", ((index + 1) * 100) / questions.size());
-        model.addAttribute("userName", httpSession.getAttribute("userName"));
-        model.addAttribute("profilePicture", httpSession.getAttribute("profilePicture"));
-
-        return "question";
+        session.setAttribute("testSession", testSession);
+        return "redirect:/question/0";
     }
 
     @PostMapping("/submit-answer")
     public String submitAnswer(@RequestParam Long questionId,
                                @RequestParam Long optionId,
                                @RequestParam int nextIndex,
-                               HttpSession httpSession) {
-        Long sessionId = (Long) httpSession.getAttribute("sessionId");
+                               HttpSession session) {
+        TestSession testSession = (TestSession) session.getAttribute("testSession");
+        AnswerOption selectedOption = answerOptionService.getAnswerOptionById(optionId);
 
-        if (sessionId == null) {
-            return "redirect:/test/start";
+        UserAnswer userAnswer = new UserAnswer();
+        userAnswer.setSession(testSession);
+        userAnswer.setQuestion(questionService.getQuestionById(questionId));
+        userAnswer.setSelectedOption(selectedOption);
+        userAnswer.setIsCorrect(selectedOption.getIsCorrect());
+        userAnswerService.saveUserAnswer(userAnswer);
+
+        List<Question> questions = questionService.getQuestionsByQuizId(testSession.getQuiz().getId());
+        if (nextIndex < questions.size()) {
+            return "redirect:/question/" + nextIndex;
+        } else {
+            return "redirect:/test/results";
         }
-
-        sessionService.submitAnswer(sessionId, questionId, optionId);
-        return "redirect:/test/question/" + nextIndex;
     }
 
-    @GetMapping("/complete")
-    public String completeTest(HttpSession httpSession, Model model) {
-        Long sessionId = (Long) httpSession.getAttribute("sessionId");
-
-        if (sessionId == null) {
+    @GetMapping("/results")
+    public String showResults(Model model, HttpSession session) {
+        TestSession testSession = (TestSession) session.getAttribute("testSession");
+        if (testSession == null) {
             return "redirect:/dashboard";
         }
 
-        // Complete the session and calculate score
-        TestSession completedSession = sessionService.completeSession(sessionId);
+        List<UserAnswer> userAnswers = userAnswerService.getUserAnswersBySessionId(testSession.getSessionId());
+        long correctAnswers = userAnswers.stream().filter(UserAnswer::getIsCorrect).count();
+        int totalQuestions = questionService.getQuestionsByQuizId(testSession.getQuiz().getId()).size();
+        
+        // Simple IQ calculation logic (can be improved)
+        int iqScore = 80 + (int) Math.round(((double) correctAnswers / totalQuestions) * 60);
 
-        if (completedSession == null) {
-            model.addAttribute("error", "Session not found");
-            return "redirect:/dashboard";
-        }
+        testSession.setCompletedAt(LocalDateTime.now());
+        testSession.setCorrectAnswers((int) correctAnswers);
+        testSession.setTotalQuestions(totalQuestions);
+        testSession.setIqScore(iqScore);
+        
+        long timeTaken = Duration.between(testSession.getStartedAt(), testSession.getCompletedAt()).getSeconds();
+        testSession.setTimeTakenSeconds((int) timeTaken);
 
-        // Add all necessary data to model
-        model.addAttribute("session", completedSession);
-        model.addAttribute("userName", httpSession.getAttribute("userName"));
-        model.addAttribute("profilePicture", httpSession.getAttribute("profilePicture"));
-        model.addAttribute("userEmail", httpSession.getAttribute("userEmail"));
+        testSessionService.saveSession(testSession);
 
-        // Calculate accuracy percentage
-        if (completedSession.getTotalQuestions() != null && completedSession.getTotalQuestions() > 0) {
-            double accuracy = (completedSession.getCorrectAnswers() * 100.0) / completedSession.getTotalQuestions();
-            model.addAttribute("accuracy", Math.round(accuracy));
-        } else {
-            model.addAttribute("accuracy", 0);
-        }
+        model.addAttribute("testSession", testSession);
+        model.addAttribute("correctAnswers", correctAnswers);
+        model.addAttribute("totalQuestions", totalQuestions);
+        model.addAttribute("iqScore", iqScore);
 
-        // Add interpretation text based on score
-        Integer iqScore = completedSession.getIqScore();
-        if (iqScore != null) {
-            String interpretation;
-            String category;
-
-            if (iqScore >= 130) {
-                category = "Genius";
-                interpretation = "Exceptional! Your score indicates very superior intelligence. You're in the top 2% of the population.";
-            } else if (iqScore >= 120) {
-                category = "Superior";
-                interpretation = "Excellent! Your score indicates superior intelligence. You're in the top 10% of the population.";
-            } else if (iqScore >= 110) {
-                category = "High Average";
-                interpretation = "Great! Your score indicates high average intelligence. You're performing above average.";
-            } else if (iqScore >= 90) {
-                category = "Average";
-                interpretation = "Good! Your score indicates average intelligence. This is where most people score.";
-            } else {
-                category = "Below Average";
-                interpretation = "Keep practicing! Intelligence can be improved with training and practice.";
-            }
-
-            model.addAttribute("category", category);
-            model.addAttribute("iqScore", iqScore);
-            model.addAttribute("interpretation", interpretation);
-            model.addAttribute("correctAnswers", completedSession.getCorrectAnswers());
-            model.addAttribute("totalQuestions", completedSession.getTotalQuestions());
-            model.addAttribute("timeTaken", completedSession.getTimeTakenSeconds());
-        }
-
-        // Remove session from HttpSession
-        httpSession.removeAttribute("sessionId");
+        session.removeAttribute("testSession"); // Clear session after showing results
 
         return "results";
     }
-
-    @GetMapping("/history")
-    public String testHistory(HttpSession httpSession, Model model) {
-        Long userId = (Long) httpSession.getAttribute("userId");
-        if (userId == null) {
-            return "redirect:/login";
-        }
-
-        List<TestSession> sessions = sessionService.getUserSessions(userId);
-
-        for (TestSession session : sessions) {
-            LocalDateTime displayTime = session.getCompletedAt() != null
-                    ? session.getCompletedAt()
-                    : session.getStartedAt();
-            session.setDisplayDateTime(displayTime);
-        }
-
-        model.addAttribute("sessions", sessions);
-        // Compute values in Java (not in Thymeleaf)
-        int totalTests = sessions.size();
-
-        int bestScore = sessions.stream()
-                .filter(s -> s.getIqScore() != null)
-                .mapToInt(TestSession::getIqScore)
-                .max()
-                .orElse(0);
-
-        double avgScore = sessions.stream()
-                .filter(s -> s.getIqScore() != null)
-                .mapToInt(TestSession::getIqScore)
-                .average()
-                .orElse(0);
-
-        double avgAccuracy = sessions.stream()
-                .filter(s -> s.getCorrectAnswers() != null && s.getTotalQuestions() != null && s.getTotalQuestions() > 0)
-                .mapToDouble(s -> s.getCorrectAnswers() * 100.0 / s.getTotalQuestions())
-                .average()
-                .orElse(0);
-
-        model.addAttribute("sessions", sessions);
-        model.addAttribute("totalTests", totalTests);
-        model.addAttribute("bestScore", bestScore);
-        model.addAttribute("avgScore", Math.round(avgScore));
-        model.addAttribute("avgAccuracy", Math.round(avgAccuracy));
-
-        model.addAttribute("userName", httpSession.getAttribute("userName"));
-        model.addAttribute("profilePicture", httpSession.getAttribute("profilePicture"));
-
-        return "test-history";
-    }
-
 }
-

@@ -42,6 +42,7 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
         if (userOpt.isPresent()) {
             HttpSession session = request.getSession();
             User user = userOpt.get();
+            session.setAttribute("user", user); // Storing the whole user object
             session.setAttribute("userId", user.getUserId());
             session.setAttribute("userEmail", user.getEmail());
             session.setAttribute("userName", user.getUsername());
@@ -53,4 +54,3 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
         super.onAuthenticationSuccess(request, response, authentication);
     }
 }
-

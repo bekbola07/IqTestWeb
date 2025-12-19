@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>View Quiz</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background: #F5F7FA;
+            color: #2C3E50;
+        }
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .question {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+        }
+        .btn {
+            background: #3498DB;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 th:text="${quiz.name}">Quiz Name</h1>
+    <p>Created by: <span th:text="${quiz.user.username}">User</span></p>
+    <p>Type: <span th:text="${quiz.quizType.name}">Type</span></p>
+
+    <a th:href="@{/test/start/{quizId}(quizId=${quiz.id})}" class="btn">Start Quiz</a>
+
+    <div th:each="question : ${quiz.questions}" class="question">
+        <h3 th:text="${question.questionText}"></h3>
+        <ul>
+            <li th:each="option : ${question.answerOptions}" th:text="${option.optionText}"></li>
+        </ul>
+    </div>
+
+    <a th:href="@{/quiz/{id}/add-question(id=${quiz.id})}" class="btn" style="margin-top: 2rem;">Add Question</a>
+</div>
+
+</body>
+</html>

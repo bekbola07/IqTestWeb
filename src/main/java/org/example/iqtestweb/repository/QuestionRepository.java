@@ -8,9 +8,7 @@ import java.util.List;
 
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {
-    List<Question> findByIsActiveTrue();
 
     List<Question> getQuestionsByQuestionCategory_CategoryId(Long categoryID);
+    List<Question> findByQuizId(Long quizId);
 }
-
-

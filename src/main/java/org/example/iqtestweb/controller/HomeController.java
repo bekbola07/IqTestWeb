@@ -100,14 +100,19 @@ public class HomeController {
                             HttpSession session, Model model) {
 
         Long userId = null;
+        User user = null;
 
         if (principal instanceof OAuth2User) {
-            userId = (Long) session.getAttribute("userId");
-        } else if (principal instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) principal;
-            User user = userService.findByUsername(userDetails.getUsername()).orElse(null);
+            user = (User) session.getAttribute("user");
             if (user != null) {
                 userId = user.getUserId();
+            }
+        } else if (principal instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) principal;
+            user = userService.findByUsername(userDetails.getUsername()).orElse(null);
+            if (user != null) {
+                userId = user.getUserId();
+                session.setAttribute("user", user); // Storing the whole user object
                 session.setAttribute("userId", user.getUserId());
                 session.setAttribute("userName", user.getUsername());
                 session.setAttribute("userEmail", user.getEmail());

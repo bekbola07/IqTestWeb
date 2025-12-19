@@ -157,16 +157,7 @@
 </head>
 <body>
 
-<div class="sidebar">
-    <div class="sidebar-header">Admin Panel</div>
-    <nav class="sidebar-menu">
-        <a th:href="@{/admin/dashboard}" class="active">Dashboard</a>
-        <a th:href="@{/admin/users}">User Management</a>
-        <a th:href="@{/admin/categories}">Categories</a>
-        <a th:href="@{/admin/questions}">Questions</a>
-        <a th:href="@{/admin/sessions}">Assessments</a>
-    </nav>
-</div>
+<div th:replace="~{admin/fragments :: sidebar('dashboard')}"></div>
 
 <div class="main-content">
     <nav class="navbar">

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.iqtestweb.entity.enums.Status;
 
 @Entity
 @Table(name = "answer_options")
@@ -26,6 +27,9 @@ public class AnswerOption {
     private Boolean isCorrect = false;
     private Integer optionOrder;
 
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.ACTIVE;
+
     public AnswerOption(Question question, String optionText, Boolean isCorrect, Integer optionOrder) {
         this.question = question;
         this.optionText = optionText;
@@ -38,5 +42,10 @@ public class AnswerOption {
         this.imageUrl = imageUrl;
         this.isCorrect = isCorrect;
         this.optionOrder = optionOrder;
+    }
+
+    @PreRemove
+    public void preRemove() {
+        this.status = Status.DELETED;
     }
 }

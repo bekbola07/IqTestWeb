@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.example.iqtestweb.entity.enums.Status;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,7 +23,9 @@ public class TestSession {
     @JoinColumn(name = "user_id")
     private User user;
 
-    private LocalDateTime displayDateTime;
+    @ManyToOne
+    @JoinColumn(name = "quiz_id")
+    private Quiz quiz;
 
     @Column(name = "started_at")
     private LocalDateTime startedAt = LocalDateTime.now();
@@ -35,4 +38,11 @@ public class TestSession {
     private Integer iqScore;
     private Integer timeTakenSeconds;
 
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.ACTIVE;
+
+    @PreRemove
+    public void preRemove() {
+        this.status = Status.DELETED;
+    }
 }

@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Assessment Sessions - Admin</title>
+    <title>Edit Quiz Type - Admin</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -88,24 +88,44 @@
         .container {
             padding: 2.5rem 2rem;
         }
-        table {
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        input[type="text"] {
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 2rem;
+            padding: 0.75rem 1rem;
+            border: 1px solid #BDC3C7;
+            border-radius: 8px;
+            font-size: 1rem;
         }
-        th, td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid #E5E7EB;
-        }
-        th {
-            background: #F8F9FA;
+        .btn {
+            background: #3498DB;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-<div th:replace="~{admin/fragments :: sidebar('sessions')}"></div>
+<div class="sidebar">
+    <div class="sidebar-header">Admin Panel</div>
+    <nav class="sidebar-menu">
+        <a th:href="@{/admin/dashboard}">Dashboard</a>
+        <a th:href="@{/admin/users}">User Management</a>
+        <a th:href="@{/admin/categories}">Categories</a>
+        <a th:href="@{/admin/questions}">Questions</a>
+        <a th:href="@{/admin/sessions}">Assessments</a>
+        <a th:href="@{/admin/quiz-types}" class="active">Quiz Types</a>
+    </nav>
+</div>
 
 <div class="main-content">
     <nav class="navbar">
@@ -121,25 +141,14 @@
         </div>
     </nav>
     <div class="container">
-        <h1>Assessment Sessions</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>User</th>
-                    <th>Score</th>
-                    <th>Completed At</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="user_session : ${sessions}">
-                    <td th:text="${user_session.sessionId}"></td>
-                    <td th:text="${user_session.user.username}"></td>
-                    <td th:text="${user_session.iqScore}"></td>
-                    <td th:text="${#temporals.format(user_session.getCompletedAt(), 'dd-MMM-yyyy HH:mm')}"></td>
-                </tr>
-            </tbody>
-        </table>
+        <h1>Edit Quiz Type</h1>
+        <form th:action="@{/admin/quiz-types/edit/{id}(id=${quizType.id})}" th:object="${quizType}" method="post" style="margin-top: 2rem;">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" th:field="*{name}" required>
+            </div>
+            <button type="submit" class="btn">Save Changes</button>
+        </form>
     </div>
 </div>
 

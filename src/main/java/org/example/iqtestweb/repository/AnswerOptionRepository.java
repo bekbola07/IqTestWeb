@@ -9,5 +9,5 @@ import java.util.List;
 @Repository
 public interface AnswerOptionRepository extends JpaRepository<AnswerOption, Long> {
     List<AnswerOption> findByQuestionQuestionId(Long questionId);
+    void deleteByQuestionQuestionId(Long questionId);
 }
-

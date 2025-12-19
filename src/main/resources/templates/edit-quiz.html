@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Quiz</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body { background: #F5F7FA; padding: 0; margin: 0; font-family: 'Inter', sans-serif; }
+        .navbar { background: white; padding: 1.25rem 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .navbar-content { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .container { max-width: 1000px; margin: 2rem auto; padding: 0; }
+        .card { padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 2rem; }
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; font-weight: 600; margin-bottom: 0.5rem; }
+        input[type="text"], select { width: 100%; padding: 0.75rem 1rem; border: 1px solid #BDC3C7; border-radius: 8px; font-size: 1rem; }
+        .btn { padding: 0.75rem 1.5rem; border-radius: 8px; border: none; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .btn-primary { background: #3498DB; color: white; }
+        .btn-secondary { background: #f0f0f0; color: #333; }
+        .btn-danger { background: #E74C3C; color: white; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #E5E7EB; }
+        th { background: #F8F9FA; }
+        .actions { display: flex; gap: 0.5rem; }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{fragments :: user-header(backLink='/quiz/list')}"></div>
+
+<div class="container">
+    <!-- Edit Quiz Details Card -->
+    <div class="card">
+        <h2>Edit Quiz Details</h2>
+        <form th:action="@{/quiz/{id}/edit(id=${quiz.id})}" th:object="${quiz}" method="post" style="margin-top: 1.5rem;">
+            <div class="form-group">
+                <label for="name">Quiz Name</label>
+                <input type="text" id="name" th:field="*{name}" required>
+            </div>
+            <div class="form-group">
+                <label for="quizType">Quiz Type</label>
+                <select id="quizType" th:field="*{quizType.id}" required>
+                    <option th:each="type : ${quizTypes}" th:value="${type.id}" th:text="${type.name}"></option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Quiz Details</button>
+        </form>
+    </div>
+
+    <!-- Manage Questions Card -->
+    <div class="card">
+        <div class="header">
+            <h2>Manage Questions</h2>
+            <a th:href="@{/quiz/{quizId}/questions/add(quizId=${quiz.id})}" class="btn btn-primary"><i class="fas fa-plus"></i> Add Question</a>
+        </div>
+        <div th:if="${#lists.isEmpty(quiz.questions)}" style="text-align: center; padding: 1rem; color: #777;">
+            No questions have been added to this quiz yet.
+        </div>
+        <table th:if="${not #lists.isEmpty(quiz.questions)}">
+            <thead>
+                <tr>
+                    <th>Question Text</th>
+                    <th>Category</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="question : ${quiz.questions}">
+                    <td th:text="${question.questionText}"></td>
+                    <td th:text="${question.questionCategory != null ? question.questionCategory.categoryName : 'N/A'}"></td>
+                    <td class="actions">
+                        <a th:href="@{/quiz/{quizId}/questions/{questionId}/edit(quizId=${quiz.id}, questionId=${question.questionId})}" class="btn btn-secondary"><i class="fas fa-edit"></i></a>
+                        <a th:href="@{/quiz/{quizId}/questions/{questionId}/delete(quizId=${quiz.id}, questionId=${question.questionId})}" class="btn btn-danger" onclick="return confirm('Are you sure?')"><i class="fas fa-trash"></i></a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.example.iqtestweb.entity.enums.Status;
 import org.example.iqtestweb.entity.enums.UserRole;
 
 import java.time.LocalDateTime;
@@ -49,10 +50,17 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserRole role = UserRole.USER;
 
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.ACTIVE;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
 
+    @PreRemove
+    public void preRemove() {
+        this.status = Status.DELETED;
+    }
 }

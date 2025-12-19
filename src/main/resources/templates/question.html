@@ -8,6 +8,7 @@
             background: #F5F7FA;
             padding: 0;
             margin: 0;
+            font-family: 'Inter', sans-serif;
         }
         .navbar {
             background: white;
@@ -149,6 +150,8 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
+        .btn-finish { background: #2ECC71; }
+        .btn-finish:hover { background: #27AE60; }
     </style>
 </head>
 <body>
@@ -188,7 +191,7 @@
             <input type="hidden" name="nextIndex" th:value="${currentIndex + 1}">
 
             <div class="options">
-                <label th:each="option : ${options}" class="option">
+                <label th:each="option : ${answerOptions}" class="option">
                     <input type="radio"
                            name="optionId"
                            th:value="${option.optionId}"
@@ -199,8 +202,10 @@
                 </label>
             </div>
 
-            <button type="submit" id="submitBtn" class="btn-next" disabled>
-                Next Question →
+            <button type="submit" id="submitBtn" class="btn-next"
+                    th:classappend="${currentIndex + 1 == totalQuestions} ? 'btn-finish'"
+                    th:text="${currentIndex + 1 < totalQuestions} ? 'Next Question →' : 'Finish'"
+                    disabled>
             </button>
         </form>
     </div>
