@@ -1,13 +1,92 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Common Styles Fragment -->
+    <div th:fragment="common-styles">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <style>
+            body {
+                background: #F5F7FA;
+                padding: 0;
+                margin: 0;
+                font-family: 'Inter', sans-serif;
+                color: #2C3E50;
+            }
+            .navbar {
+                background: white;
+                padding: 1.25rem 2rem;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                border-bottom: 1px solid #E5E7EB;
+            }
+            .navbar-content {
+                max-width: 1400px;
+                margin: 0 auto;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .navbar h1 {
+                font-size: 1.5rem;
+                font-weight: 600;
+                color: #2C3E50;
+            }
+            .user-section {
+                display: flex;
+                align-items: center;
+                gap: 1.5rem;
+            }
+            .user-info {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+            }
+            .user-avatar {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+            }
+            .admin-badge {
+                background: #2C3E50;
+                color: white;
+                padding: 0.4rem 0.8rem;
+                border-radius: 4px;
+                font-size: 0.8rem;
+            }
+            .container {
+                max-width: 1200px;
+                margin: 2rem auto;
+                padding: 2rem;
+            }
+            .btn {
+                padding: 0.75rem 1.5rem;
+                border-radius: 8px;
+                text-decoration: none;
+                font-weight: 500;
+                border: none;
+                cursor: pointer;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            .btn-primary { background: #3498DB; color: white; }
+            .btn-secondary { background: #f0f0f0; color: #333; }
+            .btn-success { background: #2ECC71; color: white; }
+            .btn-warning { background: #F39C12; color: white; }
+            .btn-danger { background: #E74C3C; color: white; }
+            .btn-info { background: #5DADE2; color: white; }
+        </style>
+    </div>
+</head>
 <body>
 
-<!-- User Dashboard Header -->
-<div th:fragment="user-header(backLink)">
+<!-- Universal Navbar Fragment -->
+<div th:fragment="navbar(backLink)">
     <nav class="navbar">
         <div class="navbar-content">
-            <a th:href="${backLink}" class="btn btn-secondary" style="padding: 0.5rem 1rem;">&larr; Back</a>
-            <h1>IQ Assessment Platform</h1>
+            <div style="display: flex; align-items: center;">
+                <a th:if="${backLink != null}" th:href="@{${backLink}}" class="btn btn-secondary" style="padding: 0.5rem 1rem; margin-right: 1rem; text-decoration: none;">&larr; Back</a>
+                <a th:href="@{/dashboard}" style="text-decoration: none; color: inherit;"><h1>IQ Assessment Platform</h1></a>
+            </div>
             <div class="user-section">
                 <div class="user-info">
                     <img th:src="${session.profilePicture}" alt="Profile" class="user-avatar" th:if="${session.profilePicture}">

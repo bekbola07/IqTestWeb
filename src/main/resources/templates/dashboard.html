@@ -3,60 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Dashboard - IQ Assessment Platform</title>
+    <div th:replace="~{fragments :: common-styles}"></div>
     <style>
-        body {
-            background: #F5F7FA;
-            padding: 0;
-            margin: 0;
-        }
-        .navbar {
-            background: white;
-            padding: 1.25rem 2rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            border-bottom: 1px solid #E5E7EB;
-        }
-        .navbar-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .navbar h1 {
-            color: var(--dark);
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-        .user-section {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid var(--accent);
-        }
-        .admin-badge {
-            background: #2C3E50;
-            color: white;
-            padding: 0.4rem 0.875rem;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            letter-spacing: 0.05em;
-        }
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2.5rem 2rem;
-        }
         .dashboard-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -88,83 +36,41 @@
         .card h2 {
             font-size: 1.25rem;
             margin-bottom: 0.75rem;
-            color: var(--dark);
         }
         .card p {
-            color: var(--text-muted);
+            color: #7F8C8D;
             margin-bottom: 1.5rem;
             line-height: 1.6;
         }
         .stat-value {
             font-size: 2.5rem;
             font-weight: 700;
-            color: var(--accent);
+            color: #3498DB;
             line-height: 1;
             margin-bottom: 0.5rem;
         }
         .admin-card {
             border: 2px solid #2C3E50;
-            background: linear-gradient(135deg, #F8F9FA 0%, #FFFFFF 100%);
         }
         .admin-card .card-icon {
             background: #2C3E50;
             color: white;
         }
-        .admin-features {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0.75rem;
-            margin: 1.5rem 0;
-        }
-        .admin-feature {
-            background: white;
-            padding: 0.875rem;
-            border-radius: 6px;
-            border: 1px solid #E5E7EB;
-            font-size: 0.9rem;
-            color: var(--text);
-            text-align: center;
-            font-weight: 500;
-        }
-        .btn-admin {
-            background: #2C3E50;
-            color: white;
-        }
-        .btn-admin:hover {
-            background: #1A252F;
-        }
+        .btn-admin { background: #2C3E50; color: white; }
+        .btn-admin:hover { background: #1A252F; }
     </style>
 </head>
 <body>
-<nav class="navbar">
-    <div class="navbar-content">
-        <h1>IQ Assessment Platform</h1>
-        <div class="user-section">
-            <div class="user-info">
-                <img th:src="${profilePicture}" alt="Profile" class="user-avatar" th:if="${profilePicture}">
-                <span style="font-weight: 500;" th:text="${userName}">User</span>
-                <span th:if="${userRole == 'ADMIN'}" class="admin-badge">ADMIN</span>
-            </div>
-            <form th:action="@{/logout}" method="post" style="margin: 0;">
-                <button type="submit" class="btn btn-secondary" style="padding: 0.5rem 1rem;">Sign Out</button>
-            </form>
-        </div>
-    </div>
-</nav>
+
+<div th:replace="~{fragments :: navbar(backLink=null)}"></div>
 
 <div class="container">
     <div class="dashboard-grid">
         <!-- Admin Card -->
-        <div class="card admin-card" th:if="${userRole == 'ADMIN'}">
+        <div class="card admin-card" th:if="${session.userRole == 'ADMIN'}">
             <div class="card-icon">⚙</div>
             <h2>Admin Control Panel</h2>
-            <p>Manage users, questions, and review all test sessions</p>
-            <div class="admin-features">
-                <div class="admin-feature">User Management</div>
-                <div class="admin-feature">Question Bank</div>
-                <div class="admin-feature">Add Questions</div>
-                <div class="admin-feature">Session Analytics</div>
-            </div>
+            <p>Manage users, categories, and review all test sessions.</p>
             <a th:href="@{/admin/dashboard}" class="btn btn-admin">Access Admin Panel</a>
         </div>
 
@@ -172,7 +78,7 @@
         <div class="card">
             <div class="card-icon">📋</div>
             <h2>Start Assessment</h2>
-            <p>Begin a comprehensive cognitive assessment to evaluate your intelligence quotient</p>
+            <p>Begin a comprehensive cognitive assessment to evaluate your intelligence quotient.</p>
             <a th:href="@{/test/select-quiz}" class="btn btn-primary">Begin Assessment</a>
         </div>
 
@@ -180,7 +86,7 @@
         <div class="card">
             <div class="card-icon">✍️</div>
             <h2>Quiz Management</h2>
-            <p>Create, edit, and manage your own quizzes.</p>
+            <p>Create, edit, and manage your own quizzes and their questions.</p>
             <a th:href="@{/quiz/list}" class="btn btn-secondary">Manage Quizzes</a>
         </div>
 

@@ -29,8 +29,8 @@ public class Question {
     @Enumerated(EnumType.STRING)
     private DifficultyLevel difficultyLevel;
 
-    @ManyToOne
-    @JoinColumn(name = "category")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "category", nullable = false)
     private QuestionCategory questionCategory;
 
     private String questionImageUrl;

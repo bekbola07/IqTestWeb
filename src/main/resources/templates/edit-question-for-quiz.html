@@ -3,17 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Edit Question</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <div th:replace="~{fragments :: common-styles}"></div>
     <style>
-        body { background: #F5F7FA; padding: 0; margin: 0; font-family: 'Inter', sans-serif; }
-        .navbar { background: white; padding: 1.25rem 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .navbar-content { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
         .container { max-width: 900px; margin: 2rem auto; padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
         .form-group { margin-bottom: 1.5rem; }
         label { display: block; font-weight: 600; margin-bottom: 0.5rem; }
         input[type="text"], textarea, select, input[type="number"] { width: 100%; padding: 0.75rem 1rem; border: 1px solid #BDC3C7; border-radius: 8px; font-size: 1rem; }
-        .btn { padding: 0.75rem 1.5rem; border-radius: 8px; border: none; cursor: pointer; }
-        .btn-primary { background: #3498DB; color: white; }
         .options-container { margin-top: 1rem; }
         .option-group { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
         .add-option-btn { background: #2ECC71; color: white; margin-top: 1rem; }
@@ -22,11 +17,11 @@
 </head>
 <body>
 
-<div th:replace="~{fragments :: user-header(backLink=@{/quiz/{id}/edit(id=${quiz.id})})}"></div>
+<div th:replace="~{fragments :: navbar(backLink=@{/quiz/{id}/edit(id=${quiz.id})})}"></div>
 
 <div class="container">
     <h1 th:text="|Edit Question for: ${quiz.name}|">Edit Question</h1>
-    <form th:action="@{/quiz/{quizId}/questions/{questionId}/edit(quizId=${quiz.id}, questionId=${question.questionId})}" th:object="${question}" method="post" style="margin-top: 2rem;">
+    <form th:action="@{/quiz/{quizId}/questions/{questionId}/edit(quizId=${quiz.id}, questionId=${question.questionId})}" th:object="${question}" method="post" style="margin-top: 2rem;" autocomplete="off">
         <div class="form-group">
             <label for="questionText">Question Text</label>
             <textarea id="questionText" th:field="*{questionText}" rows="3" required></textarea>

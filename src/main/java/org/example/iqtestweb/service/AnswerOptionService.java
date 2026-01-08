@@ -30,4 +30,8 @@ public class AnswerOptionService {
     public AnswerOption getAnswerOptionById(Long id) {
         return answerOptionRepository.findById(id).orElse(null);
     }
+
+    public void softDeleteByQuestionId(Long questionId) {
+        answerOptionRepository.softDeleteByQuestionId(questionId);
+    }
 }

@@ -3,17 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Create Quiz</title>
+    <div th:replace="~{fragments :: common-styles}"></div>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
-            background: #F5F7FA;
-            color: #2C3E50;
-        }
         .container {
             max-width: 800px;
-            margin: 2rem auto;
-            padding: 2rem;
             background: white;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
@@ -33,21 +26,15 @@
             border-radius: 8px;
             font-size: 1rem;
         }
-        .btn {
-            background: #3498DB;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-        }
     </style>
 </head>
 <body>
 
+<div th:replace="~{fragments :: navbar(backLink='/quiz/list')}"></div>
+
 <div class="container">
     <h1>Create a New Quiz</h1>
-    <form th:action="@{/quiz/create}" th:object="${quiz}" method="post" style="margin-top: 2rem;">
+    <form th:action="@{/quiz/create}" th:object="${quiz}" method="post" style="margin-top: 2rem;" autocomplete="off">
         <div class="form-group">
             <label for="name">Quiz Name</label>
             <input type="text" id="name" th:field="*{name}" required>
@@ -58,7 +45,7 @@
                 <option th:each="type : ${quizTypes}" th:value="${type.id}" th:text="${type.name}"></option>
             </select>
         </div>
-        <button type="submit" class="btn">Create Quiz</button>
+        <button type="submit" class="btn btn-primary">Create Quiz</button>
     </form>
 </div>
 
