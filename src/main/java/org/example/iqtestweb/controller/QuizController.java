@@ -213,7 +213,7 @@ public class QuizController {
         questionService.saveQuestion(existingQuestion);
 
         // Soft delete old answer options and save new ones
-        answerOptionService.softDeleteByQuestionId(questionId);
+        answerOptionService.deleteByQuestionId(questionId);
         List<AnswerOption> newAnswerOptions = new ArrayList<>();
         for (int i = 0; i < optionTexts.size(); i++) {
             String imageUrl = (optionImageUrls != null && optionImageUrls.size() > i) ? optionImageUrls.get(i) : null;
