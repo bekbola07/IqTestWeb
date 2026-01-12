@@ -71,10 +71,13 @@ public class QuizController {
             redirectAttributes.addFlashAttribute("error", "You are not authorized to edit this quiz.");
             return "redirect:/quiz/list";
         }
+        Quiz dbQuiz = quizService.getQuizById(id);
         User user = (User) session.getAttribute("user");
-        quiz.setId(id);
-        quiz.setUser(user);
-        quizService.saveQuiz(quiz);
+        dbQuiz.setId(id);
+        dbQuiz.setUser(user);
+        dbQuiz.setName(quiz.getName());
+        dbQuiz.setQuizType(quiz.getQuizType());
+        quizService.saveQuiz(dbQuiz);
         redirectAttributes.addFlashAttribute("success", "Quiz updated successfully!");
         return "redirect:/quiz/list";
     }

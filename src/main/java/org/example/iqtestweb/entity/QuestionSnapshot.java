@@ -1,63 +1,53 @@
 package org.example.iqtestweb.entity;
 
-
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
 import org.example.iqtestweb.entity.enums.DifficultyLevel;
 import org.example.iqtestweb.entity.enums.QuestionType;
 import org.example.iqtestweb.entity.enums.Status;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
+// Yangi entity yarating
 @Entity
-@Table(name = "questions")
+@Table(name = "question_snapshots")
 @Data
-@NoArgsConstructor
-public class Question {
+public class QuestionSnapshot {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long questionId;
+    private Long snapshotId;
 
     @ManyToOne
-    @JoinColumn(name = "quiz_id")
-    private Quiz quiz;
+    @JoinColumn(name = "test_session_id")
+    private TestSession testSession;
 
     @Column(columnDefinition = "TEXT")
     private String questionText;
 
+    private String questionImageUrl;
+
     @Enumerated(EnumType.STRING)
     private DifficultyLevel difficultyLevel;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "category", nullable = false)
-    private QuestionCategory questionCategory;
-
-    private String questionImageUrl;
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.ACTIVE;
 
     @Enumerated(EnumType.STRING)
     private QuestionType questionType = QuestionType.TEXT;
 
     private Integer timeLimitSeconds = 60;
-    private Integer points = 1;
 
-    @Enumerated(EnumType.STRING)
-    private Status status = Status.ACTIVE;
+    private Integer points;
+
+    // Original question ID (reference only)
+    private Long originalQuestionId;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
-
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    private List<AnswerOption> answerOptions = new ArrayList<>();
 
     @PreRemove
     public void preRemove() {
         this.status = Status.DELETED;
     }
 }
+

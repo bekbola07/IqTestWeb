@@ -179,26 +179,26 @@
     <div class="question-card">
         <div class="question-number">Question <span th:text="${currentIndex + 1}">1</span></div>
 
-        <div th:if="${question.questionType.name() == 'TEXT' or question.questionType.name() == 'MIXED'}" class="question-text" th:text="${question.questionText}">What comes next in the sequence?</div>
+        <div th:if="${questionSnapshot.questionType.name() == 'TEXT' or questionSnapshot.questionType.name() == 'MIXED'}" class="question-text" th:text="${questionSnapshot.questionText}">What comes next in the sequence?</div>
 
-        <img th:if="${question.questionType.name() == 'IMAGE' or question.questionType.name() == 'MIXED'}"
-             th:src="@{${question.questionImageUrl}}"
+        <img th:if="${questionSnapshot.questionType.name() == 'IMAGE' or questionSnapshot.questionType.name() == 'MIXED'}"
+             th:src="@{${questionSnapshot.questionImageUrl}}"
              class="question-image"
              alt="Question visual">
 
         <form th:action="@{/test/submit-answer}" method="post">
-            <input type="hidden" name="questionId" th:value="${question.questionId}">
+            <input type="hidden" name="questionSnapshotId" th:value="${questionSnapshot.snapshotId}">
             <input type="hidden" name="nextIndex" th:value="${currentIndex + 1}">
 
             <div class="options">
-                <label th:each="option : ${answerOptions}" class="option">
+                <label th:each="option : ${optionSnapshots}" class="option">
                     <input type="radio"
-                           name="optionId"
-                           th:value="${option.optionId}"
+                           name="optionSnapshotId"
+                           th:value="${option.snapshotId}"
                            onclick="document.getElementById('submitBtn').disabled=false"
                            required>
-                    <span th:if="${question.questionType.name() == 'TEXT' or question.questionType.name() == 'MIXED'}" class="option-text" th:text="${option.optionText}">Option text</span>
-                    <img th:if="${question.questionType.name() == 'IMAGE' or question.questionType.name() == 'MIXED'}" th:src="@{${option.imageUrl}}" class="option-image" alt="Option visual">
+                    <span th:if="${questionSnapshot.questionType.name() == 'TEXT' or questionSnapshot.questionType.name() == 'MIXED'}" class="option-text" th:text="${option.optionText}">Option text</span>
+                    <img th:if="${questionSnapshot.questionType.name() == 'IMAGE' or questionSnapshot.questionType.name() == 'MIXED'}" th:src="@{${option.imageUrl}}" class="option-image" alt="Option visual">
                 </label>
             </div>
 

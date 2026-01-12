@@ -30,23 +30,23 @@ public class TestSessionService {
         return sessionRepository.save(session);
     }
 
-    @Transactional
-    public void submitAnswer(Long sessionId, Long questionId, Long optionId) {
-        TestSession session = sessionRepository.findById(sessionId).orElse(null);
-        Question question = questionRepository.findById(questionId).orElse(null);
-        AnswerOption selectedOption = answerOptionRepository.findById(optionId).orElse(null);
-
-        if (session != null && question != null && selectedOption != null) {
-            UserAnswer answer = new UserAnswer();
-            answer.setSession(session);
-            answer.setQuestion(question);
-            answer.setSelectedOption(selectedOption);
-            answer.setIsCorrect(selectedOption.getIsCorrect());
-            answer.setAnsweredAt(LocalDateTime.now());
-
-            userAnswerRepository.save(answer);
-        }
-    }
+//    @Transactional
+//    public void submitAnswer(Long sessionId, Long questionId, Long optionId) {
+//        TestSession session = sessionRepository.findById(sessionId).orElse(null);
+//        Question question = questionRepository.findById(questionId).orElse(null);
+//        AnswerOption selectedOption = answerOptionRepository.findById(optionId).orElse(null);
+//
+//        if (session != null && question != null && selectedOption != null) {
+//            UserAnswer answer = new UserAnswer();
+//            answer.setSession(session);
+//            answer.setQuestion(question);
+//            answer.setSelectedOption(selectedOption);
+//            answer.setIsCorrect(selectedOption.getIsCorrect());
+//            answer.setAnsweredAt(LocalDateTime.now());
+//
+//            userAnswerRepository.save(answer);
+//        }
+//    }
 
     @Transactional
     public TestSession completeSession(Long sessionId) {
