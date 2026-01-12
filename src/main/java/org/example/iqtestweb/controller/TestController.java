@@ -183,13 +183,16 @@ public String submitAnswer(@RequestParam Long questionSnapshotId,
         int totalQuestions = questionService.getQuestionsByQuizId(testSession.getQuiz().getId()).size();
         
         // Simple IQ calculation logic (can be improved)
-        int iqScore = 80 + (int) Math.round(((double) correctAnswers / totalQuestions) * 60);
+//        int iqScore = 80 + (int) Math.round(((double) correctAnswers / totalQuestions) * 60);
+
+        int score = userAnswers.stream().mapToInt(i -> i.getQuestionSnapshot().getPoints()).sum();
 
         testSession.setCompletedAt(LocalDateTime.now());
         testSession.setCorrectAnswers((int) correctAnswers);
         testSession.setTotalQuestions(totalQuestions);
-        testSession.setIqScore(iqScore);
-        
+//        testSession.setIqScore(iqScore);
+        testSession.setIqScore(score);
+
         long timeTaken = Duration.between(testSession.getStartedAt(), testSession.getCompletedAt()).getSeconds();
         testSession.setTimeTakenSeconds((int) timeTaken);
 
@@ -198,7 +201,7 @@ public String submitAnswer(@RequestParam Long questionSnapshotId,
         model.addAttribute("testSession", testSession);
         model.addAttribute("correctAnswers", correctAnswers);
         model.addAttribute("totalQuestions", totalQuestions);
-        model.addAttribute("iqScore", iqScore);
+        model.addAttribute("iqScore", score);
 
         session.removeAttribute("testSession"); // Clear session after showing results
 
