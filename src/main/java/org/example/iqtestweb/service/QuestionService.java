@@ -56,7 +56,7 @@ public class QuestionService {
             if (question.getQuiz() != null) {
                 question.getQuiz().preUpdate();
             }
-            answerOptionService.deleteByQuestionId(id);
+            // answerOptionService.deleteByQuestionId(id); // CascadeType.ALL will handle this
             questionRepository.deleteById(id);
         }
     }

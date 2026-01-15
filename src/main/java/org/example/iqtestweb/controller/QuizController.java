@@ -212,17 +212,18 @@ public class QuizController {
         existingQuestion.setDifficultyLevel(question.getDifficultyLevel());
         existingQuestion.setTimeLimitSeconds(question.getTimeLimitSeconds());
         existingQuestion.setPoints(question.getPoints());
-        questionService.saveQuestion(existingQuestion);
-
-        // Soft delete old answer options and save new ones
-        answerOptionService.deleteByQuestionId(questionId);
-        List<AnswerOption> newAnswerOptions = new ArrayList<>();
+        
+        // Clear existing options (orphan removal will handle deletion)
+        existingQuestion.getAnswerOptions().clear();
+        
+        // Add new options
         for (int i = 0; i < optionTexts.size(); i++) {
             String imageUrl = (optionImageUrls != null && optionImageUrls.size() > i) ? optionImageUrls.get(i) : null;
             AnswerOption option = new AnswerOption(existingQuestion, optionTexts.get(i), imageUrl, i == correctOptionIndex, i);
-            newAnswerOptions.add(option);
+            existingQuestion.getAnswerOptions().add(option);
         }
-        answerOptionService.saveAll(newAnswerOptions);
+        
+        questionService.saveQuestion(existingQuestion);
 
         redirectAttributes.addFlashAttribute("success", "Question updated successfully!");
         return "redirect:/quiz/" + quizId + "/edit"; // Redirect back to edit quiz page

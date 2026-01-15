@@ -16,7 +16,7 @@ public class AnswerOption {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long optionId;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "question_id")
     private Question question;
 

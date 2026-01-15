@@ -51,10 +51,10 @@ public class Question {
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
-//    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @ToString.Exclude
-//    @EqualsAndHashCode.Exclude
-//    private List<AnswerOption> answerOptions = new ArrayList<>();
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<AnswerOption> answerOptions = new ArrayList<>();
 
     @PreRemove
     public void preRemove() {
