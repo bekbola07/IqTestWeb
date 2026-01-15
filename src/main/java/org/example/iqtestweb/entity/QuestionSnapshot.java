@@ -2,24 +2,26 @@ package org.example.iqtestweb.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 import org.example.iqtestweb.entity.enums.DifficultyLevel;
 import org.example.iqtestweb.entity.enums.QuestionType;
 import org.example.iqtestweb.entity.enums.Status;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-// Yangi entity yarating
 @Entity
 @Table(name = "question_snapshots")
 @Data
+@ToString(exclude = "answerOptionSnapshots")
 public class QuestionSnapshot {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long snapshotId;
 
     @ManyToOne
-    @JoinColumn(name = "test_session_id")
-    private TestSession testSession;
+    @JoinColumn(name = "quiz_snapshot_id")
+    private QuizSnapshot quizSnapshot;
 
     @Column(columnDefinition = "TEXT")
     private String questionText;
@@ -45,9 +47,11 @@ public class QuestionSnapshot {
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @OneToMany(mappedBy = "questionSnapshot", cascade = CascadeType.ALL)
+    private List<AnswerOptionSnapshot> answerOptionSnapshots;
+
     @PreRemove
     public void preRemove() {
         this.status = Status.DELETED;
     }
 }
-

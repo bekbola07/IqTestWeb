@@ -77,6 +77,8 @@ public class QuizController {
         dbQuiz.setUser(user);
         dbQuiz.setName(quiz.getName());
         dbQuiz.setQuizType(quiz.getQuizType());
+        dbQuiz.setTimeType(quiz.getTimeType());
+        dbQuiz.setTimeLimitSeconds(quiz.getTimeLimitSeconds());
         quizService.saveQuiz(dbQuiz);
         redirectAttributes.addFlashAttribute("success", "Quiz updated successfully!");
         return "redirect:/quiz/list";

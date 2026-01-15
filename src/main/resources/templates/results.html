@@ -237,7 +237,7 @@
                 <div class="stat-label">Total Questions</div>
             </div>
             <div class="stat-box">
-                <div class="stat-value" th:text="${timeTaken != null ? (timeTaken / 60) + ' min' : 'N/A'}">15 min</div>
+                <div class="stat-value" th:text="${testSession.timeTakenSeconds != null ? (testSession.timeTakenSeconds / 60) + ' min' : 'N/A'}">15 min</div>
                 <div class="stat-label">Time Taken</div>
             </div>
         </div>
@@ -261,7 +261,7 @@
         <!-- Action Buttons -->
         <div class="buttons">
             <a th:href="@{/dashboard}" class="btn btn-primary">Back to Dashboard</a>
-            <a th:href="@{/test/start}" class="btn btn-secondary">Take Another Test</a>
+            <a th:href="@{/test/select-quiz}" class="btn btn-secondary">Take Another Test</a>
             <a th:href="@{/test/history}" class="btn btn-secondary">View History</a>
         </div>
     </div>

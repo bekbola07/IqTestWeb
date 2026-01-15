@@ -22,6 +22,7 @@ public class QuizService {
     }
 
     public Quiz saveQuiz(Quiz quiz) {
+        quiz.preUpdate();
         return quizRepository.save(quiz);
     }
 

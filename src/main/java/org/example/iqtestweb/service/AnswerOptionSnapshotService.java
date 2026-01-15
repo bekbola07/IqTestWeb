@@ -76,14 +76,6 @@ public class AnswerOptionSnapshotService {
     }
 
     /**
-     * Test session ID bo'yicha barcha answer option snapshot'larni topish
-     * (Join orqali question snapshot)
-     */
-    public List<AnswerOptionSnapshot> findByTestSessionId(Long testSessionId) {
-        return answerOptionSnapshotRepository.findByQuestionSnapshot_TestSession_SessionId(testSessionId);
-    }
-
-    /**
      * Snapshot o'chirish (odatda kerak bo'lmaydi)
      */
     @Transactional
@@ -111,5 +103,9 @@ public class AnswerOptionSnapshotService {
      */
     public List<AnswerOptionSnapshot> findByQuestionSnapshotIdOrderByOptionOrder(Long questionSnapshotId) {
         return answerOptionSnapshotRepository.findByQuestionSnapshot_SnapshotIdOrderByOptionOrderAsc(questionSnapshotId);
+    }
+
+    public List<AnswerOptionSnapshot> findByOriginalOptionIds(List<Long> originalOptionIds) {
+        return answerOptionSnapshotRepository.findByOriginalOptionIdIn(originalOptionIds);
     }
 }

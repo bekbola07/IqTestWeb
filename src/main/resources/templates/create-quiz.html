@@ -19,12 +19,18 @@
             font-weight: 600;
             margin-bottom: 0.5rem;
         }
-        input[type="text"], select {
+        input[type="text"], select, input[type="number"] {
             width: 100%;
             padding: 0.75rem 1rem;
             border: 1px solid #BDC3C7;
             border-radius: 8px;
             font-size: 1rem;
+        }
+        .time-settings {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
         }
     </style>
 </head>
@@ -45,9 +51,56 @@
                 <option th:each="type : ${quizTypes}" th:value="${type.id}" th:text="${type.name}"></option>
             </select>
         </div>
+
+        <div class="form-group">
+            <label for="timeType">Time Limit Type</label>
+            <select id="timeType" th:field="*{timeType}">
+                <option value="NO_LIMIT">No Time Limit</option>
+                <option value="TOTAL_TIME">Total Time for Quiz</option>
+                <option value="PER_QUESTION">Time per Question</option>
+            </select>
+        </div>
+
+        <div id="timeSettings" class="time-settings" style="display: none;">
+            <div class="form-group" id="globalTimeInput">
+                <label for="timeLimitSeconds">Total Time (seconds)</label>
+                <input type="number" id="timeLimitSeconds" th:field="*{timeLimitSeconds}" min="1">
+            </div>
+            <div id="perQuestionInfo" style="display: none; color: #666; font-size: 0.9rem;">
+                Time limit for each question will be set when adding/editing questions.
+            </div>
+        </div>
+
         <button type="submit" class="btn btn-primary">Create Quiz</button>
     </form>
 </div>
+
+<script>
+    const timeType = document.getElementById('timeType');
+    const timeSettings = document.getElementById('timeSettings');
+    const globalTimeInput = document.getElementById('globalTimeInput');
+    const perQuestionInfo = document.getElementById('perQuestionInfo');
+
+    function toggleTimeSettings() {
+        if (timeType.value === 'NO_LIMIT') {
+            timeSettings.style.display = 'none';
+        } else {
+            timeSettings.style.display = 'block';
+            if (timeType.value === 'TOTAL_TIME') {
+                globalTimeInput.style.display = 'block';
+                perQuestionInfo.style.display = 'none';
+            } else {
+                globalTimeInput.style.display = 'none';
+                perQuestionInfo.style.display = 'block';
+            }
+        }
+    }
+
+    timeType.addEventListener('change', toggleTimeSettings);
+
+    // Initial check
+    toggleTimeSettings();
+</script>
 
 </body>
 </html>

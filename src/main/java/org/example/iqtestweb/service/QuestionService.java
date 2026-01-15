@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.iqtestweb.entity.AnswerOption;
 import org.example.iqtestweb.entity.Question;
 import org.example.iqtestweb.entity.QuestionCategory;
+import org.example.iqtestweb.entity.Quiz;
 import org.example.iqtestweb.entity.enums.Status;
 import org.example.iqtestweb.repository.AnswerOptionRepository;
 import org.example.iqtestweb.repository.QuestionCategoryRepository;
@@ -39,13 +40,25 @@ public class QuestionService {
 
     @Transactional
     public Question saveQuestion(Question question) {
+        // If question is updated, update the quiz timestamp
+        if (question.getQuiz() != null) {
+            Quiz quiz = question.getQuiz();
+            quiz.preUpdate();
+        }
         return questionRepository.save(question);
     }
 
     @Transactional
     public void deleteQuestion(Long id) {
-        answerOptionService.deleteByQuestionId(id);
-        questionRepository.deleteById(id);
+        Question question = questionRepository.findById(id).orElse(null);
+        if (question != null) {
+            // Update quiz timestamp
+            if (question.getQuiz() != null) {
+                question.getQuiz().preUpdate();
+            }
+            answerOptionService.deleteByQuestionId(id);
+            questionRepository.deleteById(id);
+        }
     }
 
     public List<QuestionCategory> getAllCategories() {

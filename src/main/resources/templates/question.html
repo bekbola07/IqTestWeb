@@ -152,6 +152,12 @@
         }
         .btn-finish { background: #2ECC71; }
         .btn-finish:hover { background: #27AE60; }
+        .timer {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #E74C3C;
+            margin-left: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -159,6 +165,7 @@
     <div class="navbar-content">
         <div style="font-weight: 600; color: #2C3E50;">IQ Assessment</div>
         <div class="user-badge">
+            <span id="timer" class="timer" th:if="${timeLimitSeconds != null}"></span>
             <img th:src="${profilePicture}" alt="" th:if="${profilePicture}">
             <span style="font-weight: 500;" th:text="${userName}">User</span>
         </div>
@@ -186,9 +193,10 @@
              class="question-image"
              alt="Question visual">
 
-        <form th:action="@{/test/submit-answer}" method="post">
+        <form id="questionForm" th:action="@{/test/submit-answer}" method="post">
             <input type="hidden" name="questionSnapshotId" th:value="${questionSnapshot.snapshotId}">
             <input type="hidden" name="nextIndex" th:value="${currentIndex + 1}">
+            <input type="hidden" id="timeTakenSeconds" name="timeTakenSeconds" value="0">
 
             <div class="options">
                 <label th:each="option : ${optionSnapshots}" class="option">
@@ -210,5 +218,39 @@
         </form>
     </div>
 </div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const timeLimitSeconds = /*[[${timeLimitSeconds}]]*/ null;
+    const timeType = /*[[${timeType}]]*/ null;
+    let timeLeft = timeLimitSeconds;
+    let timeTaken = 0;
+    const timerElement = document.getElementById('timer');
+    const timeTakenInput = document.getElementById('timeTakenSeconds');
+
+    if (timeLimitSeconds != null) {
+        const timerInterval = setInterval(() => {
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                document.getElementById('questionForm').submit();
+            } else {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerElement.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                timeLeft--;
+                timeTaken++;
+                timeTakenInput.value = timeTaken;
+            }
+        }, 1000);
+    } else {
+        // If no time limit, just track time taken
+        setInterval(() => {
+            timeTaken++;
+            timeTakenInput.value = timeTaken;
+        }, 1000);
+    }
+    /*]]>*/
+</script>
+
 </body>
 </html>

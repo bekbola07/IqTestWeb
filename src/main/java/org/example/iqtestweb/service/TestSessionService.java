@@ -3,8 +3,6 @@ package org.example.iqtestweb.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.iqtestweb.entity.*;
-import org.example.iqtestweb.repository.AnswerOptionRepository;
-import org.example.iqtestweb.repository.QuestionRepository;
 import org.example.iqtestweb.repository.TestSessionRepository;
 import org.example.iqtestweb.repository.UserAnswerRepository;
 import org.springframework.stereotype.Service;
@@ -21,32 +19,10 @@ public class TestSessionService {
 
     private final UserAnswerRepository userAnswerRepository;
 
-    private final QuestionRepository questionRepository;
-
-    private final AnswerOptionRepository answerOptionRepository;
-
     @Transactional
     public TestSession saveSession(TestSession session) {
         return sessionRepository.save(session);
     }
-
-//    @Transactional
-//    public void submitAnswer(Long sessionId, Long questionId, Long optionId) {
-//        TestSession session = sessionRepository.findById(sessionId).orElse(null);
-//        Question question = questionRepository.findById(questionId).orElse(null);
-//        AnswerOption selectedOption = answerOptionRepository.findById(optionId).orElse(null);
-//
-//        if (session != null && question != null && selectedOption != null) {
-//            UserAnswer answer = new UserAnswer();
-//            answer.setSession(session);
-//            answer.setQuestion(question);
-//            answer.setSelectedOption(selectedOption);
-//            answer.setIsCorrect(selectedOption.getIsCorrect());
-//            answer.setAnsweredAt(LocalDateTime.now());
-//
-//            userAnswerRepository.save(answer);
-//        }
-//    }
 
     @Transactional
     public TestSession completeSession(Long sessionId) {

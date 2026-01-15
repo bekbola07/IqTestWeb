@@ -3,200 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Test History - IQ Test</title>
-<!--    <style>-->
-<!--        body {-->
-<!--            font-family: 'Segoe UI', Tahoma, sans-serif;-->
-<!--            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);-->
-<!--            min-height: 100vh;-->
-<!--            margin: 0;-->
-<!--            padding: 0;-->
-<!--        }-->
-<!--        .navbar {-->
-<!--            background: white;-->
-<!--            padding: 1rem 2rem;-->
-<!--            border-radius: 0;-->
-<!--            display: flex;-->
-<!--            justify-content: space-between;-->
-<!--            align-items: center;-->
-<!--            margin-bottom: 2rem;-->
-<!--            box-shadow: 0 4px 12px rgba(0,0,0,0.1);-->
-<!--        }-->
-<!--        .navbar h1 {-->
-<!--            color: #667eea;-->
-<!--            margin: 0;-->
-<!--        }-->
-<!--        .user-info {-->
-<!--            display: flex;-->
-<!--            align-items: center;-->
-<!--            gap: 1rem;-->
-<!--        }-->
-<!--        .navbar a {-->
-<!--            color: #667eea;-->
-<!--            text-decoration: none;-->
-<!--            font-weight: 600;-->
-<!--        }-->
-<!--        .container {-->
-<!--            max-width: 1200px;-->
-<!--            margin: 0 auto;-->
-<!--            padding: 0 2rem 2rem;-->
-<!--        }-->
-<!--        .stats-summary {-->
-<!--            display: grid;-->
-<!--            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));-->
-<!--            gap: 1.5rem;-->
-<!--            margin-bottom: 2rem;-->
-<!--        }-->
-<!--        .stat-card {-->
-<!--            background: white;-->
-<!--            border-radius: 12px;-->
-<!--            padding: 1.5rem;-->
-<!--            box-shadow: 0 4px 15px rgba(0,0,0,0.1);-->
-<!--            text-align: center;-->
-<!--        }-->
-<!--        .stat-icon {-->
-<!--            font-size: 2rem;-->
-<!--            margin-bottom: 0.5rem;-->
-<!--        }-->
-<!--        .stat-value {-->
-<!--            font-size: 2.5rem;-->
-<!--            font-weight: bold;-->
-<!--            color: #667eea;-->
-<!--        }-->
-<!--        .stat-label {-->
-<!--            color: #666;-->
-<!--            font-size: 0.9rem;-->
-<!--            margin-top: 0.5rem;-->
-<!--        }-->
-<!--        .card {-->
-<!--            background: white;-->
-<!--            border-radius: 15px;-->
-<!--            padding: 2rem;-->
-<!--            box-shadow: 0 10px 40px rgba(0,0,0,0.2);-->
-<!--        }-->
-<!--        h2 {-->
-<!--            color: #667eea;-->
-<!--            margin-bottom: 1.5rem;-->
-<!--        }-->
-<!--        .history-timeline {-->
-<!--            position: relative;-->
-<!--        }-->
-<!--        .timeline-item {-->
-<!--            position: relative;-->
-<!--            padding-left: 3rem;-->
-<!--            padding-bottom: 2rem;-->
-<!--            border-left: 3px solid #e0e0e0;-->
-<!--        }-->
-<!--        .timeline-item:last-child {-->
-<!--            border-left: none;-->
-<!--        }-->
-<!--        .timeline-marker {-->
-<!--            position: absolute;-->
-<!--            left: -12px;-->
-<!--            top: 0;-->
-<!--            width: 20px;-->
-<!--            height: 20px;-->
-<!--            border-radius: 50%;-->
-<!--            background: #667eea;-->
-<!--            border: 3px solid white;-->
-<!--            box-shadow: 0 2px 8px rgba(0,0,0,0.2);-->
-<!--        }-->
-<!--        .test-card {-->
-<!--            background: #f8f9fa;-->
-<!--            border-radius: 12px;-->
-<!--            padding: 1.5rem;-->
-<!--            border: 2px solid #e0e0e0;-->
-<!--            transition: all 0.3s;-->
-<!--        }-->
-<!--        .test-card:hover {-->
-<!--            border-color: #667eea;-->
-<!--            transform: translateX(5px);-->
-<!--        }-->
-<!--        .test-header {-->
-<!--            display: flex;-->
-<!--            justify-content: space-between;-->
-<!--            align-items: center;-->
-<!--            margin-bottom: 1rem;-->
-<!--        }-->
-<!--        .test-date {-->
-<!--            color: #999;-->
-<!--            font-size: 0.9rem;-->
-<!--        }-->
-<!--        .test-score {-->
-<!--            font-size: 2rem;-->
-<!--            font-weight: bold;-->
-<!--            padding: 0.5rem 1.5rem;-->
-<!--            border-radius: 25px;-->
-<!--            display: inline-block;-->
-<!--        }-->
-<!--        .score-genius {-->
-<!--            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);-->
-<!--            color: #996600;-->
-<!--        }-->
-<!--        .score-superior {-->
-<!--            background: linear-gradient(135deg, #00ff88 0%, #00cc66 100%);-->
-<!--            color: #006633;-->
-<!--        }-->
-<!--        .score-high {-->
-<!--            background: linear-gradient(135deg, #66ff99 0%, #33cc66 100%);-->
-<!--            color: #006600;-->
-<!--        }-->
-<!--        .score-average {-->
-<!--            background: linear-gradient(135deg, #99ccff 0%, #6699ff 100%);-->
-<!--            color: #003366;-->
-<!--        }-->
-<!--        .score-low {-->
-<!--            background: linear-gradient(135deg, #ffaa88 0%, #ff8866 100%);-->
-<!--            color: #cc3300;-->
-<!--        }-->
-<!--        .test-details {-->
-<!--            display: grid;-->
-<!--            grid-template-columns: repeat(3, 1fr);-->
-<!--            gap: 1rem;-->
-<!--            margin-top: 1rem;-->
-<!--        }-->
-<!--        .detail-item {-->
-<!--            text-align: center;-->
-<!--        }-->
-<!--        .detail-value {-->
-<!--            font-size: 1.5rem;-->
-<!--            font-weight: bold;-->
-<!--            color: #667eea;-->
-<!--        }-->
-<!--        .detail-label {-->
-<!--            color: #666;-->
-<!--            font-size: 0.85rem;-->
-<!--            margin-top: 0.3rem;-->
-<!--        }-->
-<!--        .empty-state {-->
-<!--            text-align: center;-->
-<!--            padding: 4rem 2rem;-->
-<!--            color: #999;-->
-<!--        }-->
-<!--        .empty-state-icon {-->
-<!--            font-size: 5rem;-->
-<!--            margin-bottom: 1rem;-->
-<!--        }-->
-<!--        .empty-state h3 {-->
-<!--            color: #667eea;-->
-<!--            margin-bottom: 0.5rem;-->
-<!--        }-->
-<!--        .btn-start {-->
-<!--            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);-->
-<!--            color: white;-->
-<!--            padding: 12px 30px;-->
-<!--            border: none;-->
-<!--            border-radius: 25px;-->
-<!--            font-size: 16px;-->
-<!--            font-weight: 600;-->
-<!--            cursor: pointer;-->
-<!--            text-decoration: none;-->
-<!--            display: inline-block;-->
-<!--            margin-top: 1rem;-->
-<!--        }-->
-<!--        .btn-start:hover {-->
-<!--            transform: translateY(-2px);-->
-<!--        }-->
-<!--    </style>-->
     <style>
         /* Global Reset and Typography - Classic & Highly Legible */
         body {
@@ -539,7 +345,7 @@
             <div class="empty-state-icon">📭</div>
             <h3>No Tests Yet</h3>
             <p>You haven't taken any tests yet. Start your first IQ test now!</p>
-            <a th:href="@{/test/start}" class="btn-start">🚀 Start Your First Test</a>
+            <a th:href="@{/test/select-quiz}" class="btn-start">🚀 Start Your First Test</a>
         </div>
 
         <!-- Timeline -->
@@ -549,13 +355,12 @@
                 <div class="test-card">
                     <div class="test-header">
                         <div>
-<!--                            <div class="test-date" th:text="${#temporals.format(test_session.completedAt ?: test_session.startedAt, 'EEEE, MMMM dd, yyyy - HH:mm')}">Monday, January 01, 2024 - 10:00</div>-->
                             <div class="test-date"
-                                 th:text="${#temporals.format(session.displayDateTime, 'EEEE, MMMM dd, yyyy - HH:mm')}">
+                                 th:text="${#temporals.format(test_session.completedAt != null ? test_session.completedAt : test_session.startedAt, 'EEEE, MMMM dd, yyyy - HH:mm')}">
                                 Monday, January 01, 2024 - 10:00
                             </div>
 
-                            <h3 th:text="'Test Session #' + ${test_session.sessionId}">Test Session #1</h3>
+                            <h3 th:text="${test_session.quizSnapshot != null ? test_session.quizSnapshot.name : 'Test Session #' + test_session.sessionId}">Test Session #1</h3>
                         </div>
                         <div>
                             <div class="test-score"

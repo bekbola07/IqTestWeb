@@ -38,6 +38,11 @@
             <input type="number" id="points" th:field="*{points}" min="1" required>
         </div>
 
+        <div class="form-group" th:if="${quiz.timeType.name() == 'PER_QUESTION'}">
+            <label for="timeLimitSeconds">Time Limit (seconds)</label>
+            <input type="number" id="timeLimitSeconds" th:field="*{timeLimitSeconds}" min="10" required>
+        </div>
+
         <div class="form-group">
             <label>Answer Options (Mark the correct one)</label>
             <div id="options-container">

@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.example.iqtestweb.entity.enums.QuizStatus;
+import org.example.iqtestweb.entity.enums.QuizTimeType;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,6 +16,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = "questions")
 public class Quiz {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,7 +38,19 @@ public class Quiz {
     @Enumerated(EnumType.STRING)
     private QuizStatus status = QuizStatus.STOPPED;
 
+    @Enumerated(EnumType.STRING)
+    private QuizTimeType timeType = QuizTimeType.NO_LIMIT;
+
+    private Integer timeLimitSeconds; // Used when timeType is TOTAL_TIME
+
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt = LocalDateTime.now();
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }

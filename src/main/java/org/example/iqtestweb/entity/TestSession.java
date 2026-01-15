@@ -24,8 +24,8 @@ public class TestSession {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "quiz_id")
-    private Quiz quiz;
+    @JoinColumn(name = "quiz_snapshot_id")
+    private QuizSnapshot quizSnapshot;
 
     @Column(name = "started_at")
     private LocalDateTime startedAt = LocalDateTime.now();

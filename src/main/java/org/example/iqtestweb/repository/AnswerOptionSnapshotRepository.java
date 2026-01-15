@@ -35,12 +35,6 @@ public interface AnswerOptionSnapshotRepository extends JpaRepository<AnswerOpti
     List<AnswerOptionSnapshot> findByOriginalOptionId(Long originalOptionId);
 
     /**
-     * Test session ID bo'yicha barcha answer option snapshot'larni topish
-     * (Join orqali question snapshot)
-     */
-    List<AnswerOptionSnapshot> findByQuestionSnapshot_TestSession_SessionId(Long testSessionId);
-
-    /**
      * Question snapshot ID bo'yicha barcha snapshot'larni o'chirish
      */
     @Modifying
@@ -52,13 +46,5 @@ public interface AnswerOptionSnapshotRepository extends JpaRepository<AnswerOpti
      */
     List<AnswerOptionSnapshot> findByQuestionSnapshot_SnapshotIdOrderByOptionOrderAsc(Long questionSnapshotId);
 
-    /**
-     * Test session va original option ID bo'yicha topish
-     */
-    @Query("SELECT aos FROM AnswerOptionSnapshot aos " +
-            "WHERE aos.questionSnapshot.testSession.sessionId = :testSessionId " +
-            "AND aos.originalOptionId = :originalOptionId")
-    List<AnswerOptionSnapshot> findByTestSessionAndOriginalOption(
-            @Param("testSessionId") Long testSessionId,
-            @Param("originalOptionId") Long originalOptionId);
+    List<AnswerOptionSnapshot> findByOriginalOptionIdIn(List<Long> originalOptionIds);
 }

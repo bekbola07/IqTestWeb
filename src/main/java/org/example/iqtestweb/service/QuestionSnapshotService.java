@@ -47,17 +47,10 @@ public class QuestionSnapshotService {
     }
 
     /**
-     * Test session bo'yicha barcha question snapshot'larni topish
+     * Quiz snapshot bo'yicha barcha question snapshot'larni topish
      */
-    public List<QuestionSnapshot> findByTestSessionId(Long testSessionId) {
-        return questionSnapshotRepository.findByTestSession_SessionId(testSessionId);
-    }
-
-    /**
-     * Test session bo'yicha snapshot'lar sonini hisoblash
-     */
-    public long countByTestSessionId(Long testSessionId) {
-        return questionSnapshotRepository.countByTestSession_SessionId(testSessionId);
+    public List<QuestionSnapshot> findByQuizSnapshotId(Long quizSnapshotId) {
+        return questionSnapshotRepository.findByQuizSnapshot_Id(quizSnapshotId);
     }
 
     /**
@@ -77,24 +70,9 @@ public class QuestionSnapshotService {
     }
 
     /**
-     * Test session bo'yicha barcha snapshot'larni o'chirish
-     */
-    @Transactional
-    public void deleteByTestSessionId(Long testSessionId) {
-        questionSnapshotRepository.deleteByTestSession_SessionId(testSessionId);
-    }
-
-    /**
      * Snapshot mavjudligini tekshirish
      */
     public boolean existsById(Long snapshotId) {
         return questionSnapshotRepository.existsById(snapshotId);
-    }
-
-    /**
-     * Test session uchun snapshot'lar allaqachon yaratilganmi tekshirish
-     */
-    public boolean snapshotsExistForSession(Long testSessionId) {
-        return questionSnapshotRepository.countByTestSession_SessionId(testSessionId) > 0;
     }
 }
