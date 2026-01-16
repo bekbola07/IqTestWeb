@@ -4,13 +4,11 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.example.iqtestweb.entity.*;
 import org.example.iqtestweb.entity.enums.QuizStatus;
-import org.example.iqtestweb.service.AnswerOptionService;
-import org.example.iqtestweb.service.QuestionService;
-import org.example.iqtestweb.service.QuizService;
-import org.example.iqtestweb.service.QuizTypeService;
+import org.example.iqtestweb.service.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
@@ -25,6 +23,7 @@ public class QuizController {
     private final QuizTypeService quizTypeService;
     private final QuestionService questionService;
     private final AnswerOptionService answerOptionService;
+    private final AttachmentService attachmentService;
 
     // Quiz List
     @GetMapping("/list")
@@ -43,9 +42,13 @@ public class QuizController {
     }
 
     @PostMapping("/create")
-    public String createQuiz(@ModelAttribute Quiz quiz, HttpSession session, RedirectAttributes redirectAttributes) {
+    public String createQuiz(@ModelAttribute Quiz quiz, @RequestParam(value = "file", required = false) MultipartFile file, HttpSession session, RedirectAttributes redirectAttributes) {
         User user = (User) session.getAttribute("user");
         quiz.setUser(user);
+        if (file != null && !file.isEmpty()) {
+            Attachment attachment = attachmentService.saveAttachment(file);
+            quiz.setAttachment(attachment);
+        }
         quizService.saveQuiz(quiz);
         redirectAttributes.addFlashAttribute("success", "Quiz created successfully!");
         return "redirect:/quiz/list";
@@ -65,7 +68,7 @@ public class QuizController {
     }
 
     @PostMapping("/{id}/edit")
-    public String editQuiz(@PathVariable Long id, @ModelAttribute Quiz quiz, HttpSession session, RedirectAttributes redirectAttributes) {
+    public String editQuiz(@PathVariable Long id, @ModelAttribute Quiz quiz, @RequestParam(value = "file", required = false) MultipartFile file, HttpSession session, RedirectAttributes redirectAttributes) {
         // Authorization check
         if (!isUserOwner(id, session)) {
             redirectAttributes.addFlashAttribute("error", "You are not authorized to edit this quiz.");
@@ -79,6 +82,10 @@ public class QuizController {
         dbQuiz.setQuizType(quiz.getQuizType());
         dbQuiz.setTimeType(quiz.getTimeType());
         dbQuiz.setTimeLimitSeconds(quiz.getTimeLimitSeconds());
+        if (file != null && !file.isEmpty()) {
+            Attachment attachment = attachmentService.saveAttachment(file);
+            dbQuiz.setAttachment(attachment);
+        }
         quizService.saveQuiz(dbQuiz);
         redirectAttributes.addFlashAttribute("success", "Quiz updated successfully!");
         return "redirect:/quiz/list";
@@ -139,7 +146,9 @@ public class QuizController {
 
     @PostMapping("/{quizId}/questions/add")
     public String addQuestion(@PathVariable Long quizId, @ModelAttribute Question question,
-                              @RequestParam List<String> optionTexts, @RequestParam(required = false) List<String> optionImageUrls,
+                              @RequestParam List<String> optionTexts,
+                              @RequestParam(value = "questionImage", required = false) MultipartFile questionImage,
+                              @RequestParam(value = "optionImages", required = false) List<MultipartFile> optionImages,
                               @RequestParam int correctOptionIndex, HttpSession session, RedirectAttributes redirectAttributes) {
         if (!isUserOwner(quizId, session)) {
             redirectAttributes.addFlashAttribute("error", "You are not authorized to add questions to this quiz.");
@@ -147,12 +156,19 @@ public class QuizController {
         }
         Quiz quiz = quizService.getQuizById(quizId);
         question.setQuiz(quiz);
+        if (questionImage != null && !questionImage.isEmpty()) {
+            Attachment attachment = attachmentService.saveAttachment(questionImage);
+            question.setAttachment(attachment);
+        }
         Question savedQuestion = questionService.saveQuestion(question);
 
         List<AnswerOption> answerOptions = new ArrayList<>();
         for (int i = 0; i < optionTexts.size(); i++) {
-            String imageUrl = (optionImageUrls != null && optionImageUrls.size() > i) ? optionImageUrls.get(i) : null;
-            AnswerOption option = new AnswerOption(savedQuestion, optionTexts.get(i), imageUrl, i == correctOptionIndex, i);
+            Attachment optionAttachment = null;
+            if (optionImages != null && optionImages.size() > i && !optionImages.get(i).isEmpty()) {
+                optionAttachment = attachmentService.saveAttachment(optionImages.get(i));
+            }
+            AnswerOption option = new AnswerOption(savedQuestion, optionTexts.get(i), optionAttachment, i == correctOptionIndex, i);
             answerOptions.add(option);
         }
         answerOptionService.saveAll(answerOptions);
@@ -192,7 +208,10 @@ public class QuizController {
 
     @PostMapping("/{quizId}/questions/{questionId}/edit")
     public String editQuestion(@PathVariable Long quizId, @PathVariable Long questionId, @ModelAttribute Question question,
-                               @RequestParam List<String> optionTexts, @RequestParam(required = false) List<String> optionImageUrls,
+                               @RequestParam List<String> optionTexts,
+                               @RequestParam(value = "questionImage", required = false) MultipartFile questionImage,
+                               @RequestParam(value = "optionImages", required = false) List<MultipartFile> optionImages,
+                               @RequestParam(value = "existingOptionAttachmentIds", required = false) List<Long> existingOptionAttachmentIds,
                                @RequestParam int correctOptionIndex, HttpSession session, RedirectAttributes redirectAttributes) {
         if (!isUserOwner(quizId, session)) {
             redirectAttributes.addFlashAttribute("error", "You are not authorized to edit questions for this quiz.");
@@ -207,7 +226,10 @@ public class QuizController {
         // Update question details
         existingQuestion.setQuestionText(question.getQuestionText());
         existingQuestion.setQuestionCategory(question.getQuestionCategory());
-        existingQuestion.setQuestionImageUrl(question.getQuestionImageUrl());
+        if (questionImage != null && !questionImage.isEmpty()) {
+            Attachment attachment = attachmentService.saveAttachment(questionImage);
+            existingQuestion.setAttachment(attachment);
+        }
         existingQuestion.setQuestionType(question.getQuestionType());
         existingQuestion.setDifficultyLevel(question.getDifficultyLevel());
         existingQuestion.setTimeLimitSeconds(question.getTimeLimitSeconds());
@@ -218,8 +240,21 @@ public class QuizController {
         
         // Add new options
         for (int i = 0; i < optionTexts.size(); i++) {
-            String imageUrl = (optionImageUrls != null && optionImageUrls.size() > i) ? optionImageUrls.get(i) : null;
-            AnswerOption option = new AnswerOption(existingQuestion, optionTexts.get(i), imageUrl, i == correctOptionIndex, i);
+            Attachment optionAttachment = null;
+            
+            // Check if there's a new file uploaded for this option
+            if (optionImages != null && optionImages.size() > i && !optionImages.get(i).isEmpty()) {
+                optionAttachment = attachmentService.saveAttachment(optionImages.get(i));
+            } else if (existingOptionAttachmentIds != null && existingOptionAttachmentIds.size() > i && existingOptionAttachmentIds.get(i) != null) {
+                // If no new file, check if we should keep the existing attachment
+                try {
+                    optionAttachment = attachmentService.getAttachment(existingOptionAttachmentIds.get(i));
+                } catch (Exception e) {
+                    // Ignore if attachment not found
+                }
+            }
+
+            AnswerOption option = new AnswerOption(existingQuestion, optionTexts.get(i), optionAttachment, i == correctOptionIndex, i);
             existingQuestion.getAnswerOptions().add(option);
         }
         

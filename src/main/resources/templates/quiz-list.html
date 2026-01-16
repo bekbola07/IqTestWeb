@@ -13,6 +13,14 @@
         .status-started { background: #D4EFDF; color: #1E8449; }
         .status-stopped { background: #FADBD8; color: #C0392B; }
         .actions { display: flex; gap: 0.5rem; }
+        .quiz-image {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
     </style>
 </head>
 <body>
@@ -36,7 +44,10 @@
         </thead>
         <tbody>
             <tr th:each="quiz : ${quizzes}">
-                <td th:text="${quiz.name}">Quiz Name</td>
+                <td>
+                    <img th:if="${quiz.attachment != null}" th:src="@{'/attachment/' + ${quiz.attachment.id}}" class="quiz-image" alt="Quiz Image">
+                    <span th:text="${quiz.name}">Quiz Name</span>
+                </td>
                 <td th:text="${quiz.quizType.name}">Quiz Type</td>
                 <td>
                     <span th:if="${quiz.status.name() == 'STARTED'}" class="status status-started">Started</span>

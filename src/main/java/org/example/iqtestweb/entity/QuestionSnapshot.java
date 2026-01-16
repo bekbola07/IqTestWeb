@@ -26,7 +26,9 @@ public class QuestionSnapshot {
     @Column(columnDefinition = "TEXT")
     private String questionText;
 
-    private String questionImageUrl;
+    @ManyToOne
+    @JoinColumn(name = "attachment_id")
+    private Attachment attachment;
 
     @Enumerated(EnumType.STRING)
     private DifficultyLevel difficultyLevel;

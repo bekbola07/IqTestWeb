@@ -9,7 +9,7 @@
         .card { padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 2rem; }
         .form-group { margin-bottom: 1.5rem; }
         label { display: block; font-weight: 600; margin-bottom: 0.5rem; }
-        input[type="text"], select, input[type="number"] { width: 100%; padding: 0.75rem 1rem; border: 1px solid #BDC3C7; border-radius: 8px; font-size: 1rem; }
+        input[type="text"], select, input[type="number"], input[type="file"] { width: 100%; padding: 0.75rem 1rem; border: 1px solid #BDC3C7; border-radius: 8px; font-size: 1rem; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #E5E7EB; }
@@ -21,6 +21,13 @@
             background: #f8f9fa;
             border-radius: 8px;
         }
+        .quiz-image {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -31,7 +38,7 @@
     <!-- Edit Quiz Details Card -->
     <div class="card">
         <h2>Edit Quiz Details</h2>
-        <form th:action="@{/quiz/{id}/edit(id=${quiz.id})}" th:object="${quiz}" method="post" style="margin-top: 1.5rem;" autocomplete="off">
+        <form th:action="@{/quiz/{id}/edit(id=${quiz.id})}" th:object="${quiz}" method="post" enctype="multipart/form-data" style="margin-top: 1.5rem;" autocomplete="off">
             <div class="form-group">
                 <label for="name">Quiz Name</label>
                 <input type="text" id="name" th:field="*{name}" required>
@@ -41,6 +48,12 @@
                 <select id="quizType" th:field="*{quizType.id}" required>
                     <option th:each="type : ${quizTypes}" th:value="${type.id}" th:text="${type.name}"></option>
                 </select>
+            </div>
+
+            <div class="form-group">
+                <label for="file">Quiz Image (Optional)</label>
+                <img th:if="${quiz.attachment != null}" th:src="@{'/attachment/' + ${quiz.attachment.id}}" class="quiz-image" alt="Current Quiz Image">
+                <input type="file" id="file" name="file" accept="image/*">
             </div>
 
             <div class="form-group">

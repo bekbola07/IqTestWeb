@@ -33,11 +33,25 @@
             display: inline-block;
             margin-top: 1rem;
         }
+        .quiz-image {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        .question-image, .option-image {
+            max-width: 200px;
+            height: auto;
+            border-radius: 4px;
+            margin: 0.5rem 0;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <img th:if="${quiz.attachment != null}" th:src="@{'/attachment/' + ${quiz.attachment.id}}" class="quiz-image" alt="Quiz Image">
     <h1 th:text="${quiz.name}">Quiz Name</h1>
     <p>Created by: <span th:text="${quiz.user.username}">User</span></p>
     <p>Type: <span th:text="${quiz.quizType.name}">Type</span></p>
@@ -46,8 +60,12 @@
 
     <div th:each="question : ${quiz.questions}" class="question">
         <h3 th:text="${question.questionText}"></h3>
+        <img th:if="${question.attachment != null}" th:src="@{'/attachment/' + ${question.attachment.id}}" class="question-image" alt="Question Image">
         <ul>
-            <li th:each="option : ${question.answerOptions}" th:text="${option.optionText}"></li>
+            <li th:each="option : ${question.answerOptions}">
+                <span th:text="${option.optionText}"></span>
+                <img th:if="${option.attachment != null}" th:src="@{'/attachment/' + ${option.attachment.id}}" class="option-image" alt="Option Image">
+            </li>
         </ul>
     </div>
 

@@ -37,7 +37,9 @@ public class Question {
     @JoinColumn(name = "category", nullable = false)
     private QuestionCategory questionCategory;
 
-    private String questionImageUrl;
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinColumn(name = "attachment_id", referencedColumnName = "id")
+    private Attachment attachment;
 
     @Enumerated(EnumType.STRING)
     private QuestionType questionType = QuestionType.TEXT;

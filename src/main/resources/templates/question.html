@@ -186,10 +186,10 @@
     <div class="question-card">
         <div class="question-number">Question <span th:text="${currentIndex + 1}">1</span></div>
 
-        <div th:if="${questionSnapshot.questionType.name() == 'TEXT' or questionSnapshot.questionType.name() == 'MIXED'}" class="question-text" th:text="${questionSnapshot.questionText}">What comes next in the sequence?</div>
+        <div th:if="${questionSnapshot.questionText != null and !questionSnapshot.questionText.isEmpty()}" class="question-text" th:text="${questionSnapshot.questionText}">What comes next in the sequence?</div>
 
-        <img th:if="${questionSnapshot.questionType.name() == 'IMAGE' or questionSnapshot.questionType.name() == 'MIXED'}"
-             th:src="@{${questionSnapshot.questionImageUrl}}"
+        <img th:if="${questionSnapshot.attachment != null}"
+             th:src="@{'/attachment/' + ${questionSnapshot.attachment.id}}"
              class="question-image"
              alt="Question visual">
 
@@ -205,8 +205,8 @@
                            th:value="${option.snapshotId}"
                            onclick="document.getElementById('submitBtn').disabled=false"
                            required>
-                    <span th:if="${questionSnapshot.questionType.name() == 'TEXT' or questionSnapshot.questionType.name() == 'MIXED'}" class="option-text" th:text="${option.optionText}">Option text</span>
-                    <img th:if="${questionSnapshot.questionType.name() == 'IMAGE' or questionSnapshot.questionType.name() == 'MIXED'}" th:src="@{${option.imageUrl}}" class="option-image" alt="Option visual">
+                    <span th:if="${option.optionText != null and !option.optionText.isEmpty()}" class="option-text" th:text="${option.optionText}">Option text</span>
+                    <img th:if="${option.attachment != null}" th:src="@{'/attachment/' + ${option.attachment.id}}" class="option-image" alt="Option visual">
                 </label>
             </div>
 

@@ -8,11 +8,17 @@
         .container { max-width: 900px; margin: 2rem auto; padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
         .form-group { margin-bottom: 1.5rem; }
         label { display: block; font-weight: 600; margin-bottom: 0.5rem; }
-        input[type="text"], textarea, select, input[type="number"] { width: 100%; padding: 0.75rem 1rem; border: 1px solid #BDC3C7; border-radius: 8px; font-size: 1rem; }
+        input[type="text"], textarea, select, input[type="number"], input[type="file"] { width: 100%; padding: 0.75rem 1rem; border: 1px solid #BDC3C7; border-radius: 8px; font-size: 1rem; }
         .options-container { margin-top: 1rem; }
         .option-group { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
         .add-option-btn { background: #2ECC71; color: white; margin-top: 1rem; }
         .remove-option-btn { background: #E74C3C; color: white; padding: 0.5rem 1rem; border-radius: 6px; }
+        .question-image, .option-image {
+            max-width: 150px;
+            height: auto;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
     </style>
 </head>
 <body>
@@ -21,10 +27,15 @@
 
 <div class="container">
     <h1 th:text="|Edit Question for: ${quiz.name}|">Edit Question</h1>
-    <form th:action="@{/quiz/{quizId}/questions/{questionId}/edit(quizId=${quiz.id}, questionId=${question.questionId})}" th:object="${question}" method="post" style="margin-top: 2rem;" autocomplete="off">
+    <form th:action="@{/quiz/{quizId}/questions/{questionId}/edit(quizId=${quiz.id}, questionId=${question.questionId})}" th:object="${question}" method="post" enctype="multipart/form-data" style="margin-top: 2rem;" autocomplete="off">
         <div class="form-group">
             <label for="questionText">Question Text</label>
             <textarea id="questionText" th:field="*{questionText}" rows="3" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="questionImage">Question Image (Optional)</label>
+            <img th:if="${question.attachment != null}" th:src="@{'/attachment/' + ${question.attachment.id}}" class="question-image" alt="Current Question Image">
+            <input type="file" id="questionImage" name="questionImage" accept="image/*">
         </div>
         <div class="form-group">
             <label for="category">Category</label>
@@ -47,9 +58,13 @@
             <label>Answer Options (Mark the correct one)</label>
             <div id="options-container">
                 <div th:each="option, stat : ${answerOptions}" class="option-group">
+                    <input type="hidden" name="existingOptionAttachmentIds" th:value="${option.attachment != null ? option.attachment.id : ''}">
                     <input type="radio" name="correctOption" th:value="${stat.index}" th:checked="${correctOptionIndex == stat.index}" onchange="correctIndexInput.value = this.value;">
                     <input type="text" name="optionTexts" placeholder="Option text" required th:value="${option.optionText}">
-                    <input type="text" name="optionImageUrls" placeholder="Image URL (optional)" th:value="${option.imageUrl}">
+                    <div th:if="${option.attachment != null}">
+                        <img th:src="@{'/attachment/' + ${option.attachment.id}}" class="option-image" alt="Option Image">
+                    </div>
+                    <input type="file" name="optionImages" accept="image/*">
                     <button type="button" class="remove-option-btn" onclick="removeOption(this)"><i class="fas fa-times"></i></button>
                 </div>
             </div>
@@ -71,9 +86,10 @@
         const div = document.createElement('div');
         div.className = 'option-group';
         div.innerHTML = `
+            <input type="hidden" name="existingOptionAttachmentIds" value="">
             <input type="radio" name="correctOption" value="${index}" onchange="correctIndexInput.value = this.value;">
             <input type="text" name="optionTexts" placeholder="Option text" required value="${text}">
-            <input type="text" name="optionImageUrls" placeholder="Image URL (optional)" value="${imageUrl}">
+            <input type="file" name="optionImages" accept="image/*">
             <button type="button" class="remove-option-btn" onclick="removeOption(this)"><i class="fas fa-times"></i></button>
         `;
         container.appendChild(div);

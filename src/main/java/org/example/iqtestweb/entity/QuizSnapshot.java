@@ -29,6 +29,10 @@ public class QuizSnapshot {
     @JoinColumn(name = "quiz_type_id")
     private QuizType quizType;
 
+    @ManyToOne
+    @JoinColumn(name = "attachment_id")
+    private Attachment attachment;
+
     @Enumerated(EnumType.STRING)
     private QuizTimeType timeType;
 

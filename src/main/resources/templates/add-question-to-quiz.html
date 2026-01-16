@@ -8,7 +8,7 @@
         .container { max-width: 900px; margin: 2rem auto; padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
         .form-group { margin-bottom: 1.5rem; }
         label { display: block; font-weight: 600; margin-bottom: 0.5rem; }
-        input[type="text"], textarea, select, input[type="number"] { width: 100%; padding: 0.75rem 1rem; border: 1px solid #BDC3C7; border-radius: 8px; font-size: 1rem; }
+        input[type="text"], textarea, select, input[type="number"], input[type="file"] { width: 100%; padding: 0.75rem 1rem; border: 1px solid #BDC3C7; border-radius: 8px; font-size: 1rem; }
         .options-container { margin-top: 1rem; }
         .option-group { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
     </style>
@@ -19,10 +19,14 @@
 
 <div class="container">
     <h1 th:text="|Add Question to: ${quiz.name}|">Add Question</h1>
-    <form th:action="@{/quiz/{quizId}/questions/add(quizId=${quiz.id})}" th:object="${question}" method="post" style="margin-top: 2rem;" autocomplete="off">
+    <form th:action="@{/quiz/{quizId}/questions/add(quizId=${quiz.id})}" th:object="${question}" method="post" enctype="multipart/form-data" style="margin-top: 2rem;" autocomplete="off">
         <div class="form-group">
             <label for="questionText">Question Text</label>
             <textarea id="questionText" th:field="*{questionText}" rows="3" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="questionImage">Question Image (Optional)</label>
+            <input type="file" id="questionImage" name="questionImage" accept="image/*">
         </div>
         <div class="form-group">
             <label for="category">Category</label>
@@ -65,7 +69,7 @@
         div.innerHTML = `
             <input type="radio" name="correctOption" value="${index}" ${index === 0 ? 'checked' : ''} onchange="correctIndexInput.value = this.value;">
             <input type="text" name="optionTexts" placeholder="Option text" required value="${text}">
-            <input type="text" name="optionImageUrls" placeholder="Image URL (optional)" value="${imageUrl}">
+            <input type="file" name="optionImages" accept="image/*">
         `;
         container.appendChild(div);
     }

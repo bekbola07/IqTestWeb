@@ -178,6 +178,7 @@ public class TestController {
         model.addAttribute("correctAnswers", correctAnswers);
         model.addAttribute("totalQuestions", totalQuestions);
         model.addAttribute("iqScore", score);
+        model.addAttribute("accuracy", (int) (((double) correctAnswers / totalQuestions) * 100));
 
         session.removeAttribute("testSession"); // Clear session after showing results
 

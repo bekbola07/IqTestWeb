@@ -23,7 +23,10 @@ public class AnswerOption {
     @Column(columnDefinition = "TEXT")
     private String optionText;
 
-    private String imageUrl;
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinColumn(name = "attachment_id", referencedColumnName = "id")
+    private Attachment attachment;
+
     private Boolean isCorrect = false;
     private Integer optionOrder;
 
@@ -36,10 +39,10 @@ public class AnswerOption {
         this.isCorrect = isCorrect;
         this.optionOrder = optionOrder;
     }
-     public AnswerOption(Question question, String optionText, String imageUrl, Boolean isCorrect, Integer optionOrder) {
+     public AnswerOption(Question question, String optionText, Attachment attachment, Boolean isCorrect, Integer optionOrder) {
         this.question = question;
         this.optionText = optionText;
-        this.imageUrl = imageUrl;
+        this.attachment = attachment;
         this.isCorrect = isCorrect;
         this.optionOrder = optionOrder;
     }

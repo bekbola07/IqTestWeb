@@ -18,7 +18,10 @@ public class AnswerOptionSnapshot {
     @Column(columnDefinition = "TEXT")
     private String optionText;
 
-    private String imageUrl;
+    @ManyToOne
+    @JoinColumn(name = "attachment_id")
+    private Attachment attachment;
+
     private Boolean isCorrect;
     private Integer optionOrder;
 

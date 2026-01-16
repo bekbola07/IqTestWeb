@@ -43,6 +43,7 @@ public class QuizSnapshotService {
         snapshot.setOriginalQuiz(quiz);
         snapshot.setName(quiz.getName());
         snapshot.setQuizType(quiz.getQuizType());
+        snapshot.setAttachment(quiz.getAttachment());
         snapshot.setTimeType(quiz.getTimeType());
         snapshot.setTimeLimitSeconds(quiz.getTimeLimitSeconds());
         snapshot.setOriginalQuizUpdatedAt(quiz.getUpdatedAt() != null ? quiz.getUpdatedAt() : LocalDateTime.now());
@@ -56,7 +57,7 @@ public class QuizSnapshotService {
             QuestionSnapshot qSnapshot = new QuestionSnapshot();
             qSnapshot.setQuizSnapshot(snapshot);
             qSnapshot.setQuestionText(question.getQuestionText());
-            qSnapshot.setQuestionImageUrl(question.getQuestionImageUrl());
+            qSnapshot.setAttachment(question.getAttachment());
             qSnapshot.setDifficultyLevel(question.getDifficultyLevel());
             qSnapshot.setPoints(question.getPoints());
             qSnapshot.setOriginalQuestionId(question.getQuestionId());
@@ -69,7 +70,7 @@ public class QuizSnapshotService {
                 AnswerOptionSnapshot optSnapshot = new AnswerOptionSnapshot();
                 optSnapshot.setQuestionSnapshot(qSnapshot);
                 optSnapshot.setOptionText(option.getOptionText());
-                optSnapshot.setImageUrl(option.getImageUrl());
+                optSnapshot.setAttachment(option.getAttachment());
                 optSnapshot.setIsCorrect(option.getIsCorrect());
                 optSnapshot.setOptionOrder(option.getOptionOrder());
                 optSnapshot.setOriginalOptionId(option.getOptionId());

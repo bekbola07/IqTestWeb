@@ -35,6 +35,10 @@ public class Quiz {
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions;
 
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinColumn(name = "attachment_id", referencedColumnName = "id")
+    private Attachment attachment;
+
     @Enumerated(EnumType.STRING)
     private QuizStatus status = QuizStatus.STOPPED;
 
