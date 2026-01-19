@@ -24,6 +24,16 @@ public class AttachmentService {
         return attachmentRepository.save(attachment);
     }
 
+    public Attachment saveWebAttachment(String webUrl) {
+        Attachment attachment = Attachment.builder()
+                .name("web_image") // Generic name or extract from URL
+                .contentType("image/jpeg") // Default or detect
+                .size(0) // Unknown size
+                .webUrl(webUrl)
+                .build();
+        return attachmentRepository.save(attachment);
+    }
+
     public Attachment getAttachment(Long id) {
         return attachmentRepository.findById(id).orElseThrow(() -> new RuntimeException("Attachment not found"));
     }

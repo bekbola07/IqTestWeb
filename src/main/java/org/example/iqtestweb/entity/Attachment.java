@@ -22,5 +22,7 @@ public class Attachment {
 
     private long size;
 
-    private String imageUrl;
+    private String imageUrl; // Local file path
+
+    private String webUrl; // Remote URL
 }

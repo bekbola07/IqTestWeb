@@ -4,20 +4,81 @@
     <meta charset="UTF-8">
     <title>Edit Question</title>
     <div th:replace="~{fragments :: common-styles}"></div>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .container { max-width: 900px; margin: 2rem auto; padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
         .form-group { margin-bottom: 1.5rem; }
         label { display: block; font-weight: 600; margin-bottom: 0.5rem; }
-        input[type="text"], textarea, select, input[type="number"], input[type="file"] { width: 100%; padding: 0.75rem 1rem; border: 1px solid #BDC3C7; border-radius: 8px; font-size: 1rem; }
+        input[type="text"], textarea, select, input[type="number"] {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #BDC3C7;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
         .options-container { margin-top: 1rem; }
-        .option-group { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+        .option-group { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; border-bottom: 1px solid #eee; padding-bottom: 1rem; }
         .add-option-btn { background: #2ECC71; color: white; margin-top: 1rem; }
-        .remove-option-btn { background: #E74C3C; color: white; padding: 0.5rem 1rem; border-radius: 6px; }
-        .question-image, .option-image {
-            max-width: 150px;
-            height: auto;
-            border-radius: 4px;
-            margin-bottom: 0.5rem;
+        .remove-option-btn { background: #E74C3C; color: white; padding: 0.5rem 1rem; border-radius: 6px; border: none; cursor: pointer; }
+
+        /* Image Input Styling */
+        .image-input-group {
+            position: relative;
+            flex: 1;
+            min-width: 200px;
+        }
+        .image-input-group input[type="text"] {
+            padding-right: 45px; /* Space for the icon */
+        }
+        .paperclip-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #7F8C8D;
+            font-size: 1.2rem;
+            transition: color 0.2s;
+            z-index: 10;
+        }
+        .paperclip-btn:hover {
+            color: #3498DB;
+        }
+        .hidden-file-input {
+            display: none;
+        }
+
+        .text-input { flex: 2; min-width: 200px; }
+
+        /* Lightbox */
+        .lightbox { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); justify-content: center; align-items: center; }
+        .lightbox img { max-width: 90%; max-height: 90%; border-radius: 8px; }
+        .lightbox-close { position: absolute; top: 20px; right: 30px; color: white; font-size: 40px; cursor: pointer; }
+
+        .preview-image { max-width: 50px; max-height: 50px; margin-left: 10px; cursor: pointer; border-radius: 4px; border: 1px solid #ddd; object-fit: cover; }
+
+        .image-container {
+            position: relative;
+            display: inline-block;
+        }
+        .remove-image-btn {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: red;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            z-index: 5;
         }
     </style>
 </head>
@@ -30,13 +91,35 @@
     <form th:action="@{/quiz/{quizId}/questions/{questionId}/edit(quizId=${quiz.id}, questionId=${question.questionId})}" th:object="${question}" method="post" enctype="multipart/form-data" style="margin-top: 2rem;" autocomplete="off">
         <div class="form-group">
             <label for="questionText">Question Text</label>
-            <textarea id="questionText" th:field="*{questionText}" rows="3" required></textarea>
+            <textarea id="questionText" th:field="*{questionText}" rows="3"></textarea>
         </div>
+
         <div class="form-group">
-            <label for="questionImage">Question Image (Optional)</label>
-            <img th:if="${question.attachment != null}" th:src="@{'/attachment/' + ${question.attachment.id}}" class="question-image" alt="Current Question Image">
-            <input type="file" id="questionImage" name="questionImage" accept="image/*">
+            <label>Question Image</label>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="image-input-group">
+                    <input type="text" name="questionWebUrl" id="qUrlInput" placeholder="Image URL"
+                           th:value="${question.attachment != null ? question.attachment.webUrl : ''}"
+                           onchange="document.getElementById('qFileInput').value = ''">
+                    <i class="fas fa-paperclip paperclip-btn" onclick="document.getElementById('qFileInput').click()" title="Attach File"></i>
+                    <input type="file" id="qFileInput" name="questionImage" class="hidden-file-input" accept="image/*" onchange="previewFile(this, 'qPreview', 'qUrlInput', 'qRemoveBtn', 'qRemoveInput')">
+                </div>
+
+                <div class="image-container" id="qImageContainer" th:style="${question.attachment == null ? 'display:none' : 'display:block'}">
+                    <img id="qPreview" class="preview-image"
+                         th:if="${question.attachment != null}"
+                         th:src="@{${question.attachment.webUrl != null ? question.attachment.webUrl : '/attachment/' + question.attachment.id}}"
+                         onclick="openLightbox(this.src)">
+                    <img id="qPreview" class="preview-image" th:unless="${question.attachment != null}" onclick="openLightbox(this.src)">
+
+                    <button type="button" id="qRemoveBtn" class="remove-image-btn" onclick="removeImage('qPreview', 'qUrlInput', 'qFileInput', 'qImageContainer', 'qRemoveInput')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <input type="hidden" name="removeQuestionImage" id="qRemoveInput" value="false">
+            </div>
         </div>
+
         <div class="form-group">
             <label for="category">Category</label>
             <select id="category" th:field="*{questionCategory.categoryId}">
@@ -59,12 +142,34 @@
             <div id="options-container">
                 <div th:each="option, stat : ${answerOptions}" class="option-group">
                     <input type="hidden" name="existingOptionAttachmentIds" th:value="${option.attachment != null ? option.attachment.id : ''}">
+
                     <input type="radio" name="correctOption" th:value="${stat.index}" th:checked="${correctOptionIndex == stat.index}" onchange="correctIndexInput.value = this.value;">
-                    <input type="text" name="optionTexts" placeholder="Option text" required th:value="${option.optionText}">
-                    <div th:if="${option.attachment != null}">
-                        <img th:src="@{'/attachment/' + ${option.attachment.id}}" class="option-image" alt="Option Image">
+
+                    <input type="text" name="optionTexts" placeholder="Option text" class="text-input" th:value="${option.optionText}">
+
+                    <div class="image-input-group">
+                        <input type="text" name="optionWebUrls" th:id="'url-' + ${stat.index}" placeholder="Image URL"
+                               th:value="${option.attachment != null ? option.attachment.webUrl : ''}"
+                               th:onchange="'document.getElementById(\'file-' + ${stat.index} + '\').value = \'\''">
+                        <i class="fas fa-paperclip paperclip-btn" th:onclick="'document.getElementById(\'file-' + ${stat.index} + '\').click()'" title="Attach File"></i>
+                        <input type="file" th:id="'file-' + ${stat.index}" name="optionImages" class="hidden-file-input" accept="image/*"
+                               th:onchange="'previewFile(this, \'preview-' + ${stat.index} + '\', \'url-' + ${stat.index} + '\', \'remove-btn-' + ${stat.index} + '\', \'remove-input-' + ${stat.index} + '\', \'container-' + ${stat.index} + '\')'">
                     </div>
-                    <input type="file" name="optionImages" accept="image/*">
+
+                    <div class="image-container" th:id="'container-' + ${stat.index}" th:style="${option.attachment == null ? 'display:none' : 'display:block'}">
+                        <img th:id="'preview-' + ${stat.index}" class="preview-image"
+                             th:if="${option.attachment != null}"
+                             th:src="@{${option.attachment.webUrl != null ? option.attachment.webUrl : '/attachment/' + option.attachment.id}}"
+                             onclick="openLightbox(this.src)">
+                        <img th:id="'preview-' + ${stat.index}" class="preview-image" th:unless="${option.attachment != null}" onclick="openLightbox(this.src)">
+
+                        <button type="button" th:id="'remove-btn-' + ${stat.index}" class="remove-image-btn"
+                                th:onclick="'removeImage(\'preview-' + ${stat.index} + '\', \'url-' + ${stat.index} + '\', \'file-' + ${stat.index} + '\', \'container-' + ${stat.index} + '\', \'remove-input-' + ${stat.index} + '\')'">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <input type="hidden" name="removeOptionImages" th:id="'remove-input-' + ${stat.index}" value="false">
+
                     <button type="button" class="remove-option-btn" onclick="removeOption(this)"><i class="fas fa-times"></i></button>
                 </div>
             </div>
@@ -74,6 +179,12 @@
 
         <button type="submit" class="btn btn-primary">Save Changes</button>
     </form>
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox" class="lightbox" onclick="closeLightbox()">
+    <span class="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="">
 </div>
 
 <script>
@@ -88,8 +199,22 @@
         div.innerHTML = `
             <input type="hidden" name="existingOptionAttachmentIds" value="">
             <input type="radio" name="correctOption" value="${index}" onchange="correctIndexInput.value = this.value;">
-            <input type="text" name="optionTexts" placeholder="Option text" required value="${text}">
-            <input type="file" name="optionImages" accept="image/*">
+            <input type="text" name="optionTexts" placeholder="Option text" class="text-input" value="${text}">
+
+            <div class="image-input-group">
+                <input type="text" name="optionWebUrls" id="url-${index}" placeholder="Image URL" onchange="document.getElementById('file-${index}').value = ''">
+                <i class="fas fa-paperclip paperclip-btn" onclick="document.getElementById('file-${index}').click()" title="Attach File"></i>
+                <input type="file" id="file-${index}" name="optionImages" class="hidden-file-input" accept="image/*" onchange="previewFile(this, 'preview-${index}', 'url-${index}', 'remove-btn-${index}', 'remove-input-${index}', 'container-${index}')">
+            </div>
+
+            <div class="image-container" id="container-${index}" style="display:none">
+                <img id="preview-${index}" class="preview-image" onclick="openLightbox(this.src)">
+                <button type="button" id="remove-btn-${index}" class="remove-image-btn" onclick="removeImage('preview-${index}', 'url-${index}', 'file-${index}', 'container-${index}', 'remove-input-${index}')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <input type="hidden" name="removeOptionImages" id="remove-input-${index}" value="false">
+
             <button type="button" class="remove-option-btn" onclick="removeOption(this)"><i class="fas fa-times"></i></button>
         `;
         container.appendChild(div);
@@ -107,6 +232,61 @@
         });
         optionCount = radios.length;
     }
+
+    function previewFile(input, previewId, textInputId, removeBtnId, removeInputId, containerId) {
+        const preview = document.getElementById(previewId);
+        const textInput = document.getElementById(textInputId);
+        const container = document.getElementById(containerId || 'qImageContainer'); // Fallback for question image
+        const removeInput = document.getElementById(removeInputId);
+        const file = input.files[0];
+
+        if (file) {
+            textInput.value = file.name;
+            textInput.readOnly = true;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                container.style.display = 'block';
+                if(removeInput) removeInput.value = 'false';
+            }
+            reader.readAsDataURL(file);
+        } else {
+            // If file selection cancelled, keep previous state or clear?
+            // Usually browsers don't trigger change if cancelled, but if they do:
+            // textInput.value = '';
+            // textInput.readOnly = false;
+            // container.style.display = 'none';
+        }
+    }
+
+    function removeImage(previewId, textInputId, fileInputId, containerId, removeInputId) {
+        if(confirm('Are you sure you want to remove the image?')) {
+            document.getElementById(containerId).style.display = 'none';
+            document.getElementById(textInputId).value = '';
+            document.getElementById(textInputId).readOnly = false;
+            document.getElementById(fileInputId).value = '';
+            document.getElementById(removeInputId).value = 'true';
+        }
+    }
+
+    function openLightbox(src) {
+        if (src && src !== window.location.href && src !== '') {
+            document.getElementById('lightbox-img').src = src;
+            document.getElementById('lightbox').style.display = 'flex';
+        }
+    }
+
+    function closeLightbox() {
+        document.getElementById('lightbox').style.display = 'none';
+    }
+
+    // Close lightbox on ESC key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === "Escape") {
+            closeLightbox();
+        }
+    });
 
     // Initialize correct option index on page load
     document.addEventListener('DOMContentLoaded', () => {

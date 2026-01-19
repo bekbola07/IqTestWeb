@@ -4,12 +4,20 @@
     <meta charset="UTF-8">
     <title>Edit Quiz</title>
     <div th:replace="~{fragments :: common-styles}"></div>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .container { max-width: 1000px; padding: 0; }
         .card { padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 2rem; }
         .form-group { margin-bottom: 1.5rem; }
         label { display: block; font-weight: 600; margin-bottom: 0.5rem; }
-        input[type="text"], select, input[type="number"], input[type="file"] { width: 100%; padding: 0.75rem 1rem; border: 1px solid #BDC3C7; border-radius: 8px; font-size: 1rem; }
+        input[type="text"], select, input[type="number"] {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #BDC3C7;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #E5E7EB; }
@@ -21,12 +29,74 @@
             background: #f8f9fa;
             border-radius: 8px;
         }
+        .quiz-image-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
         .quiz-image {
             width: 100%;
             max-width: 300px;
             height: auto;
             border-radius: 8px;
-            margin-bottom: 1rem;
+            cursor: pointer;
+        }
+        .remove-image-btn {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: red;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* Image Input Styling */
+        .image-input-group {
+            position: relative;
+            width: 100%;
+        }
+        .image-input-group input[type="text"] {
+            padding-right: 45px; /* Space for the icon */
+        }
+        .paperclip-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #7F8C8D;
+            font-size: 1.2rem;
+            transition: color 0.2s;
+            z-index: 10;
+        }
+        .paperclip-btn:hover {
+            color: #3498DB;
+        }
+        .hidden-file-input {
+            display: none;
+        }
+
+        /* Lightbox */
+        .lightbox { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); justify-content: center; align-items: center; }
+        .lightbox img { max-width: 90%; max-height: 90%; border-radius: 8px; }
+        .lightbox-close { position: absolute; top: 20px; right: 30px; color: white; font-size: 40px; cursor: pointer; }
+
+        .question-thumbnail {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-right: 10px;
+            vertical-align: middle;
         }
     </style>
 </head>
@@ -51,9 +121,25 @@
             </div>
 
             <div class="form-group">
-                <label for="file">Quiz Image (Optional)</label>
-                <img th:if="${quiz.attachment != null}" th:src="@{'/attachment/' + ${quiz.attachment.id}}" class="quiz-image" alt="Current Quiz Image">
-                <input type="file" id="file" name="file" accept="image/*">
+                <label>Quiz Image (Optional)</label>
+                <div th:if="${quiz.attachment != null}" class="quiz-image-container" id="currentImageContainer">
+                    <img th:src="@{${quiz.attachment.webUrl != null ? quiz.attachment.webUrl : '/attachment/' + quiz.attachment.id}}"
+                         class="quiz-image"
+                         alt="Current Quiz Image"
+                         onclick="openLightbox(this.src)">
+                    <button type="button" class="remove-image-btn" onclick="removeImage()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <input type="hidden" name="removeImage" id="removeImageInput" value="false">
+                </div>
+
+                <div class="image-input-group">
+                    <input type="text" id="quizUrlInput" placeholder="Image URL"
+                           th:value="${quiz.attachment != null ? quiz.attachment.webUrl : ''}"
+                           onchange="document.getElementById('fileInput').value = ''">
+                    <i class="fas fa-paperclip paperclip-btn" onclick="document.getElementById('fileInput').click()" title="Attach File"></i>
+                    <input type="file" id="fileInput" name="file" class="hidden-file-input" accept="image/*" onchange="updateTextInput(this, 'quizUrlInput')">
+                </div>
             </div>
 
             <div class="form-group">
@@ -98,7 +184,13 @@
             </thead>
             <tbody>
                 <tr th:each="question : ${quiz.questions}">
-                    <td th:text="${question.questionText}"></td>
+                    <td>
+                        <img th:if="${question.attachment != null}"
+                             th:src="@{${question.attachment.webUrl != null ? question.attachment.webUrl : '/attachment/' + question.attachment.id}}"
+                             class="question-thumbnail"
+                             alt="Question Image">
+                        <span th:text="${question.questionText}"></span>
+                    </td>
                     <td th:text="${question.questionCategory != null ? question.questionCategory.categoryName : 'N/A'}"></td>
                     <td class="actions">
                         <a th:href="@{/quiz/{quizId}/questions/{questionId}/edit(quizId=${quiz.id}, questionId=${question.questionId})}" class="btn btn-secondary"><i class="fas fa-edit"></i></a>
@@ -108,6 +200,12 @@
             </tbody>
         </table>
     </div>
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox" class="lightbox" onclick="closeLightbox()">
+    <span class="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="">
 </div>
 
 <script>
@@ -130,6 +228,41 @@
             }
         }
     }
+
+    function updateTextInput(fileInput, textInputId) {
+        const textInput = document.getElementById(textInputId);
+        if (fileInput.files.length > 0) {
+            textInput.value = fileInput.files[0].name;
+            textInput.readOnly = true;
+        } else {
+            textInput.value = '';
+            textInput.readOnly = false;
+        }
+    }
+
+    function openLightbox(src) {
+        document.getElementById('lightbox-img').src = src;
+        document.getElementById('lightbox').style.display = 'flex';
+    }
+
+    function closeLightbox() {
+        document.getElementById('lightbox').style.display = 'none';
+    }
+
+    function removeImage() {
+        if(confirm('Are you sure you want to remove the image?')) {
+            document.getElementById('currentImageContainer').style.display = 'none';
+            document.getElementById('removeImageInput').value = 'true';
+            document.getElementById('quizUrlInput').value = '';
+        }
+    }
+
+    // Close lightbox on ESC key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === "Escape") {
+            closeLightbox();
+        }
+    });
 
     timeType.addEventListener('change', toggleTimeSettings);
 

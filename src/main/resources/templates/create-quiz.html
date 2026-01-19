@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Create Quiz</title>
     <div th:replace="~{fragments :: common-styles}"></div>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .container {
             max-width: 800px;
@@ -19,13 +20,42 @@
             font-weight: 600;
             margin-bottom: 0.5rem;
         }
-        input[type="text"], select, input[type="number"], input[type="file"] {
+        input[type="text"], select, input[type="number"] {
             width: 100%;
             padding: 0.75rem 1rem;
             border: 1px solid #BDC3C7;
             border-radius: 8px;
             font-size: 1rem;
+            box-sizing: border-box; /* Fix sizing issues */
         }
+
+        /* Image Input Styling */
+        .image-input-group {
+            position: relative;
+            width: 100%;
+        }
+        .image-input-group input[type="text"] {
+            padding-right: 45px; /* Space for the icon */
+        }
+        .paperclip-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #7F8C8D;
+            font-size: 1.2rem;
+            transition: color 0.2s;
+            z-index: 10; /* Ensure icon is above input text */
+            background: white; /* Optional: background to cover text if needed, but transparent is usually better with padding */
+        }
+        .paperclip-btn:hover {
+            color: #3498DB;
+        }
+        .hidden-file-input {
+            display: none;
+        }
+
         .time-settings {
             margin-top: 1rem;
             padding: 1rem;
@@ -53,8 +83,12 @@
         </div>
 
         <div class="form-group">
-            <label for="file">Quiz Image (Optional)</label>
-            <input type="file" id="file" name="file" accept="image/*">
+            <label>Quiz Image (Optional)</label>
+            <div class="image-input-group">
+                <input type="text" id="quizUrlInput" placeholder="Image URL" onchange="document.getElementById('fileInput').value = ''">
+                <i class="fas fa-paperclip paperclip-btn" onclick="document.getElementById('fileInput').click()" title="Attach File"></i>
+                <input type="file" id="fileInput" name="file" class="hidden-file-input" accept="image/*" onchange="updateTextInput(this, 'quizUrlInput')">
+            </div>
         </div>
 
         <div class="form-group">
@@ -98,6 +132,17 @@
                 globalTimeInput.style.display = 'none';
                 perQuestionInfo.style.display = 'block';
             }
+        }
+    }
+
+    function updateTextInput(fileInput, textInputId) {
+        const textInput = document.getElementById(textInputId);
+        if (fileInput.files.length > 0) {
+            textInput.value = fileInput.files[0].name;
+            textInput.readOnly = true; // Prevent editing URL if file is selected
+        } else {
+            textInput.value = '';
+            textInput.readOnly = false;
         }
     }
 

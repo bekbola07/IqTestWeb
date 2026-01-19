@@ -4,13 +4,57 @@
     <meta charset="UTF-8">
     <title>Add Question</title>
     <div th:replace="~{fragments :: common-styles}"></div>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .container { max-width: 900px; margin: 2rem auto; padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
         .form-group { margin-bottom: 1.5rem; }
         label { display: block; font-weight: 600; margin-bottom: 0.5rem; }
-        input[type="text"], textarea, select, input[type="number"], input[type="file"] { width: 100%; padding: 0.75rem 1rem; border: 1px solid #BDC3C7; border-radius: 8px; font-size: 1rem; }
+        input[type="text"], textarea, select, input[type="number"] {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #BDC3C7;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
         .options-container { margin-top: 1rem; }
-        .option-group { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+        .option-group { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; border-bottom: 1px solid #eee; padding-bottom: 1rem; }
+
+        /* Image Input Styling */
+        .image-input-group {
+            position: relative;
+            flex: 1;
+            min-width: 200px;
+        }
+        .image-input-group input[type="text"] {
+            padding-right: 45px; /* Space for the icon */
+        }
+        .paperclip-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #7F8C8D;
+            font-size: 1.2rem;
+            transition: color 0.2s;
+            z-index: 10;
+        }
+        .paperclip-btn:hover {
+            color: #3498DB;
+        }
+        .hidden-file-input {
+            display: none;
+        }
+
+        .text-input { flex: 2; min-width: 200px; }
+
+        /* Lightbox */
+        .lightbox { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); justify-content: center; align-items: center; }
+        .lightbox img { max-width: 90%; max-height: 90%; border-radius: 8px; }
+        .lightbox-close { position: absolute; top: 20px; right: 30px; color: white; font-size: 40px; cursor: pointer; }
+
+        .preview-image { max-width: 50px; max-height: 50px; margin-left: 10px; cursor: pointer; display: none; border-radius: 4px; border: 1px solid #ddd; object-fit: cover; }
     </style>
 </head>
 <body>
@@ -22,12 +66,21 @@
     <form th:action="@{/quiz/{quizId}/questions/add(quizId=${quiz.id})}" th:object="${question}" method="post" enctype="multipart/form-data" style="margin-top: 2rem;" autocomplete="off">
         <div class="form-group">
             <label for="questionText">Question Text</label>
-            <textarea id="questionText" th:field="*{questionText}" rows="3" required></textarea>
+            <textarea id="questionText" th:field="*{questionText}" rows="3"></textarea>
         </div>
+
         <div class="form-group">
-            <label for="questionImage">Question Image (Optional)</label>
-            <input type="file" id="questionImage" name="questionImage" accept="image/*">
+            <label>Question Image</label>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="image-input-group">
+                    <input type="text" name="questionWebUrl" id="qUrlInput" placeholder="Image URL" onchange="document.getElementById('qFileInput').value = ''">
+                    <i class="fas fa-paperclip paperclip-btn" onclick="document.getElementById('qFileInput').click()" title="Attach File"></i>
+                    <input type="file" id="qFileInput" name="questionImage" class="hidden-file-input" accept="image/*" onchange="previewFile(this, 'qPreview', 'qUrlInput')">
+                </div>
+                <img id="qPreview" class="preview-image" onclick="openLightbox(this.src)">
+            </div>
         </div>
+
         <div class="form-group">
             <label for="category">Category</label>
             <select id="category" th:field="*{questionCategory.categoryId}" required>
@@ -57,6 +110,12 @@
     </form>
 </div>
 
+<!-- Lightbox -->
+<div id="lightbox" class="lightbox" onclick="closeLightbox()">
+    <span class="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="">
+</div>
+
 <script>
     const container = document.getElementById('options-container');
     const correctIndexInput = document.getElementById('correctOptionIndex');
@@ -68,8 +127,15 @@
         div.className = 'option-group';
         div.innerHTML = `
             <input type="radio" name="correctOption" value="${index}" ${index === 0 ? 'checked' : ''} onchange="correctIndexInput.value = this.value;">
-            <input type="text" name="optionTexts" placeholder="Option text" required value="${text}">
-            <input type="file" name="optionImages" accept="image/*">
+            <input type="text" name="optionTexts" placeholder="Option text" class="text-input" value="${text}">
+
+            <div class="image-input-group">
+                <input type="text" name="optionWebUrls" id="url-${index}" placeholder="Image URL" onchange="document.getElementById('file-${index}').value = ''">
+                <i class="fas fa-paperclip paperclip-btn" onclick="document.getElementById('file-${index}').click()" title="Attach File"></i>
+                <input type="file" id="file-${index}" name="optionImages" class="hidden-file-input" accept="image/*" onchange="previewFile(this, 'preview-${index}', 'url-${index}')">
+            </div>
+
+            <img id="preview-${index}" class="preview-image" onclick="openLightbox(this.src)">
         `;
         container.appendChild(div);
     }
@@ -78,6 +144,44 @@
     for (let i = 0; i < 4; i++) {
         addOption();
     }
+
+    function previewFile(input, previewId, textInputId) {
+        const preview = document.getElementById(previewId);
+        const textInput = document.getElementById(textInputId);
+        const file = input.files[0];
+
+        if (file) {
+            textInput.value = file.name;
+            textInput.readOnly = true;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        } else {
+            textInput.value = '';
+            textInput.readOnly = false;
+            preview.style.display = 'none';
+        }
+    }
+
+    function openLightbox(src) {
+        document.getElementById('lightbox-img').src = src;
+        document.getElementById('lightbox').style.display = 'flex';
+    }
+
+    function closeLightbox() {
+        document.getElementById('lightbox').style.display = 'none';
+    }
+
+    // Close lightbox on ESC key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === "Escape") {
+            closeLightbox();
+        }
+    });
 </script>
 
 </body>
