@@ -37,7 +37,7 @@ public class QuestionSnapshot {
     private Status status = Status.ACTIVE;
 
     @Enumerated(EnumType.STRING)
-    private QuestionType questionType = QuestionType.TEXT;
+    private QuestionType questionType;
 
     private Integer timeLimitSeconds = 60;
 

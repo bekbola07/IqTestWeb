@@ -4,169 +4,345 @@
     <meta charset="UTF-8">
     <title>Add Question</title>
     <div th:replace="~{fragments :: common-styles}"></div>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
-        .container { max-width: 900px; margin: 2rem auto; padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-        .form-group { margin-bottom: 1.5rem; }
-        label { display: block; font-weight: 600; margin-bottom: 0.5rem; }
-        input[type="text"], textarea, select, input[type="number"] {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 1px solid #BDC3C7;
-            border-radius: 8px;
-            font-size: 1rem;
-            box-sizing: border-box;
-        }
-        .options-container { margin-top: 1rem; }
-        .option-group { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; border-bottom: 1px solid #eee; padding-bottom: 1rem; }
-
-        /* Image Input Styling */
-        .image-input-group {
-            position: relative;
-            flex: 1;
-            min-width: 200px;
-        }
-        .image-input-group input[type="text"] {
-            padding-right: 45px; /* Space for the icon */
-        }
-        .paperclip-btn {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: #7F8C8D;
-            font-size: 1.2rem;
-            transition: color 0.2s;
-            z-index: 10;
-        }
-        .paperclip-btn:hover {
-            color: #3498DB;
+        /* Additional page-specific styles */
+        .grid-2-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
         }
         .hidden-file-input {
             display: none;
         }
 
-        .text-input { flex: 2; min-width: 200px; }
+        /* Options Grid */
+        #options-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-md);
+        }
 
-        /* Lightbox */
-        .lightbox { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); justify-content: center; align-items: center; }
-        .lightbox img { max-width: 90%; max-height: 90%; border-radius: 8px; }
-        .lightbox-close { position: absolute; top: 20px; right: 30px; color: white; font-size: 40px; cursor: pointer; }
+        /* Lightbox Styles */
+        .lightbox {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .lightbox img {
+            max-width: 90%;
+            max-height: 85%;
+            border-radius: 4px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .lightbox-close:hover {
+            color: #bbb;
+        }
 
-        .preview-image { max-width: 50px; max-height: 50px; margin-left: 10px; cursor: pointer; display: none; border-radius: 4px; border: 1px solid #ddd; object-fit: cover; }
+        /* Make preview clickable */
+        .file-preview-thumb {
+            cursor: zoom-in;
+            transition: transform 0.2s;
+        }
+        .file-preview-thumb:hover {
+            transform: scale(1.05);
+        }
+
+        /* Alpine Transitions */
+        [x-cloak] { display: none !important; }
+
+        @media (max-width: 768px) {
+            .grid-2-col, #options-container {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
 
 <div th:replace="~{fragments :: navbar(backLink=@{/quiz/{id}/edit(id=${quiz.id})})}"></div>
 
-<div class="container">
-    <h1 th:text="|Add Question to: ${quiz.name}|">Add Question</h1>
-    <form th:action="@{/quiz/{quizId}/questions/add(quizId=${quiz.id})}" th:object="${question}" method="post" enctype="multipart/form-data" style="margin-top: 2rem;" autocomplete="off">
-        <div class="form-group">
-            <label for="questionText">Question Text</label>
-            <textarea id="questionText" th:field="*{questionText}" rows="3"></textarea>
-        </div>
+<div class="container" x-data="questionForm()">
+    <form th:action="@{/quiz/{quizId}/questions/add(quizId=${quiz.id})}" th:object="${question}" method="post" enctype="multipart/form-data" autocomplete="off" @submit.prevent="submitForm($event)">
+        <div class="card">
+            <h1 th:text="|Add Question to: ${quiz.name}|">Add Question</h1>
 
-        <div class="form-group">
-            <label>Question Image</label>
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <div class="image-input-group">
-                    <input type="text" name="questionWebUrl" id="qUrlInput" placeholder="Image URL" onchange="document.getElementById('qFileInput').value = ''">
-                    <i class="fas fa-paperclip paperclip-btn" onclick="document.getElementById('qFileInput').click()" title="Attach File"></i>
-                    <input type="file" id="qFileInput" name="questionImage" class="hidden-file-input" accept="image/*" onchange="previewFile(this, 'qPreview', 'qUrlInput')">
+            <div class="grid-2-col">
+                <div class="form-group">
+                    <label for="questionType">Question Type</label>
+                    <select id="questionType" th:field="*{questionType}" x-model="questionType" class="form-control" @change="handleTypeChange()">
+                        <option value="MULTIPLE_CHOICE_SINGLE">Multiple Choice (Single Answer)</option>
+                        <option value="MULTIPLE_CHOICE_MULTI">Multiple Choice (Multiple Answers)</option>
+                        <option value="TRUE_FALSE">True / False</option>
+                        <option value="FILL_IN_THE_BLANK">Fill in the Blank</option>
+                    </select>
                 </div>
-                <img id="qPreview" class="preview-image" onclick="openLightbox(this.src)">
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category" th:field="*{questionCategory.categoryId}" required>
+                        <option value="">-- Select Category --</option>
+                        <option th:each="cat : ${categories}" th:value="${cat.categoryId}" th:text="${cat.categoryName}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="questionText">Question Text</label>
+                <textarea id="questionText" th:field="*{questionText}" rows="3" placeholder="Enter your question here..." required></textarea>
+            </div>
+
+            <div class="form-group" x-show="questionType !== 'FILL_IN_THE_BLANK'">
+                <label>Question Image (Optional)</label>
+                <div class="file-upload-wrapper" id="q-image-uploader" x-init="initUploader($el, 'questionImage')">
+                    <!-- Uploader will be injected here -->
+                </div>
+            </div>
+
+            <div class="grid-2-col">
+                <div class="form-group">
+                    <label for="points">Points</label>
+                    <input type="number" id="points" th:field="*{points}" min="1" required placeholder="e.g., 10">
+                </div>
+                <div class="form-group" th:if="${quiz.timeType.name() == 'PER_QUESTION'}">
+                    <label for="timeLimitSeconds">Time Limit (seconds)</label>
+                    <input type="number" id="timeLimitSeconds" th:field="*{timeLimitSeconds}" min="10" required placeholder="e.g., 60">
+                </div>
             </div>
         </div>
 
-        <div class="form-group">
-            <label for="category">Category</label>
-            <select id="category" th:field="*{questionCategory.categoryId}" required>
-                <option value="">-- Select Category --</option>
-                <option th:each="cat : ${categories}" th:value="${cat.categoryId}" th:text="${cat.categoryName}"></option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="points">Points</label>
-            <input type="number" id="points" th:field="*{points}" min="1" required>
-        </div>
+        <!-- Answer Options Section -->
+        <div class="card" x-show="questionType !== 'FILL_IN_THE_BLANK'">
+            <h2 x-text="getOptionsTitle()">Answer Options</h2>
+            <p class="text-secondary" style="margin-top: -1rem; margin-bottom: 1rem;" x-text="getOptionsSubtitle()"></p>
 
-        <div class="form-group" th:if="${quiz.timeType.name() == 'PER_QUESTION'}">
-            <label for="timeLimitSeconds">Time Limit (seconds)</label>
-            <input type="number" id="timeLimitSeconds" th:field="*{timeLimitSeconds}" min="10" required>
-        </div>
+            <!-- Dynamic Options Container -->
+            <div id="options-container" :class="{'grid-2-col': questionType !== 'TRUE_FALSE'}">
 
-        <div class="form-group">
-            <label>Answer Options (Mark the correct one)</label>
-            <div id="options-container">
-                <!-- Options will be added here by JS -->
+                <!-- Template for Multiple Choice (Single & Multi) -->
+                <template x-for="(option, index) in options" :key="option.id">
+                    <div class="answer-option-card" x-show="questionType === 'MULTIPLE_CHOICE_SINGLE' || questionType === 'MULTIPLE_CHOICE_MULTI'">
+                        <div class="radio-wrapper">
+                            <!-- Single Choice Radio -->
+                            <input x-show="questionType === 'MULTIPLE_CHOICE_SINGLE'"
+                                   type="radio"
+                                   name="correctOptionIndex"
+                                   :value="index"
+                                   :checked="index === 0"
+                                   required>
+
+                            <!-- Multi Choice Checkbox -->
+                            <input x-show="questionType === 'MULTIPLE_CHOICE_MULTI'"
+                                   type="checkbox"
+                                   name="correctOptionIndices"
+                                   :value="index">
+                        </div>
+                        <div class="option-content">
+                            <input type="text" name="optionTexts" x-model="option.text" placeholder="Answer text" required>
+
+                            <!-- Option Image Uploader -->
+                            <div class="file-upload-wrapper" style="margin-top: 5px;" x-init="initUploader($el, 'optionImages')">
+                                <!-- Uploader injected here -->
+                            </div>
+                        </div>
+                        <div class="option-actions">
+                            <button type="button" class="btn btn-danger btn-icon btn-sm" @click="removeOption(index)" x-show="options.length > 2">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- True/False Static Options -->
+                <div class="answer-option-card" x-show="questionType === 'TRUE_FALSE'">
+                    <div class="radio-wrapper">
+                        <input type="radio" name="correctOptionIndex" value="0" checked>
+                    </div>
+                    <div class="option-content">
+                        <input type="text" name="optionTexts" value="True" readonly style="background-color: #f8f9fa; cursor: not-allowed;">
+                    </div>
+                </div>
+                <div class="answer-option-card" x-show="questionType === 'TRUE_FALSE'">
+                    <div class="radio-wrapper">
+                        <input type="radio" name="correctOptionIndex" value="1">
+                    </div>
+                    <div class="option-content">
+                        <input type="text" name="optionTexts" value="False" readonly style="background-color: #f8f9fa; cursor: not-allowed;">
+                    </div>
+                </div>
+
             </div>
-            <input type="hidden" id="correctOptionIndex" name="correctOptionIndex" value="0">
+
+            <button type="button" class="btn btn-secondary" style="margin-top: var(--spacing-md); width: 100%;"
+                    @click="addOption()"
+                    x-show="questionType === 'MULTIPLE_CHOICE_SINGLE' || questionType === 'MULTIPLE_CHOICE_MULTI'">
+                <i class="fas fa-plus"></i> Add Answer Option
+            </button>
         </div>
 
-        <button type="submit" class="btn btn-primary">Save Question</button>
+        <!-- Fill in the Blank Section -->
+        <div class="card" x-show="questionType === 'FILL_IN_THE_BLANK'">
+            <h2>Correct Answer</h2>
+            <p class="text-secondary">Enter the exact text the user must type to answer correctly.</p>
+            <div class="form-group">
+                <label>Correct Answer Text</label>
+                <input type="text" name="optionTexts" placeholder="e.g., Paris" :required="questionType === 'FILL_IN_THE_BLANK'">
+                <!-- Hidden inputs to satisfy backend requirements if needed -->
+                <input type="hidden" name="correctOptionIndex" value="0">
+            </div>
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> The answer will be checked case-insensitively (e.g., "Paris" and "paris" are both correct).
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: var(--spacing-md); margin-top: var(--spacing-lg);">
+            <a th:href="@{/quiz/{id}/edit(id=${quiz.id})}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Save Question
+            </button>
+        </div>
     </form>
 </div>
 
-<!-- Lightbox -->
+<!-- Lightbox Modal -->
 <div id="lightbox" class="lightbox" onclick="closeLightbox()">
     <span class="lightbox-close">&times;</span>
     <img id="lightbox-img" src="">
 </div>
 
 <script>
-    const container = document.getElementById('options-container');
-    const correctIndexInput = document.getElementById('correctOptionIndex');
-    let optionCount = 0;
+    function questionForm() {
+        return {
+            questionType: 'MULTIPLE_CHOICE_SINGLE',
+            options: [
+                { id: 1, text: '' },
+                { id: 2, text: '' },
+                { id: 3, text: '' },
+                { id: 4, text: '' }
+            ],
 
-    function addOption(text = '', imageUrl = '') {
-        const index = optionCount++;
-        const div = document.createElement('div');
-        div.className = 'option-group';
-        div.innerHTML = `
-            <input type="radio" name="correctOption" value="${index}" ${index === 0 ? 'checked' : ''} onchange="correctIndexInput.value = this.value;">
-            <input type="text" name="optionTexts" placeholder="Option text" class="text-input" value="${text}">
+            handleTypeChange() {
+                if (this.questionType === 'TRUE_FALSE') {
+                    // True/False handled by static HTML
+                } else if (this.questionType === 'FILL_IN_THE_BLANK') {
+                    // Handled by separate section
+                } else {
+                    if (this.options.length < 2) {
+                        this.options = [{ id: Date.now(), text: '' }, { id: Date.now() + 1, text: '' }];
+                    }
+                }
+            },
 
-            <div class="image-input-group">
-                <input type="text" name="optionWebUrls" id="url-${index}" placeholder="Image URL" onchange="document.getElementById('file-${index}').value = ''">
-                <i class="fas fa-paperclip paperclip-btn" onclick="document.getElementById('file-${index}').click()" title="Attach File"></i>
-                <input type="file" id="file-${index}" name="optionImages" class="hidden-file-input" accept="image/*" onchange="previewFile(this, 'preview-${index}', 'url-${index}')">
-            </div>
+            addOption() {
+                this.options.push({ id: Date.now(), text: '' });
+            },
 
-            <img id="preview-${index}" class="preview-image" onclick="openLightbox(this.src)">
-        `;
-        container.appendChild(div);
-    }
+            removeOption(index) {
+                if (this.options.length > 2) {
+                    this.options.splice(index, 1);
+                }
+            },
 
-    // Add initial 4 options
-    for (let i = 0; i < 4; i++) {
-        addOption();
-    }
+            getOptionsTitle() {
+                if (this.questionType === 'TRUE_FALSE') return 'Select Correct Option';
+                return 'Answer Options';
+            },
 
-    function previewFile(input, previewId, textInputId) {
-        const preview = document.getElementById(previewId);
-        const textInput = document.getElementById(textInputId);
-        const file = input.files[0];
+            getOptionsSubtitle() {
+                if (this.questionType === 'MULTIPLE_CHOICE_MULTI') return 'Select all correct answers (Checkboxes).';
+                if (this.questionType === 'TRUE_FALSE') return 'Select whether the statement is True or False.';
+                return 'Select the single correct answer (Radio button).';
+            },
 
-        if (file) {
-            textInput.value = file.name;
-            textInput.readOnly = true;
+            submitForm(event) {
+                if (this.questionType === 'MULTIPLE_CHOICE_MULTI') {
+                    const checkboxes = document.querySelectorAll('input[name="correctOptionIndices"]:checked');
+                    if (checkboxes.length === 0) {
+                        alert('Please select at least one correct answer.');
+                        return;
+                    }
+                }
+                event.target.submit();
+            },
 
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                preview.src = e.target.result;
-                preview.style.display = 'block';
+            initUploader(wrapper, inputName) {
+                // Generate unique ID
+                const uploaderId = 'file-' + Math.random().toString(36).substr(2, 9);
+
+                wrapper.innerHTML = `
+                    <div class="file-upload-area" id="area-${uploaderId}">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Attach Image</span>
+                    </div>
+                    <div class="file-preview-card" id="card-${uploaderId}" style="display: none;">
+                        <img class="file-preview-thumb" id="preview-${uploaderId}" src="" title="Click to enlarge">
+                        <div class="file-info">
+                            <span class="file-name" id="name-${uploaderId}"></span>
+                        </div>
+                        <div class="file-actions">
+                            <button type="button" class="btn-remove-file" id="remove-${uploaderId}" title="Remove file"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <input type="file" name="${inputName}" id="${uploaderId}" accept="image/*" class="hidden-file-input">
+                `;
+
+                const area = document.getElementById(`area-${uploaderId}`);
+                const card = document.getElementById(`card-${uploaderId}`);
+                const input = document.getElementById(uploaderId);
+                const preview = document.getElementById(`preview-${uploaderId}`);
+                const name = document.getElementById(`name-${uploaderId}`);
+                const removeBtn = document.getElementById(`remove-${uploaderId}`);
+
+                // Click area to upload
+                area.addEventListener('click', () => input.click());
+
+                // Click preview to open lightbox
+                preview.addEventListener('click', () => openLightbox(preview.src));
+
+                input.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            preview.src = event.target.result;
+                            name.textContent = file.name;
+                            area.style.display = 'none';
+                            card.style.display = 'flex';
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+
+                removeBtn.addEventListener('click', () => {
+                    input.value = ''; // Clear the file input
+                    preview.src = '';
+                    name.textContent = '';
+                    area.style.display = 'flex';
+                    card.style.display = 'none';
+                });
             }
-            reader.readAsDataURL(file);
-        } else {
-            textInput.value = '';
-            textInput.readOnly = false;
-            preview.style.display = 'none';
         }
     }
 
+    // Lightbox functions
     function openLightbox(src) {
         document.getElementById('lightbox-img').src = src;
         document.getElementById('lightbox').style.display = 'flex';
@@ -175,13 +351,6 @@
     function closeLightbox() {
         document.getElementById('lightbox').style.display = 'none';
     }
-
-    // Close lightbox on ESC key
-    document.addEventListener('keydown', function(event) {
-        if (event.key === "Escape") {
-            closeLightbox();
-        }
-    });
 </script>
 
 </body>

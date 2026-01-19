@@ -3,6 +3,7 @@ package org.example.iqtestweb.controller;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.example.iqtestweb.entity.*;
+import org.example.iqtestweb.entity.enums.QuestionType;
 import org.example.iqtestweb.entity.enums.QuizStatus;
 import org.example.iqtestweb.service.*;
 import org.springframework.stereotype.Controller;
@@ -12,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Controller
@@ -57,7 +59,6 @@ public class QuizController {
     // Edit Quiz
     @GetMapping("/{id}/edit")
     public String showEditQuizForm(@PathVariable Long id, Model model, HttpSession session, RedirectAttributes redirectAttributes) {
-        // Authorization check
         if (!isUserOwner(id, session)) {
             redirectAttributes.addFlashAttribute("error", "You are not authorized to edit this quiz.");
             return "redirect:/quiz/list";
@@ -68,11 +69,10 @@ public class QuizController {
     }
 
     @PostMapping("/{id}/edit")
-    public String editQuiz(@PathVariable Long id, @ModelAttribute Quiz quiz, 
-                           @RequestParam(value = "file", required = false) MultipartFile file, 
+    public String editQuiz(@PathVariable Long id, @ModelAttribute Quiz quiz,
+                           @RequestParam(value = "file", required = false) MultipartFile file,
                            @RequestParam(value = "removeImage", required = false) Boolean removeImage,
                            HttpSession session, RedirectAttributes redirectAttributes) {
-        // Authorization check
         if (!isUserOwner(id, session)) {
             redirectAttributes.addFlashAttribute("error", "You are not authorized to edit this quiz.");
             return "redirect:/quiz/list";
@@ -85,7 +85,7 @@ public class QuizController {
         dbQuiz.setQuizType(quiz.getQuizType());
         dbQuiz.setTimeType(quiz.getTimeType());
         dbQuiz.setTimeLimitSeconds(quiz.getTimeLimitSeconds());
-        
+
         if (Boolean.TRUE.equals(removeImage)) {
             dbQuiz.setAttachment(null);
         }
@@ -156,10 +156,10 @@ public class QuizController {
     public String addQuestion(@PathVariable Long quizId, @ModelAttribute Question question,
                               @RequestParam List<String> optionTexts,
                               @RequestParam(value = "questionImage", required = false) MultipartFile questionImage,
-                              @RequestParam(value = "questionWebUrl", required = false) String questionWebUrl,
                               @RequestParam(value = "optionImages", required = false) List<MultipartFile> optionImages,
-                              @RequestParam(value = "optionWebUrls", required = false) List<String> optionWebUrls,
-                              @RequestParam int correctOptionIndex, HttpSession session, RedirectAttributes redirectAttributes) {
+                              @RequestParam(required = false) Integer correctOptionIndex,
+                              @RequestParam(required = false) List<Integer> correctOptionIndices,
+                              HttpSession session, RedirectAttributes redirectAttributes) {
         if (!isUserOwner(quizId, session)) {
             redirectAttributes.addFlashAttribute("error", "You are not authorized to add questions to this quiz.");
             return "redirect:/quiz/list";
@@ -167,12 +167,8 @@ public class QuizController {
         Quiz quiz = quizService.getQuizById(quizId);
         question.setQuiz(quiz);
 
-        // Handle Question Attachment
         if (questionImage != null && !questionImage.isEmpty()) {
             Attachment attachment = attachmentService.saveAttachment(questionImage);
-            question.setAttachment(attachment);
-        } else if (questionWebUrl != null && !questionWebUrl.trim().isEmpty()) {
-            Attachment attachment = attachmentService.saveWebAttachment(questionWebUrl);
             question.setAttachment(attachment);
         }
 
@@ -181,30 +177,23 @@ public class QuizController {
         List<AnswerOption> answerOptions = new ArrayList<>();
         for (int i = 0; i < optionTexts.size(); i++) {
             String text = optionTexts.get(i);
-            Attachment optionAttachment = null;
+            if (text == null || text.trim().isEmpty()) continue;
 
-            // Handle Option Attachment
+            Attachment optionAttachment = null;
             if (optionImages != null && optionImages.size() > i && !optionImages.get(i).isEmpty()) {
                 optionAttachment = attachmentService.saveAttachment(optionImages.get(i));
-            } else if (optionWebUrls != null && optionWebUrls.size() > i && optionWebUrls.get(i) != null && !optionWebUrls.get(i).trim().isEmpty()) {
-                optionAttachment = attachmentService.saveWebAttachment(optionWebUrls.get(i));
             }
 
-            // Validation: Either text or attachment must be present
-            if ((text == null || text.trim().isEmpty()) && optionAttachment == null) {
-                // Skip empty options or handle error. For now, let's skip but ensure at least 2 options exist logic elsewhere
-                continue; 
-            }
-
-            AnswerOption option = new AnswerOption(savedQuestion, text, optionAttachment, i == correctOptionIndex, i);
+            boolean isCorrect = determineIsCorrect(question.getQuestionType(), i, correctOptionIndex, correctOptionIndices);
+            AnswerOption option = new AnswerOption(savedQuestion, text, optionAttachment, isCorrect, i);
             answerOptions.add(option);
         }
-        
-        if (answerOptions.size() < 2) {
-             redirectAttributes.addFlashAttribute("error", "A question must have at least 2 valid options (text or image).");
-             // Ideally rollback or delete saved question, but for simplicity redirecting back
-             questionService.deleteQuestion(savedQuestion.getQuestionId());
-             return "redirect:/quiz/" + quizId + "/questions/add";
+
+        // Validation based on question type
+        if (question.getQuestionType() != QuestionType.FILL_IN_THE_BLANK && answerOptions.size() < 2) {
+            questionService.deleteQuestion(savedQuestion.getQuestionId()); // Rollback
+            redirectAttributes.addFlashAttribute("error", "A question must have at least 2 options.");
+            return "redirect:/quiz/" + quizId + "/questions/add";
         }
 
         answerOptionService.saveAll(answerOptions);
@@ -220,7 +209,6 @@ public class QuizController {
             redirectAttributes.addFlashAttribute("error", "You are not authorized to edit questions for this quiz.");
             return "redirect:/quiz/list";
         }
-        Quiz quiz = quizService.getQuizById(quizId);
         Question question = questionService.getQuestionById(questionId);
         if (question == null || !question.getQuiz().getId().equals(quizId)) {
             redirectAttributes.addFlashAttribute("error", "Question not found or does not belong to this quiz.");
@@ -228,111 +216,81 @@ public class QuizController {
         }
 
         List<AnswerOption> answerOptions = answerOptionService.findByQuestionId(questionId);
-        Integer correctOptionIndex = answerOptions.stream()
+        model.addAttribute("question", question);
+        model.addAttribute("answerOptions", answerOptions);
+        model.addAttribute("quiz", question.getQuiz());
+        model.addAttribute("categories", questionService.getAllCategories());
+        
+        // Pass correct indices to the view
+        if (question.getQuestionType() == QuestionType.MULTIPLE_CHOICE_MULTI) {
+            List<Integer> correctIndices = answerOptions.stream()
+                .filter(AnswerOption::getIsCorrect)
+                .map(AnswerOption::getOptionOrder)
+                .toList();
+            model.addAttribute("correctOptionIndices", correctIndices);
+        } else {
+            Integer correctIndex = answerOptions.stream()
                 .filter(AnswerOption::getIsCorrect)
                 .findFirst()
                 .map(AnswerOption::getOptionOrder)
                 .orElse(0);
-
-        model.addAttribute("question", question);
-        model.addAttribute("answerOptions", answerOptions);
-        model.addAttribute("quiz", quiz);
-        model.addAttribute("categories", questionService.getAllCategories());
-        model.addAttribute("correctOptionIndex", correctOptionIndex);
+            model.addAttribute("correctOptionIndex", correctIndex);
+        }
+        
         return "edit-question-for-quiz";
     }
 
     @PostMapping("/{quizId}/questions/{questionId}/edit")
     public String editQuestion(@PathVariable Long quizId, @PathVariable Long questionId, @ModelAttribute Question question,
                                @RequestParam List<String> optionTexts,
+                               @RequestParam(value = "optionIds", required = false) List<Long> optionIds,
                                @RequestParam(value = "questionImage", required = false) MultipartFile questionImage,
-                               @RequestParam(value = "questionWebUrl", required = false) String questionWebUrl,
                                @RequestParam(value = "removeQuestionImage", required = false) Boolean removeQuestionImage,
                                @RequestParam(value = "optionImages", required = false) List<MultipartFile> optionImages,
-                               @RequestParam(value = "optionWebUrls", required = false) List<String> optionWebUrls,
                                @RequestParam(value = "removeOptionImages", required = false) List<Boolean> removeOptionImages,
-                               @RequestParam(value = "existingOptionAttachmentIds", required = false) List<Long> existingOptionAttachmentIds,
-                               @RequestParam int correctOptionIndex, HttpSession session, RedirectAttributes redirectAttributes) {
+                               @RequestParam(required = false) Integer correctOptionIndex,
+                               @RequestParam(required = false) List<Integer> correctOptionIndices,
+                               HttpSession session, RedirectAttributes redirectAttributes) {
         if (!isUserOwner(quizId, session)) {
-            redirectAttributes.addFlashAttribute("error", "You are not authorized to edit questions for this quiz.");
+            redirectAttributes.addFlashAttribute("error", "You are not authorized to edit this quiz.");
             return "redirect:/quiz/list";
         }
         Question existingQuestion = questionService.getQuestionById(questionId);
-        if (existingQuestion == null || !existingQuestion.getQuiz().getId().equals(quizId)) {
-            redirectAttributes.addFlashAttribute("error", "Question not found or does not belong to this quiz.");
-            return "redirect:/quiz/" + quizId + "/edit";
-        }
-
-        // Update question details
         existingQuestion.setQuestionText(question.getQuestionText());
         existingQuestion.setQuestionCategory(question.getQuestionCategory());
-        
-        // Handle Question Attachment Removal
+        existingQuestion.setQuestionType(question.getQuestionType());
+        existingQuestion.setPoints(question.getPoints());
+        existingQuestion.setTimeLimitSeconds(question.getTimeLimitSeconds());
+
         if (Boolean.TRUE.equals(removeQuestionImage)) {
             existingQuestion.setAttachment(null);
         }
-
-        // Handle Question Attachment Update
         if (questionImage != null && !questionImage.isEmpty()) {
             Attachment attachment = attachmentService.saveAttachment(questionImage);
             existingQuestion.setAttachment(attachment);
-        } else if (questionWebUrl != null && !questionWebUrl.trim().isEmpty()) {
-            Attachment attachment = attachmentService.saveWebAttachment(questionWebUrl);
-            existingQuestion.setAttachment(attachment);
         }
-        
-        existingQuestion.setQuestionType(question.getQuestionType());
-        existingQuestion.setDifficultyLevel(question.getDifficultyLevel());
-        existingQuestion.setTimeLimitSeconds(question.getTimeLimitSeconds());
-        existingQuestion.setPoints(question.getPoints());
-        
-        // Clear existing options
-        existingQuestion.getAnswerOptions().clear();
-        
-        // Add new options
+
+        // Use the correct method name from AnswerOptionService
+        answerOptionService.deleteByQuestionId(questionId);
+
         List<AnswerOption> newOptions = new ArrayList<>();
+
         for (int i = 0; i < optionTexts.size(); i++) {
             String text = optionTexts.get(i);
-            Attachment optionAttachment = null;
-            
-            // Check if removal requested for this option
-            boolean removeImage = false;
-            if (removeOptionImages != null && removeOptionImages.size() > i && removeOptionImages.get(i) != null) {
-                removeImage = removeOptionImages.get(i);
-            }
+            if (text == null || text.trim().isEmpty()) continue;
 
-            // Check for new file upload
+            Attachment optionAttachment = null;
+            // Simplified attachment logic for edit, assuming new files are always uploaded
             if (optionImages != null && optionImages.size() > i && !optionImages.get(i).isEmpty()) {
                 optionAttachment = attachmentService.saveAttachment(optionImages.get(i));
-            } 
-            // Check for new Web URL
-            else if (optionWebUrls != null && optionWebUrls.size() > i && optionWebUrls.get(i) != null && !optionWebUrls.get(i).trim().isEmpty()) {
-                optionAttachment = attachmentService.saveWebAttachment(optionWebUrls.get(i));
-            }
-            // Check for existing attachment (if not removed)
-            else if (!removeImage && existingOptionAttachmentIds != null && existingOptionAttachmentIds.size() > i && existingOptionAttachmentIds.get(i) != null) {
-                try {
-                    optionAttachment = attachmentService.getAttachment(existingOptionAttachmentIds.get(i));
-                } catch (Exception e) {
-                    // Ignore
-                }
             }
 
-            // Validation
-            if ((text == null || text.trim().isEmpty()) && optionAttachment == null) {
-                continue;
-            }
-
-            AnswerOption option = new AnswerOption(existingQuestion, text, optionAttachment, i == correctOptionIndex, i);
+            boolean isCorrect = determineIsCorrect(question.getQuestionType(), i, correctOptionIndex, correctOptionIndices);
+            AnswerOption option = new AnswerOption(existingQuestion, text, optionAttachment, isCorrect, i);
             newOptions.add(option);
         }
         
-        if (newOptions.size() < 2) {
-             redirectAttributes.addFlashAttribute("error", "A question must have at least 2 valid options (text or image).");
-             return "redirect:/quiz/" + quizId + "/questions/" + questionId + "/edit";
-        }
-        
-        existingQuestion.getAnswerOptions().addAll(newOptions);
+        existingQuestion.setAnswerOptions(newOptions);
         questionService.saveQuestion(existingQuestion);
 
         redirectAttributes.addFlashAttribute("success", "Question updated successfully!");
@@ -346,23 +304,29 @@ public class QuizController {
             redirectAttributes.addFlashAttribute("error", "You are not authorized to delete questions from this quiz.");
             return "redirect:/quiz/list";
         }
-        Question question = questionService.getQuestionById(questionId);
-        if (question == null || !question.getQuiz().getId().equals(quizId)) {
-            redirectAttributes.addFlashAttribute("error", "Question not found or does not belong to this quiz.");
-            return "redirect:/quiz/" + quizId + "/edit";
-        }
         questionService.deleteQuestion(questionId);
         redirectAttributes.addFlashAttribute("success", "Question deleted successfully!");
-        return "redirect:/quiz/" + quizId + "/edit"; // Redirect back to edit quiz page
+        return "redirect:/quiz/" + quizId + "/edit";
     }
 
     // Helper for authorization
     private boolean isUserOwner(Long quizId, HttpSession session) {
         User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return false;
-        }
+        if (user == null) return false;
         Quiz quiz = quizService.getQuizById(quizId);
         return quiz != null && quiz.getUser().getUserId().equals(user.getUserId());
+    }
+
+    private boolean determineIsCorrect(QuestionType type, int currentIndex, Integer singleIndex, List<Integer> multiIndex) {
+        switch (type) {
+            case MULTIPLE_CHOICE_MULTI:
+                return multiIndex != null && multiIndex.contains(currentIndex);
+            case FILL_IN_THE_BLANK:
+                return true; // The single text field is always the correct answer
+            case MULTIPLE_CHOICE_SINGLE:
+            case TRUE_FALSE:
+            default:
+                return singleIndex != null && singleIndex == currentIndex;
+        }
     }
 }

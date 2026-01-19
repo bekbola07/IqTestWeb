@@ -42,7 +42,7 @@ public class Question {
     private Attachment attachment;
 
     @Enumerated(EnumType.STRING)
-    private QuestionType questionType = QuestionType.TEXT;
+    private QuestionType questionType;
 
     private Integer timeLimitSeconds = 60;
     private Integer points = 1;
