@@ -215,7 +215,7 @@ public class QuizController {
             return "redirect:/quiz/" + quizId + "/edit";
         }
 
-        List<AnswerOption> answerOptions = answerOptionService.findByQuestionId(questionId);
+        List<AnswerOption> answerOptions = answerOptionService.findActiveByQuestionId(questionId);
         model.addAttribute("question", question);
         model.addAttribute("answerOptions", answerOptions);
         model.addAttribute("quiz", question.getQuiz());
@@ -318,15 +318,10 @@ public class QuizController {
     }
 
     private boolean determineIsCorrect(QuestionType type, int currentIndex, Integer singleIndex, List<Integer> multiIndex) {
-        switch (type) {
-            case MULTIPLE_CHOICE_MULTI:
-                return multiIndex != null && multiIndex.contains(currentIndex);
-            case FILL_IN_THE_BLANK:
-                return true; // The single text field is always the correct answer
-            case MULTIPLE_CHOICE_SINGLE:
-            case TRUE_FALSE:
-            default:
-                return singleIndex != null && singleIndex == currentIndex;
-        }
+        return switch (type) {
+            case MULTIPLE_CHOICE_MULTI -> multiIndex != null && multiIndex.contains(currentIndex);
+            case FILL_IN_THE_BLANK -> true; // The single text field is always the correct answer
+            default -> singleIndex != null && singleIndex == currentIndex;
+        };
     }
 }

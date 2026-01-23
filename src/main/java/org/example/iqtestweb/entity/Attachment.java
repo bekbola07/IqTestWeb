@@ -1,5 +1,6 @@
 package org.example.iqtestweb.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,6 +23,7 @@ public class Attachment {
 
     private long size;
 
+    @JsonIgnore
     private String imageUrl; // Local file path
 
     private String webUrl; // Remote URL

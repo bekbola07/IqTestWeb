@@ -168,6 +168,7 @@
                                    name="correctOptionIndex"
                                    :value="index"
                                    :checked="option.isCorrect"
+                                   :disabled="questionType !== 'MULTIPLE_CHOICE_SINGLE'"
                                    required>
 
                             <!-- Multi Choice Checkbox -->
@@ -175,10 +176,13 @@
                                    type="checkbox"
                                    name="correctOptionIndices"
                                    :value="index"
-                                   :checked="option.isCorrect">
+                                   :checked="option.isCorrect"
+                                   :disabled="questionType !== 'MULTIPLE_CHOICE_MULTI'">
                         </div>
                         <div class="option-content">
-                            <input type="text" name="optionTexts" x-model="option.text" placeholder="Answer text" required>
+                            <input type="text" name="optionTexts" x-model="option.text" placeholder="Answer text"
+                                   :disabled="questionType !== 'MULTIPLE_CHOICE_SINGLE' && questionType !== 'MULTIPLE_CHOICE_MULTI'"
+                                   required>
 
                             <!-- Existing Option Image -->
                             <div x-show="option.imageUrl" class="file-preview-card" style="display: flex; margin-top: 5px;">
@@ -186,12 +190,12 @@
                                 <div class="file-actions">
                                     <button type="button" class="btn-remove-file" @click="removeOptionImage(index)" title="Remove file"><i class="fas fa-trash"></i></button>
                                 </div>
-                                <input type="hidden" name="removeOptionImages" :value="option.removeImage">
+                                <input type="hidden" name="removeOptionImages" :value="option.removeImage" :disabled="questionType !== 'MULTIPLE_CHOICE_SINGLE' && questionType !== 'MULTIPLE_CHOICE_MULTI'">
                             </div>
 
                             <!-- Option Image Uploader -->
                             <div class="file-upload-wrapper" style="margin-top: 5px;" x-show="!option.imageUrl || option.removeImage">
-                                <input type="file" name="optionImages" class="form-control-file" accept="image/*">
+                                <input type="file" name="optionImages" class="form-control-file" accept="image/*" :disabled="questionType !== 'MULTIPLE_CHOICE_SINGLE' && questionType !== 'MULTIPLE_CHOICE_MULTI'">
                             </div>
                         </div>
                         <div class="option-actions">
@@ -205,18 +209,18 @@
                 <!-- True/False Static Options -->
                 <div class="answer-option-card" x-show="questionType === 'TRUE_FALSE'">
                     <div class="radio-wrapper">
-                        <input type="radio" name="correctOptionIndex" value="0" :checked="isTrueCorrect">
+                        <input type="radio" name="correctOptionIndex" value="0" :checked="isTrueCorrect" :disabled="questionType !== 'TRUE_FALSE'">
                     </div>
                     <div class="option-content">
-                        <input type="text" name="optionTexts" value="True" readonly style="background-color: #f8f9fa; cursor: not-allowed;">
+                        <input type="text" name="optionTexts" value="True" readonly style="background-color: #f8f9fa; cursor: not-allowed;" :disabled="questionType !== 'TRUE_FALSE'">
                     </div>
                 </div>
                 <div class="answer-option-card" x-show="questionType === 'TRUE_FALSE'">
                     <div class="radio-wrapper">
-                        <input type="radio" name="correctOptionIndex" value="1" :checked="!isTrueCorrect">
+                        <input type="radio" name="correctOptionIndex" value="1" :checked="!isTrueCorrect" :disabled="questionType !== 'TRUE_FALSE'">
                     </div>
                     <div class="option-content">
-                        <input type="text" name="optionTexts" value="False" readonly style="background-color: #f8f9fa; cursor: not-allowed;">
+                        <input type="text" name="optionTexts" value="False" readonly style="background-color: #f8f9fa; cursor: not-allowed;" :disabled="questionType !== 'TRUE_FALSE'">
                     </div>
                 </div>
 
@@ -231,14 +235,32 @@
 
         <!-- Fill in the Blank Section -->
         <div class="card" x-show="questionType === 'FILL_IN_THE_BLANK'">
-            <h2>Correct Answer</h2>
-            <p class="text-secondary">Enter the exact text the user must type to answer correctly.</p>
-            <div class="form-group">
-                <label>Correct Answer Text</label>
-                <input type="text" name="optionTexts" placeholder="e.g., Paris" :required="questionType === 'FILL_IN_THE_BLANK'" x-model="fillBlankAnswer">
-                <input type="hidden" name="correctOptionIndex" value="0">
+            <h2>Correct Answers</h2>
+            <p class="text-secondary">Enter all possible correct answers. The user's input will be matched against these.</p>
+
+            <div id="fill-options-container" style="display: grid; gap: var(--spacing-md);">
+                <template x-for="(option, index) in fillBlankOptions" :key="option.id">
+                    <div class="answer-option-card">
+                        <div class="option-content">
+                            <input type="text" name="optionTexts" x-model="option.text" placeholder="e.g., Paris"
+                                   :disabled="questionType !== 'FILL_IN_THE_BLANK'"
+                                   required>
+                        </div>
+                        <div class="option-actions">
+                            <button type="button" class="btn btn-danger btn-icon btn-sm" @click="removeFillOption(index)" x-show="fillBlankOptions.length > 1">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </template>
             </div>
-            <div class="alert alert-info">
+
+            <button type="button" class="btn btn-secondary" style="margin-top: var(--spacing-md); width: 100%;"
+                    @click="addFillOption()">
+                <i class="fas fa-plus"></i> Add Another Correct Answer
+            </button>
+
+            <div class="alert alert-info" style="margin-top: 1rem;">
                 <i class="fas fa-info-circle"></i> The answer will be checked case-insensitively (e.g., "Paris" and "paris" are both correct).
             </div>
         </div>
@@ -268,14 +290,19 @@
         return {
             questionType: initialType,
             options: [],
+            fillBlankOptions: [],
             isTrueCorrect: true,
-            fillBlankAnswer: '',
 
             init() {
                 // Initialize options from backend data
                 if (this.questionType === 'FILL_IN_THE_BLANK') {
                     if (initialOptions.length > 0) {
-                        this.fillBlankAnswer = initialOptions[0].optionText;
+                        this.fillBlankOptions = initialOptions.map((opt, index) => ({
+                            id: index,
+                            text: opt.optionText
+                        }));
+                    } else {
+                        this.fillBlankOptions = [{ id: Date.now(), text: '' }];
                     }
                 } else if (this.questionType === 'TRUE_FALSE') {
                     // Find which one is correct (True is index 0, False is index 1 usually)
@@ -298,6 +325,11 @@
                         this.addOption();
                     }
                 }
+
+                // Ensure fill blank has at least one option if switching to it
+                if (this.fillBlankOptions.length === 0) {
+                    this.fillBlankOptions = [{ id: Date.now(), text: '' }];
+                }
             },
 
             handleTypeChange() {
@@ -315,6 +347,16 @@
             removeOption(index) {
                 if (this.options.length > 2) {
                     this.options.splice(index, 1);
+                }
+            },
+
+            addFillOption() {
+                this.fillBlankOptions.push({ id: Date.now(), text: '' });
+            },
+
+            removeFillOption(index) {
+                if (this.fillBlankOptions.length > 1) {
+                    this.fillBlankOptions.splice(index, 1);
                 }
             },
 
