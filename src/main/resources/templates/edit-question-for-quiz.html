@@ -81,7 +81,7 @@
 
 <div th:replace="~{fragments :: navbar(backLink=@{/quiz/{id}/edit(id=${quiz.id})})}"></div>
 
-<div class="container" x-data="editQuestionForm()">
+<div class="container" x-data="editQuestionForm()" x-init="init()">
     <form th:action="@{/quiz/{quizId}/questions/{questionId}/edit(quizId=${quiz.id}, questionId=${question.questionId})}" th:object="${question}" method="post" enctype="multipart/form-data" autocomplete="off" @submit.prevent="submitForm($event)">
         <div class="card">
             <h1 th:text="|Edit Question for: ${quiz.name}|">Edit Question</h1>

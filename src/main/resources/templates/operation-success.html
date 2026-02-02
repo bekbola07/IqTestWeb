@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Success</title>
+</head>
+<body>
+<script>
+    // Notify parent window to reload
+    if (window.parent) {
+        window.parent.postMessage('reload', '*');
+    } else {
+        // Fallback if not in iframe
+        window.location.href = '/quiz/list';
+    }
+</script>
+</body>
+</html>

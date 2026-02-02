@@ -65,6 +65,8 @@ public class QuizController {
         }
         model.addAttribute("quiz", quizService.getQuizById(id));
         model.addAttribute("quizTypes", quizTypeService.getAllQuizTypes());
+        model.addAttribute("categories", questionService.getAllCategories()); // Added categories
+        model.addAttribute("newQuestion", new Question()); // Added for Add Question form
         return "edit-quiz";
     }
 
@@ -193,7 +195,7 @@ public class QuizController {
         if (question.getQuestionType() != QuestionType.FILL_IN_THE_BLANK && answerOptions.size() < 2) {
             questionService.deleteQuestion(savedQuestion.getQuestionId()); // Rollback
             redirectAttributes.addFlashAttribute("error", "A question must have at least 2 options.");
-            return "redirect:/quiz/" + quizId + "/questions/add";
+            return "redirect:/quiz/" + quizId + "/edit"; // Redirect back to edit page
         }
 
         answerOptionService.saveAll(answerOptions);
