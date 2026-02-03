@@ -130,19 +130,6 @@
             color: white;
         }
 
-        /* Inline Edit Form */
-        .inline-edit-container {
-            padding: 0;
-            background: #F9FAFB;
-        }
-        .inline-edit-frame {
-            width: 100%;
-            border: none;
-            min-height: 500px;
-            display: block;
-            transition: height 0.2s;
-        }
-
         /* Add Question Button */
         .add-question-card {
             border: 2px dashed #D1D5DB;
@@ -164,6 +151,8 @@
         .lightbox { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); justify-content: center; align-items: center; }
         .lightbox img { max-width: 90%; max-height: 90%; border-radius: 8px; }
         .lightbox-close { position: absolute; top: 20px; right: 30px; color: white; font-size: 40px; cursor: pointer; }
+
+        [x-cloak] { display: none !important; }
     </style>
 </head>
 <body>
@@ -174,32 +163,66 @@
 
     <!-- Quiz Header / Details -->
     <div class="card" x-data="{ editing: false }">
-        <div class="flex justify-between items-start mb-4" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
-            <div>
-                <h1 th:text="${quiz.name}" style="margin-bottom: 0.5rem;">Quiz Name</h1>
-                <div class="text-secondary" style="color: #6B7280;">
-                    <span th:text="${quiz.quizType.name}">Type</span> &bull;
-                    <span th:text="${#lists.size(quiz.questions) + ' Questions'}">0 Questions</span>
+        <div class="card-body">
+            <div class="flex justify-between items-start mb-4" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                <div>
+                    <h1 th:text="${quiz.name}" style="margin-bottom: 0.5rem;">Quiz Name</h1>
+                    <div class="text-secondary" style="color: #6B7280;">
+                        <span th:text="${quiz.quizType.name}">Type</span> &bull;
+                        <span th:text="${#lists.size(quiz.questions) + ' Questions'}">0 Questions</span>
+                    </div>
                 </div>
+                <button @click="editing = !editing" class="btn btn-secondary btn-sm">
+                    <i class="fas fa-cog"></i> Settings
+                </button>
             </div>
-            <button @click="editing = !editing" class="btn btn-secondary btn-sm">
-                <i class="fas fa-cog"></i> Settings
-            </button>
-        </div>
 
-        <!-- Edit Quiz Form (Collapsible) -->
-        <div x-show="editing" x-transition style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #E5E7EB;">
-            <form th:action="@{/quiz/{id}/edit(id=${quiz.id})}" th:object="${quiz}" method="post" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label>Quiz Name</label>
-                    <input type="text" th:field="*{name}" required>
-                </div>
-                <!-- Other fields omitted for brevity, can be added back if needed -->
-                 <div style="display: flex; justify-content: flex-end; gap: 1rem;">
-                    <button type="button" @click="editing = false" class="btn btn-secondary">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                </div>
-            </form>
+            <!-- Edit Quiz Form (Collapsible) -->
+            <div x-show="editing" x-cloak x-transition style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #E5E7EB;">
+                <h2 style="margin-top: 0; margin-bottom: 1.5rem;">Quiz Settings</h2>
+                <form th:action="@{/quiz/{id}/edit(id=${quiz.id})}" th:object="${quiz}" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="quizName">Quiz Name</label>
+                        <input type="text" id="quizName" th:field="*{name}" required>
+                    </div>
+
+                    <!-- Hidden input for quizType -->
+                    <input type="hidden" th:field="*{quizType}" />
+
+                    <div class="form-group">
+                        <label>Quiz Image (Optional)</label>
+                        <div class="file-upload-wrapper" id="quiz-image-uploader">
+                            <!-- Existing Image Preview -->
+                            <div class="file-preview-card" id="quiz-existing-card" th:if="${quiz.attachment != null}" style="display: flex;">
+                                <img class="file-preview-thumb" th:src="${quiz.attachment.webUrl != null ? quiz.attachment.webUrl : '/attachment/' + quiz.attachment.id}" title="Click to enlarge" onclick="openLightbox(this.src)">
+                                <div class="file-info">
+                                    <span class="file-name">Existing Image</span>
+                                </div>
+                                <div class="file-actions">
+                                    <button type="button" class="btn-remove-file" onclick="removeExistingQuizImage()" title="Remove file"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
+                            <input type="hidden" name="removeImage" id="removeImage" value="false">
+
+                            <!-- New Image Uploader -->
+                            <div class="file-upload-area" id="quiz-upload-area" th:style="${quiz.attachment != null ? 'display: none;' : ''}" onclick="document.getElementById('file').click()">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span>Click to Attach Image</span>
+                            </div>
+                            <input type="file" name="file" id="file" accept="image/*" class="hidden-file-input" onchange="previewFile(this, 'quiz-preview', 'quiz-upload-area')">
+                            <div id="quiz-preview" style="display:none; margin-top: 10px;">
+                                <img src="" style="max-height: 150px; border-radius: 8px;">
+                                <button type="button" class="btn btn-sm btn-danger" onclick="clearFile('file', 'quiz-preview', 'quiz-upload-area')">Remove New Image</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem;">
+                        <button type="button" @click="editing = false" class="btn btn-secondary">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -212,63 +235,39 @@
         </div>
 
         <!-- Question Cards -->
-        <div th:each="question, stat : ${quiz.questions}" class="question-card" id="question-${question.questionId}" x-data="{ editMode: false }">
-
-            <!-- View Mode -->
-            <div class="question-view" x-show="!editMode">
+        <div th:each="question, stat : ${quiz.questions}" class="question-card" id="question-${question.questionId}">
+            <div class="question-view">
                 <div class="question-header">
                     <div class="question-title">
                         <span class="text-gray-400" th:text="'#' + ${stat.count}">#1</span>
                         <span class="question-badge" th:text="${question.questionType}">MULTIPLE CHOICE</span>
                     </div>
                     <div class="question-actions">
-                        <!-- Changed to link to separate page -->
-                        <a th:href="@{/quiz/{quizId}/questions/{questionId}/edit(quizId=${quiz.id}, questionId=${question.questionId})}"
-                           class="action-btn" title="Edit Question">
+                        <a th:href="@{/quiz/{quizId}/questions/{questionId}/edit(quizId=${quiz.id}, questionId=${question.questionId})}" class="action-btn" title="Edit Question">
                             <i class="fas fa-pencil-alt"></i>
                         </a>
-                        <a th:href="@{/quiz/{quizId}/questions/{questionId}/delete(quizId=${quiz.id}, questionId=${question.questionId})}"
-                           class="action-btn delete" title="Delete Question"
-                           onclick="return confirm('Are you sure you want to delete this question? This cannot be undone.')">
+                        <a th:href="@{/quiz/{quizId}/questions/{questionId}/delete(quizId=${quiz.id}, questionId=${question.questionId})}" class="action-btn delete" title="Delete Question" onclick="return confirm('Are you sure you want to delete this question? This cannot be undone.')">
                             <i class="fas fa-trash-alt"></i>
                         </a>
                     </div>
                 </div>
-
                 <div class="question-body">
-                    <div class="question-text" th:text="${question.questionText}">
-                        What is the capital of France?
-                    </div>
-
+                    <div class="question-text" th:text="${question.questionText}"></div>
                     <div th:if="${question.attachment != null}" style="margin-bottom: 1rem;">
-                        <img th:src="@{${question.attachment.webUrl != null ? question.attachment.webUrl : '/attachment/' + question.attachment.id}}"
-                             style="max-height: 200px; border-radius: 8px; cursor: pointer;"
-                             onclick="openLightbox(this.src)">
+                        <img th:src="@{${question.attachment.webUrl != null ? question.attachment.webUrl : '/attachment/' + question.attachment.id}}" style="max-height: 200px; border-radius: 8px; cursor: pointer;" onclick="openLightbox(this.src)">
                     </div>
-
                     <div class="question-meta">
-                        <div class="meta-item">
-                            <i class="fas fa-star text-yellow-400" style="color: #FBBF24;"></i>
-                            <span th:text="${question.points + ' Points'}">5 Points</span>
-                        </div>
-                        <div class="meta-item">
-                            <i class="fas fa-folder text-blue-400" style="color: #60A5FA;"></i>
-                            <span th:text="${question.questionCategory.categoryName}">General Knowledge</span>
-                        </div>
+                        <div class="meta-item"><i class="fas fa-star text-yellow-400" style="color: #FBBF24;"></i> <span th:text="${question.points + ' Points'}"></span></div>
+                        <div class="meta-item"><i class="fas fa-folder text-blue-400" style="color: #60A5FA;"></i> <span th:text="${question.questionCategory.categoryName}"></span></div>
                     </div>
-
-                    <!-- Options Preview -->
                     <div class="options-list">
-                        <div th:each="option : ${question.answerOptions}"
-                             th:class="${'option-item ' + (option.isCorrect ? 'correct' : '')}">
+                        <div th:each="option : ${question.answerOptions}" th:class="${'option-item ' + (option.isCorrect ? 'correct' : '')}">
                             <div class="option-marker">
                                 <i th:if="${option.isCorrect}" class="fas fa-check"></i>
                                 <span th:unless="${option.isCorrect}" style="font-size: 10px;">&bull;</span>
                             </div>
-                            <span th:text="${option.optionText}">Option Text</span>
-                            <img th:if="${option.attachment != null}"
-                                 th:src="@{${option.attachment.webUrl != null ? option.attachment.webUrl : '/attachment/' + option.attachment.id}}"
-                                 style="height: 30px; border-radius: 4px; margin-left: auto;">
+                            <span th:text="${option.optionText}"></span>
+                            <img th:if="${option.attachment != null}" th:src="@{${option.attachment.webUrl != null ? question.attachment.webUrl : '/attachment/' + option.attachment.id}}" style="height: 30px; border-radius: 4px; margin-left: auto;">
                         </div>
                     </div>
                 </div>
@@ -299,12 +298,44 @@
         document.getElementById('lightbox').style.display = 'none';
     }
 
-    // Close lightbox on ESC key
     document.addEventListener('keydown', function(event) {
         if (event.key === "Escape") {
             closeLightbox();
         }
     });
+
+    // JS helpers for file upload
+    function previewFile(input, previewId, areaId) {
+        const file = input.files[0];
+        const previewDiv = document.getElementById(previewId);
+        const areaDiv = document.getElementById(areaId);
+        const img = previewDiv.querySelector('img');
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                img.src = e.target.result;
+                previewDiv.style.display = 'block';
+                if(areaDiv) areaDiv.style.display = 'none';
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function clearFile(inputId, previewId, areaId) {
+        document.getElementById(inputId).value = '';
+        document.getElementById(previewId).style.display = 'none';
+        const areaDiv = document.getElementById(areaId);
+        if(areaDiv) areaDiv.style.display = 'flex';
+    }
+
+    function removeExistingQuizImage() {
+        if(confirm('Remove existing image?')) {
+            document.getElementById('removeImage').value = 'true';
+            document.getElementById('quiz-existing-card').style.display = 'none';
+            document.getElementById('quiz-upload-area').style.display = 'flex';
+        }
+    }
 </script>
 
 </body>
