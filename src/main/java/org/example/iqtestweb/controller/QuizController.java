@@ -272,9 +272,6 @@ public class QuizController {
             existingQuestion.setAttachment(attachment);
         }
 
-        // Use the correct method name from AnswerOptionService
-        answerOptionService.deleteByQuestionId(questionId);
-
         List<AnswerOption> newOptions = new ArrayList<>();
 
         for (int i = 0; i < optionTexts.size(); i++) {
@@ -292,7 +289,8 @@ public class QuizController {
             newOptions.add(option);
         }
         
-        existingQuestion.setAnswerOptions(newOptions);
+        existingQuestion.getAnswerOptions().clear();
+        existingQuestion.getAnswerOptions().addAll(newOptions);
         questionService.saveQuestion(existingQuestion);
 
         redirectAttributes.addFlashAttribute("success", "Question updated successfully!");
