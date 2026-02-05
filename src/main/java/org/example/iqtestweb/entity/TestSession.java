@@ -30,6 +30,9 @@ public class TestSession {
     @Column(name = "started_at")
     private LocalDateTime startedAt = LocalDateTime.now();
 
+    @Column(name = "expires_at")
+    private LocalDateTime expiresAt;
+
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
 
@@ -39,7 +42,7 @@ public class TestSession {
     private Integer timeTakenSeconds;
 
     @Enumerated(EnumType.STRING)
-    private Status status = Status.ACTIVE;
+    private Status status = Status.IN_PROGRESS;
 
     @PreRemove
     public void preRemove() {

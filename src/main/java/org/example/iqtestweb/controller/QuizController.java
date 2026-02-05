@@ -47,6 +47,18 @@ public class QuizController {
     public String createQuiz(@ModelAttribute Quiz quiz, @RequestParam(value = "file", required = false) MultipartFile file, HttpSession session, RedirectAttributes redirectAttributes) {
         User user = (User) session.getAttribute("user");
         quiz.setUser(user);
+        
+        // Basic validation for duration on create
+        if (quiz.getTimeType() == org.example.iqtestweb.entity.enums.QuizTimeType.TOTAL_TIME) {
+            if (quiz.getTimeLimitSeconds() == null || quiz.getTimeLimitSeconds() <= 0) {
+                redirectAttributes.addFlashAttribute("error", "Please specify a valid duration in seconds.");
+                return "redirect:/quiz/create";
+            }
+        } else {
+            // Reset if not TOTAL_TIME
+            quiz.setTimeLimitSeconds(null);
+        }
+
         if (file != null && !file.isEmpty()) {
             Attachment attachment = attachmentService.saveAttachment(file);
             quiz.setAttachment(attachment);
@@ -63,10 +75,15 @@ public class QuizController {
             redirectAttributes.addFlashAttribute("error", "You are not authorized to edit this quiz.");
             return "redirect:/quiz/list";
         }
-        model.addAttribute("quiz", quizService.getQuizById(id));
+        Quiz quiz = quizService.getQuizById(id);
+        model.addAttribute("quiz", quiz);
         model.addAttribute("quizTypes", quizTypeService.getAllQuizTypes());
         model.addAttribute("categories", questionService.getAllCategories()); // Added categories
         model.addAttribute("newQuestion", new Question()); // Added for Add Question form
+        
+        // Pass flag to disable inputs if STARTED
+        model.addAttribute("isPublished", quiz.getStatus() == QuizStatus.STARTED);
+        
         return "edit-quiz";
     }
 
@@ -79,25 +96,21 @@ public class QuizController {
             redirectAttributes.addFlashAttribute("error", "You are not authorized to edit this quiz.");
             return "redirect:/quiz/list";
         }
-        Quiz dbQuiz = quizService.getQuizById(id);
-        User user = (User) session.getAttribute("user");
-        dbQuiz.setId(id);
-        dbQuiz.setUser(user);
-        dbQuiz.setName(quiz.getName());
-        dbQuiz.setQuizType(quiz.getQuizType());
-        dbQuiz.setTimeType(quiz.getTimeType());
-        dbQuiz.setTimeLimitSeconds(quiz.getTimeLimitSeconds());
-
-        if (Boolean.TRUE.equals(removeImage)) {
-            dbQuiz.setAttachment(null);
-        }
-
+        
+        Attachment newAttachment = null;
         if (file != null && !file.isEmpty()) {
-            Attachment attachment = attachmentService.saveAttachment(file);
-            dbQuiz.setAttachment(attachment);
+            newAttachment = attachmentService.saveAttachment(file);
         }
-        quizService.saveQuiz(dbQuiz);
-        redirectAttributes.addFlashAttribute("success", "Quiz updated successfully!");
+
+        try {
+            quizService.updateQuizSettings(id, quiz, newAttachment, Boolean.TRUE.equals(removeImage));
+            redirectAttributes.addFlashAttribute("success", "Quiz updated successfully!");
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "An error occurred while updating the quiz.");
+        }
+        
         return "redirect:/quiz/list";
     }
 
@@ -120,9 +133,12 @@ public class QuizController {
             redirectAttributes.addFlashAttribute("error", "You are not authorized to modify this quiz.");
             return "redirect:/quiz/list";
         }
-        Quiz quiz = quizService.getQuizById(id);
-        quiz.setStatus(QuizStatus.STARTED);
-        quizService.saveQuiz(quiz);
+        try {
+            quizService.startQuiz(id);
+            redirectAttributes.addFlashAttribute("success", "Quiz started successfully!");
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
         return "redirect:/quiz/list";
     }
 
@@ -132,9 +148,8 @@ public class QuizController {
             redirectAttributes.addFlashAttribute("error", "You are not authorized to modify this quiz.");
             return "redirect:/quiz/list";
         }
-        Quiz quiz = quizService.getQuizById(id);
-        quiz.setStatus(QuizStatus.STOPPED);
-        quizService.saveQuiz(quiz);
+        quizService.stopQuiz(id);
+        redirectAttributes.addFlashAttribute("success", "Quiz stopped successfully!");
         return "redirect:/quiz/list";
     }
 
@@ -146,6 +161,11 @@ public class QuizController {
             return "redirect:/quiz/list";
         }
         Quiz quiz = quizService.getQuizById(quizId);
+        if (quiz.getStatus() == QuizStatus.STARTED) {
+             redirectAttributes.addFlashAttribute("error", "Cannot add questions to a started quiz. Stop it first.");
+             return "redirect:/quiz/" + quizId + "/edit";
+        }
+        
         Question question = new Question();
         question.setQuiz(quiz);
         model.addAttribute("question", question);
@@ -167,6 +187,11 @@ public class QuizController {
             return "redirect:/quiz/list";
         }
         Quiz quiz = quizService.getQuizById(quizId);
+        if (quiz.getStatus() == QuizStatus.STARTED) {
+             redirectAttributes.addFlashAttribute("error", "Cannot add questions to a started quiz. Stop it first.");
+             return "redirect:/quiz/" + quizId + "/edit";
+        }
+        
         question.setQuiz(quiz);
 
         if (questionImage != null && !questionImage.isEmpty()) {
@@ -216,6 +241,11 @@ public class QuizController {
             redirectAttributes.addFlashAttribute("error", "Question not found or does not belong to this quiz.");
             return "redirect:/quiz/" + quizId + "/edit";
         }
+        
+        if (question.getQuiz().getStatus() == QuizStatus.STARTED) {
+             redirectAttributes.addFlashAttribute("error", "Cannot edit questions of a started quiz. Stop it first.");
+             return "redirect:/quiz/" + quizId + "/edit";
+        }
 
         List<AnswerOption> answerOptions = answerOptionService.findActiveByQuestionId(questionId);
         model.addAttribute("question", question);
@@ -257,7 +287,13 @@ public class QuizController {
             redirectAttributes.addFlashAttribute("error", "You are not authorized to edit this quiz.");
             return "redirect:/quiz/list";
         }
+        
         Question existingQuestion = questionService.getQuestionById(questionId);
+        if (existingQuestion.getQuiz().getStatus() == QuizStatus.STARTED) {
+             redirectAttributes.addFlashAttribute("error", "Cannot edit questions of a started quiz. Stop it first.");
+             return "redirect:/quiz/" + quizId + "/edit";
+        }
+        
         existingQuestion.setQuestionText(question.getQuestionText());
         existingQuestion.setQuestionCategory(question.getQuestionCategory());
         existingQuestion.setQuestionType(question.getQuestionType());
@@ -304,6 +340,12 @@ public class QuizController {
             redirectAttributes.addFlashAttribute("error", "You are not authorized to delete questions from this quiz.");
             return "redirect:/quiz/list";
         }
+        Question question = questionService.getQuestionById(questionId);
+        if (question.getQuiz().getStatus() == QuizStatus.STARTED) {
+             redirectAttributes.addFlashAttribute("error", "Cannot delete questions from a started quiz. Stop it first.");
+             return "redirect:/quiz/" + quizId + "/edit";
+        }
+
         questionService.deleteQuestion(questionId);
         redirectAttributes.addFlashAttribute("success", "Question deleted successfully!");
         return "redirect:/quiz/" + quizId + "/edit";

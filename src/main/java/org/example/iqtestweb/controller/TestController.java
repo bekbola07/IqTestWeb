@@ -5,6 +5,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.iqtestweb.entity.*;
 import org.example.iqtestweb.entity.enums.QuizStatus;
+import org.example.iqtestweb.entity.enums.Status;
 import org.example.iqtestweb.service.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -100,20 +101,24 @@ public class TestController {
         // Get or create QuizSnapshot
         QuizSnapshot quizSnapshot = quizSnapshotService.getOrCreateSnapshot(quiz);
 
-        // Test session yaratish
-        TestSession testSession = new TestSession();
-        testSession.setUser(user);
-        testSession.setQuizSnapshot(quizSnapshot);
-        testSession.setStartedAt(LocalDateTime.now());
-        testSession = testSessionService.saveSession(testSession);
+        // Start or resume session
+        TestSession testSession = testSessionService.startSession(user, quizSnapshot);
 
         session.setAttribute("testSession", testSession);
-        return "redirect:/question/0";
+        
+        // Find where the user left off if resuming
+        if (testSession.getStatus() == Status.IN_PROGRESS) {
+            List<UserAnswer> existingAnswers = userAnswerService.getUserAnswersBySessionId(testSession.getSessionId());
+            int nextIndex = existingAnswers.size();
+            return "redirect:/question/" + nextIndex;
+        } else {
+             return "redirect:/test/results";
+        }
     }
 
     @PostMapping("/submit-answer")
     public String submitAnswer(@RequestParam Long questionSnapshotId,
-                               @RequestParam Long optionSnapshotId,
+                               @RequestParam(required = false) Long optionSnapshotId,
                                @RequestParam int nextIndex,
                                @RequestParam(defaultValue = "0") int timeTakenSeconds,
                                HttpSession session,
@@ -123,25 +128,41 @@ public class TestController {
             redirectAttributes.addFlashAttribute("error", "Test session expired.");
             return "redirect:/test/select-quiz";
         }
+        
+        // Refresh session from DB to check status and time
+        testSession = testSessionService.getSession(testSession.getSessionId());
+        if (testSession.getStatus() != Status.IN_PROGRESS) {
+             return "redirect:/test/results";
+        }
+
+        if (testSessionService.isSessionExpired(testSession)) {
+            testSessionService.handleTimeout(testSession);
+            return "redirect:/test/results";
+        }
 
         // 🔥 Snapshot'lardan ma'lumot olish
         QuestionSnapshot questionSnapshot = questionSnapshotService.getById(questionSnapshotId);
-        AnswerOptionSnapshot selectedOptionSnapshot = answerOptionSnapshotService.getById(optionSnapshotId);
+        
+        // Only process answer if option is selected
+        if (optionSnapshotId != null) {
+            AnswerOptionSnapshot selectedOptionSnapshot = answerOptionSnapshotService.getById(optionSnapshotId);
 
-        // UserAnswer saqlash (endi snapshot'ga bog'lanadi)
-        UserAnswer userAnswer = new UserAnswer();
-        userAnswer.setSession(testSession);
-        userAnswer.setQuestionSnapshot(questionSnapshot);
-        userAnswer.setSelectedOptionSnapshot(selectedOptionSnapshot);
-        userAnswer.setIsCorrect(selectedOptionSnapshot.getIsCorrect());
-        userAnswer.setTimeTakenSeconds(timeTakenSeconds); // Save time taken
-        userAnswerService.saveUserAnswer(userAnswer);
+            // UserAnswer saqlash (endi snapshot'ga bog'lanadi)
+            UserAnswer userAnswer = new UserAnswer();
+            userAnswer.setSession(testSession);
+            userAnswer.setQuestionSnapshot(questionSnapshot);
+            userAnswer.setSelectedOptionSnapshot(selectedOptionSnapshot);
+            userAnswer.setIsCorrect(selectedOptionSnapshot.getIsCorrect());
+            userAnswer.setTimeTakenSeconds(timeTakenSeconds); // Save time taken
+            userAnswerService.saveUserAnswer(userAnswer);
+        }
 
         // Keyingi savolga o'tish
         List<QuestionSnapshot> questionSnapshots = questionSnapshotService.findByQuizSnapshotId(testSession.getQuizSnapshot().getId());
         if (nextIndex < questionSnapshots.size()) {
             return "redirect:/question/" + nextIndex;
         } else {
+            testSessionService.completeSession(testSession.getSessionId());
             return "redirect:/test/results";
         }
     }
@@ -151,6 +172,14 @@ public class TestController {
         TestSession testSession = (TestSession) session.getAttribute("testSession");
         if (testSession == null) {
             return "redirect:/dashboard";
+        }
+        
+        // Refresh from DB to ensure we have latest status
+        testSession = testSessionService.getSession(testSession.getSessionId());
+
+        if (testSession.getStatus() == Status.IN_PROGRESS) {
+             // If user navigates to results manually, try to complete session
+             testSession = testSessionService.completeSession(testSession.getSessionId());
         }
 
         List<UserAnswer> userAnswers = userAnswerService.getUserAnswersBySessionId(testSession.getSessionId());
@@ -164,21 +193,11 @@ public class TestController {
                 .mapToInt(i -> i.getQuestionSnapshot().getPoints())
                 .sum();
 
-        testSession.setCompletedAt(LocalDateTime.now());
-        testSession.setCorrectAnswers((int) correctAnswers);
-        testSession.setTotalQuestions(totalQuestions);
-        testSession.setIqScore(score);
-
-        long timeTaken = Duration.between(testSession.getStartedAt(), testSession.getCompletedAt()).getSeconds();
-        testSession.setTimeTakenSeconds((int) timeTaken);
-
-        testSessionService.saveSession(testSession);
-
         model.addAttribute("testSession", testSession);
         model.addAttribute("correctAnswers", correctAnswers);
         model.addAttribute("totalQuestions", totalQuestions);
         model.addAttribute("iqScore", score);
-        model.addAttribute("accuracy", (int) (((double) correctAnswers / totalQuestions) * 100));
+        model.addAttribute("accuracy", totalQuestions > 0 ? (int) (((double) correctAnswers / totalQuestions) * 100) : 0);
 
         session.removeAttribute("testSession"); // Clear session after showing results
 

@@ -249,7 +249,12 @@
         const timerInterval = setInterval(() => {
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
-                document.getElementById('questionForm').submit();
+                // Auto-submit form without validation if time expires
+                const form = document.getElementById('questionForm');
+                // Remove required attribute to allow submission without selection
+                const radios = form.querySelectorAll('input[type="radio"]');
+                radios.forEach(radio => radio.removeAttribute('required'));
+                form.submit();
             } else {
                 const minutes = Math.floor(timeLeft / 60);
                 const seconds = timeLeft % 60;
@@ -259,6 +264,11 @@
                 timeTakenInput.value = timeTaken;
             }
         }, 1000);
+
+        // Initial display
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerElement.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     } else {
         // If no time limit, just track time taken
         setInterval(() => {
