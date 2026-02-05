@@ -69,10 +69,7 @@ public class QuestionController {
             model.addAttribute("profilePicture", session.getAttribute("profilePicture"));
 
             // Time logic
-            if (quizSnapshot.getTimeType() == QuizTimeType.PER_QUESTION) {
-                model.addAttribute("timeLimitSeconds", currentQuestionSnapshot.getTimeLimitSeconds());
-                model.addAttribute("timeType", "PER_QUESTION");
-            } else if (quizSnapshot.getTimeType() == QuizTimeType.TOTAL_TIME) {
+            if (quizSnapshot.getTimeType() == QuizTimeType.TOTAL_TIME) {
                 if (testSession.getExpiresAt() != null) {
                     long remainingSeconds = Duration.between(LocalDateTime.now(), testSession.getExpiresAt()).getSeconds();
                     model.addAttribute("timeLimitSeconds", Math.max(0, remainingSeconds));

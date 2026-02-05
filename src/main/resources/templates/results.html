@@ -237,8 +237,8 @@
                 <div class="stat-label">Total Questions</div>
             </div>
             <div class="stat-box">
-                <div class="stat-value" th:text="${testSession.timeTakenSeconds != null ? (testSession.timeTakenSeconds / 60) + ' min' : 'N/A'}">15 min</div>
-                <div class="stat-label">Time Taken</div>
+                <div class="stat-value" th:text="${testSession.timeTakenSeconds != null ? (testSession.timeTakenSeconds / 60) + ':' + #numbers.formatInteger(testSession.timeTakenSeconds % 60, 2) : 'N/A'}">15:00</div>
+                <div class="stat-label">Time Taken (mm:ss)</div>
             </div>
         </div>
 

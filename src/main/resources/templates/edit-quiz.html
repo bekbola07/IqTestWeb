@@ -167,6 +167,60 @@
             border-radius: 0.25rem;
         }
 
+        .duration-inputs {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        .duration-field {
+            flex: 1;
+        }
+
+        /* Switch styles */
+        .switch {
+          position: relative;
+          display: inline-block;
+          width: 60px;
+          height: 34px;
+        }
+        .switch input {
+          opacity: 0;
+          width: 0;
+          height: 0;
+        }
+        .slider {
+          position: absolute;
+          cursor: pointer;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: #ccc;
+          -webkit-transition: .4s;
+          transition: .4s;
+          border-radius: 34px;
+        }
+        .slider:before {
+          position: absolute;
+          content: "";
+          height: 26px;
+          width: 26px;
+          left: 4px;
+          bottom: 4px;
+          background-color: white;
+          -webkit-transition: .4s;
+          transition: .4s;
+          border-radius: 50%;
+        }
+        input:checked + .slider {
+          background-color: #2196F3;
+        }
+        input:checked + .slider:before {
+          -webkit-transform: translateX(26px);
+          -ms-transform: translateX(26px);
+          transform: translateX(26px);
+        }
+
         /* Lightbox */
         .lightbox { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); justify-content: center; align-items: center; }
         .lightbox img { max-width: 90%; max-height: 90%; border-radius: 8px; }
@@ -193,8 +247,7 @@
                     <div class="text-secondary" style="color: #6B7280;">
                         <span th:text="${quiz.quizType.name}">Type</span> &bull;
                         <span th:text="${#lists.size(quiz.questions) + ' Questions'}">0 Questions</span> &bull;
-                        <span th:if="${quiz.timeType.name() == 'TOTAL_TIME'}" th:text="${quiz.timeLimitSeconds + 's Total'}"></span>
-                        <span th:if="${quiz.timeType.name() == 'PER_QUESTION'}">Per Question Time</span>
+                        <span th:if="${quiz.timeType.name() == 'TOTAL_TIME'}" th:text="${(quiz.timeLimitSeconds / 60) + ' min Total'}"></span>
                         <span th:if="${quiz.timeType.name() == 'NO_LIMIT'}">No Time Limit</span>
                     </div>
                     <div th:if="${isPublished}" style="margin-top: 0.5rem;">
@@ -235,21 +288,23 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="timeType">Time Limit Type</label>
-                            <select id="timeType" th:field="*{timeType}" onchange="toggleTimeSettings()">
-                                <option value="NO_LIMIT">No Time Limit</option>
-                                <option value="TOTAL_TIME">Total Time for Quiz</option>
-                                <option value="PER_QUESTION">Time per Question</option>
-                            </select>
+                            <label style="display: flex; align-items: center; gap: 1rem;">
+                                <span>Enable Time Limit</span>
+                                <label class="switch">
+                                    <input type="checkbox" id="timeSwitch" onchange="toggleTimeSettings()">
+                                    <span class="slider"></span>
+                                </label>
+                            </label>
+                            <input type="hidden" id="timeType" th:field="*{timeType}">
                         </div>
 
                         <div id="timeSettings" class="time-settings" style="display: none; margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
                             <div class="form-group" id="globalTimeInput">
-                                <label for="timeLimitSeconds">Total Time (seconds)</label>
-                                <input type="number" id="timeLimitSeconds" th:field="*{timeLimitSeconds}" min="1">
-                            </div>
-                            <div id="perQuestionInfo" style="display: none; color: #666; font-size: 0.9rem;">
-                                Time limit for each question will be set when adding/editing questions.
+                                <label for="minutes">Total Duration (Minutes)</label>
+                                <div th:object="${durationDto}">
+                                    <input type="number" id="minutes" th:field="*{minutes}" min="1" max="180" placeholder="e.g. 30">
+                                </div>
+                                <small class="text-muted">Set the total time allowed for the entire quiz in minutes.</small>
                             </div>
                         </div>
                     </div>
@@ -410,34 +465,30 @@
     }
 
     // Time settings toggle logic
+    const timeSwitch = document.getElementById('timeSwitch');
+    const timeTypeInput = document.getElementById('timeType');
+    const timeSettings = document.getElementById('timeSettings');
+    const minutesInput = document.getElementById('minutes');
+
     function toggleTimeSettings() {
-        const timeType = document.getElementById('timeType');
-        const timeSettings = document.getElementById('timeSettings');
-        const globalTimeInput = document.getElementById('globalTimeInput');
-        const perQuestionInfo = document.getElementById('perQuestionInfo');
-        const timeLimitInput = document.getElementById('timeLimitSeconds');
+        if (!timeSwitch) return; // Guard clause
 
-        if (!timeType) return; // Guard clause if element doesn't exist (e.g. published mode)
-
-        if (timeType.value === 'NO_LIMIT') {
-            timeSettings.style.display = 'none';
-            if(timeLimitInput) timeLimitInput.required = false;
-        } else {
+        if (timeSwitch.checked) {
             timeSettings.style.display = 'block';
-            if (timeType.value === 'TOTAL_TIME') {
-                globalTimeInput.style.display = 'block';
-                perQuestionInfo.style.display = 'none';
-                if(timeLimitInput) timeLimitInput.required = true;
-            } else {
-                globalTimeInput.style.display = 'none';
-                perQuestionInfo.style.display = 'block';
-                if(timeLimitInput) timeLimitInput.required = false;
-            }
+            timeTypeInput.value = 'TOTAL_TIME';
+            minutesInput.required = true;
+        } else {
+            timeSettings.style.display = 'none';
+            timeTypeInput.value = 'NO_LIMIT';
+            minutesInput.required = false;
         }
     }
 
     // Run on load if not published
     document.addEventListener('DOMContentLoaded', function() {
+        if (timeTypeInput && timeTypeInput.value === 'TOTAL_TIME') {
+            if (timeSwitch) timeSwitch.checked = true;
+        }
         toggleTimeSettings();
     });
 </script>

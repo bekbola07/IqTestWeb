@@ -3,8 +3,10 @@ package org.example.iqtestweb.controller;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.example.iqtestweb.entity.*;
+import org.example.iqtestweb.entity.dto.QuizDurationDto;
 import org.example.iqtestweb.entity.enums.QuestionType;
 import org.example.iqtestweb.entity.enums.QuizStatus;
+import org.example.iqtestweb.entity.enums.QuizTimeType;
 import org.example.iqtestweb.service.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -40,22 +42,27 @@ public class QuizController {
     public String showCreateQuizForm(Model model) {
         model.addAttribute("quiz", new Quiz());
         model.addAttribute("quizTypes", quizTypeService.getAllQuizTypes());
+        model.addAttribute("durationDto", new QuizDurationDto());
         return "create-quiz";
     }
 
     @PostMapping("/create")
-    public String createQuiz(@ModelAttribute Quiz quiz, @RequestParam(value = "file", required = false) MultipartFile file, HttpSession session, RedirectAttributes redirectAttributes) {
+    public String createQuiz(@ModelAttribute Quiz quiz,
+                             @ModelAttribute QuizDurationDto durationDto,
+                             @RequestParam(value = "file", required = false) MultipartFile file,
+                             HttpSession session, RedirectAttributes redirectAttributes) {
         User user = (User) session.getAttribute("user");
         quiz.setUser(user);
         
-        // Basic validation for duration on create
-        if (quiz.getTimeType() == org.example.iqtestweb.entity.enums.QuizTimeType.TOTAL_TIME) {
-            if (quiz.getTimeLimitSeconds() == null || quiz.getTimeLimitSeconds() <= 0) {
-                redirectAttributes.addFlashAttribute("error", "Please specify a valid duration in seconds.");
+        // Normalize duration
+        if (quiz.getTimeType() == QuizTimeType.TOTAL_TIME) {
+            int totalSeconds = durationDto.toTotalSeconds();
+            if (totalSeconds <= 0) {
+                redirectAttributes.addFlashAttribute("error", "Please specify a valid duration (at least 1 second).");
                 return "redirect:/quiz/create";
             }
+            quiz.setTimeLimitSeconds(totalSeconds);
         } else {
-            // Reset if not TOTAL_TIME
             quiz.setTimeLimitSeconds(null);
         }
 
@@ -78,8 +85,11 @@ public class QuizController {
         Quiz quiz = quizService.getQuizById(id);
         model.addAttribute("quiz", quiz);
         model.addAttribute("quizTypes", quizTypeService.getAllQuizTypes());
-        model.addAttribute("categories", questionService.getAllCategories()); // Added categories
-        model.addAttribute("newQuestion", new Question()); // Added for Add Question form
+        model.addAttribute("categories", questionService.getAllCategories());
+        model.addAttribute("newQuestion", new Question());
+        
+        // Pre-fill duration DTO
+        model.addAttribute("durationDto", QuizDurationDto.fromTotalSeconds(quiz.getTimeLimitSeconds()));
         
         // Pass flag to disable inputs if STARTED
         model.addAttribute("isPublished", quiz.getStatus() == QuizStatus.STARTED);
@@ -89,12 +99,25 @@ public class QuizController {
 
     @PostMapping("/{id}/edit")
     public String editQuiz(@PathVariable Long id, @ModelAttribute Quiz quiz,
+                           @ModelAttribute QuizDurationDto durationDto,
                            @RequestParam(value = "file", required = false) MultipartFile file,
                            @RequestParam(value = "removeImage", required = false) Boolean removeImage,
                            HttpSession session, RedirectAttributes redirectAttributes) {
         if (!isUserOwner(id, session)) {
             redirectAttributes.addFlashAttribute("error", "You are not authorized to edit this quiz.");
             return "redirect:/quiz/list";
+        }
+        
+        // Normalize duration
+        if (quiz.getTimeType() == QuizTimeType.TOTAL_TIME) {
+            int totalSeconds = durationDto.toTotalSeconds();
+            if (totalSeconds <= 0) {
+                redirectAttributes.addFlashAttribute("error", "Please specify a valid duration (at least 1 second).");
+                return "redirect:/quiz/" + id + "/edit";
+            }
+            quiz.setTimeLimitSeconds(totalSeconds);
+        } else {
+            quiz.setTimeLimitSeconds(null);
         }
         
         Attachment newAttachment = null;
