@@ -3,25 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <title>Assessment - IQ Platform</title>
+    <div th:replace="~{fragments :: common-styles}"></div>
     <style>
         body {
-            background: #F5F7FA;
-            padding: 0;
-            margin: 0;
+            background-color: #f4f7f9;
             font-family: 'Inter', sans-serif;
+            padding-top: 80px; /* Space for fixed header */
         }
-        .navbar {
+
+        /* Header */
+        .assessment-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
             background: white;
             padding: 1rem 2rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            border-bottom: 1px solid #E5E7EB;
-        }
-        .navbar-content {
-            max-width: 1000px;
-            margin: 0 auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            border-bottom: 1px solid #e5e7eb;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            z-index: 100;
         }
         .user-badge {
             display: flex;
@@ -29,155 +32,214 @@
             gap: 0.75rem;
         }
         .user-badge img {
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            border: 2px solid #3498DB;
+            border: 2px solid #3498db;
         }
+        .timer {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #e74c3c;
+            background-color: #fdecea;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+
+        /* Progress Bar */
         .progress-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 2rem 2rem 0;
+            max-width: 900px;
+            margin: 2rem auto 0;
+            padding: 0 2rem;
         }
         .progress-info {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.5rem;
             font-size: 0.9rem;
-            color: #7F8C8D;
+            color: #7f8c8d;
             font-weight: 500;
         }
         .progress-bar {
             width: 100%;
-            height: 6px;
-            background: #E5E7EB;
+            height: 8px;
+            background: #e5e7eb;
             border-radius: 10px;
             overflow: hidden;
         }
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #3498DB 0%, #2980B9 100%);
+            background: linear-gradient(90deg, #3498db 0%, #2980b9 100%);
             transition: width 0.4s ease;
         }
+
+        /* Main Content */
         .container {
-            max-width: 800px;
-            margin: 2rem auto;
+            max-width: 900px;
+            margin: 1rem auto;
             padding: 0 2rem 2rem;
         }
         .question-card {
             background: white;
             border-radius: 12px;
-            padding: 3rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            border: 1px solid #E5E7EB;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid #e5e7eb;
         }
         .question-number {
-            color: #7F8C8D;
+            color: #7f8c8d;
             font-size: 0.875rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
         }
         .question-text {
             font-size: 1.5rem;
-            color: #2C3E50;
+            color: #2c3e50;
             line-height: 1.6;
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
             font-weight: 500;
         }
         .question-image {
             max-width: 100%;
             height: auto;
             border-radius: 8px;
-            margin: 2rem 0;
-            border: 1px solid #E5E7EB;
+            margin-bottom: 2rem;
+            border: 1px solid #e5e7eb;
             cursor: pointer;
+            transition: transform 0.2s;
         }
-        .options {
+        .question-image:hover {
+            transform: scale(1.02);
+        }
+
+        /* Option Cards */
+        .options-grid {
             display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 1rem;
         }
-        .option {
-            background: #F8F9FA;
-            padding: 1.25rem;
-            border: 2px solid #E5E7EB;
-            border-radius: 8px;
+        .option-card {
+            position: relative;
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
             cursor: pointer;
             transition: all 0.2s;
-            display: flex;
-            align-items: center;
         }
-        .option:hover {
-            border-color: #3498DB;
-            background: #EBF5FB;
+        .option-card:hover {
+            border-color: #a9cce3;
+            background: #eaf2f8;
         }
-        .option input[type="radio"] {
-            margin-right: 1rem;
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-            accent-color: #3498DB;
+        .option-card.selected {
+            border-color: #3498db;
+            background: #eaf2f8;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        .option-card input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .radio-icon {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            width: 24px;
+            height: 24px;
+            border: 2px solid #bdc3c7;
+            border-radius: 50%;
+            background: white;
+        }
+        .option-card.selected .radio-icon {
+            border-color: #3498db;
+            background-color: #3498db;
+        }
+        .radio-icon::after {
+            content: '';
+            position: absolute;
+            display: none;
+            left: 6px;
+            top: 6px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: white;
+        }
+        .option-card.selected .radio-icon::after {
+            display: block;
+        }
+        .option-content {
+            padding-left: 30px; /* Space for radio icon */
         }
         .option-text {
-            font-size: 1.05rem;
-            flex: 1;
-            color: #2C3E50;
+            font-size: 1.1rem;
+            color: #2c3e50;
         }
         .option-image {
-            max-width: 100px;
-            height: auto;
-            border-radius: 4px;
-            margin-left: 1rem;
+            max-width: 100%;
+            border-radius: 6px;
+            margin-top: 1rem;
             cursor: pointer;
         }
-        .btn-next {
-            background: #3498DB;
-            color: white;
-            padding: 0.875rem 2rem;
-            border: none;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            float: right;
+
+        /* Action Buttons */
+        .actions-footer {
             margin-top: 2rem;
+            text-align: right;
+        }
+        .btn-next {
+            background: #3498db;
+            color: white;
+            padding: 0.875rem 2.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
             transition: all 0.2s;
         }
         .btn-next:hover:not(:disabled) {
-            background: #2980B9;
-            transform: translateY(-1px);
+            background: #2980b9;
         }
         .btn-next:disabled {
             opacity: 0.5;
             cursor: not-allowed;
         }
-        .btn-finish { background: #2ECC71; }
-        .btn-finish:hover { background: #27AE60; }
-        .timer {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #E74C3C;
-            margin-left: 1rem;
-        }
+
         /* Lightbox */
         .lightbox { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); justify-content: center; align-items: center; }
         .lightbox img { max-width: 90%; max-height: 90%; border-radius: 8px; }
         .lightbox-close { position: absolute; top: 20px; right: 30px; color: white; font-size: 40px; cursor: pointer; }
+
+        @media (max-width: 768px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+            .assessment-header {
+                padding: 1rem;
+            }
+            .timer {
+                font-size: 1.2rem;
+            }
+        }
     </style>
 </head>
 <body>
-<nav class="navbar">
-    <div class="navbar-content">
-        <div style="font-weight: 600; color: #2C3E50;">IQ Assessment</div>
-        <div class="user-badge">
-            <span id="timer" class="timer" th:if="${timeLimitSeconds != null}"></span>
-            <img th:src="${profilePicture}" alt="" th:if="${profilePicture}">
-            <span style="font-weight: 500;" th:text="${userName}">User</span>
-        </div>
-    </div>
-</nav>
 
+<!-- Fixed Header -->
+<header class="assessment-header">
+    <div class="user-badge">
+        <img th:src="${profilePicture}" alt="User" th:if="${profilePicture}">
+        <span style="font-weight: 500;" th:text="${userName}">User</span>
+    </div>
+    <div id="timer" class="timer" th:if="${timeLimitSeconds != null}">00:00</div>
+</header>
+
+<!-- Progress Bar -->
 <div class="progress-container">
     <div class="progress-info">
         <span>Question <span th:text="${currentIndex + 1}">1</span> of <span th:text="${totalQuestions}">20</span></span>
@@ -189,45 +251,50 @@
 </div>
 
 <div class="container">
-    <div class="question-card">
-        <div class="question-number">Question <span th:text="${currentIndex + 1}">1</span></div>
+    <form id="questionForm" th:action="@{/test/submit-answer}" method="post">
+        <!-- Hidden fields must be preserved -->
+        <input type="hidden" name="questionSnapshotId" th:value="${questionSnapshot.snapshotId}">
+        <input type="hidden" name="nextIndex" th:value="${currentIndex + 1}">
+        <input type="hidden" id="timeTakenSeconds" name="timeTakenSeconds" value="0">
 
-        <div th:if="${questionSnapshot.questionText != null and !questionSnapshot.questionText.isEmpty()}" class="question-text" th:text="${questionSnapshot.questionText}">What comes next in the sequence?</div>
+        <div class="question-card">
+            <div class="question-number">Question <span th:text="${currentIndex + 1}">1</span></div>
 
-        <img th:if="${questionSnapshot.attachment != null}"
-             th:src="@{${questionSnapshot.attachment.webUrl != null ? questionSnapshot.attachment.webUrl : '/attachment/' + questionSnapshot.attachment.id}}"
-             class="question-image"
-             alt="Question visual"
-             onclick="openLightbox(this.src)">
+            <div th:if="${questionSnapshot.questionText != null and !questionSnapshot.questionText.isEmpty()}" class="question-text" th:text="${questionSnapshot.questionText}"></div>
 
-        <form id="questionForm" th:action="@{/test/submit-answer}" method="post">
-            <input type="hidden" name="questionSnapshotId" th:value="${questionSnapshot.snapshotId}">
-            <input type="hidden" name="nextIndex" th:value="${currentIndex + 1}">
-            <input type="hidden" id="timeTakenSeconds" name="timeTakenSeconds" value="0">
+            <img th:if="${questionSnapshot.attachment != null}"
+                 th:src="@{${questionSnapshot.attachment.webUrl != null ? questionSnapshot.attachment.webUrl : '/attachment/' + questionSnapshot.attachment.id}}"
+                 class="question-image"
+                 alt="Question visual"
+                 onclick="openLightbox(this.src)">
 
-            <div class="options">
-                <label th:each="option : ${optionSnapshots}" class="option">
+            <!-- Options Grid -->
+            <div class="options-grid">
+                <label th:each="option : ${optionSnapshots}" class="option-card">
                     <input type="radio"
                            name="optionSnapshotId"
                            th:value="${option.snapshotId}"
-                           onclick="document.getElementById('submitBtn').disabled=false"
                            required>
-                    <span th:if="${option.optionText != null and !option.optionText.isEmpty()}" class="option-text" th:text="${option.optionText}">Option text</span>
-                    <img th:if="${option.attachment != null}"
-                         th:src="@{${option.attachment.webUrl != null ? option.attachment.webUrl : '/attachment/' + option.attachment.id}}"
-                         class="option-image"
-                         alt="Option visual"
-                         onclick="event.preventDefault(); openLightbox(this.src)">
+                    <div class="radio-icon"></div>
+                    <div class="option-content">
+                        <span th:if="${option.optionText != null and !option.optionText.isEmpty()}" class="option-text" th:text="${option.optionText}"></span>
+                        <img th:if="${option.attachment != null}"
+                             th:src="@{${option.attachment.webUrl != null ? option.attachment.webUrl : '/attachment/' + option.attachment.id}}"
+                             class="option-image"
+                             alt="Option visual"
+                             onclick="event.preventDefault(); openLightbox(this.src)">
+                    </div>
                 </label>
             </div>
+        </div>
 
+        <div class="actions-footer">
             <button type="submit" id="submitBtn" class="btn-next"
-                    th:classappend="${currentIndex + 1 == totalQuestions} ? 'btn-finish'"
-                    th:text="${currentIndex + 1 < totalQuestions} ? 'Next Question →' : 'Finish'"
+                    th:text="${currentIndex + 1 < totalQuestions} ? 'Next Question →' : 'Finish Assessment'"
                     disabled>
             </button>
-        </form>
-    </div>
+        </div>
+    </form>
 </div>
 
 <!-- Lightbox -->
@@ -239,44 +306,56 @@
 <script th:inline="javascript">
     /*<![CDATA[*/
     const timeLimitSeconds = /*[[${timeLimitSeconds}]]*/ null;
-    const timeType = /*[[${timeType}]]*/ null;
     let timeLeft = timeLimitSeconds;
     let timeTaken = 0;
     const timerElement = document.getElementById('timer');
     const timeTakenInput = document.getElementById('timeTakenSeconds');
+    const form = document.getElementById('questionForm');
+    const submitBtn = document.getElementById('submitBtn');
 
+    // --- Timer Logic ---
     if (timeLimitSeconds != null) {
-        const timerInterval = setInterval(() => {
+        const updateTimer = () => {
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
+                timerElement.textContent = "00:00";
                 // Auto-submit form without validation if time expires
-                const form = document.getElementById('questionForm');
-                // Remove required attribute to allow submission without selection
                 const radios = form.querySelectorAll('input[type="radio"]');
                 radios.forEach(radio => radio.removeAttribute('required'));
                 form.submit();
             } else {
                 const minutes = Math.floor(timeLeft / 60);
                 const seconds = timeLeft % 60;
-                timerElement.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                timerElement.textContent = `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
                 timeLeft--;
-                timeTaken++;
-                timeTakenInput.value = timeTaken;
             }
-        }, 1000);
-
-        // Initial display
-        const minutes = Math.floor(timeLeft / 60);
-        const seconds = timeLeft % 60;
-        timerElement.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-    } else {
-        // If no time limit, just track time taken
-        setInterval(() => {
-            timeTaken++;
-            timeTakenInput.value = timeTaken;
-        }, 1000);
+        };
+        const timerInterval = setInterval(updateTimer, 1000);
+        updateTimer(); // Initial display
     }
 
+    // --- Time Taken Tracker ---
+    setInterval(() => {
+        timeTaken++;
+        timeTakenInput.value = timeTaken;
+    }, 1000);
+
+    // --- Clickable Card Logic ---
+    const optionCards = document.querySelectorAll('.option-card');
+    optionCards.forEach(card => {
+        card.addEventListener('click', () => {
+            // Un-select all other cards
+            optionCards.forEach(c => c.classList.remove('selected'));
+            // Select this card
+            card.classList.add('selected');
+            // Check the hidden radio button inside
+            card.querySelector('input[type="radio"]').checked = true;
+            // Enable the next button
+            submitBtn.disabled = false;
+        });
+    });
+
+    // --- Lightbox Logic ---
     function openLightbox(src) {
         document.getElementById('lightbox-img').src = src;
         document.getElementById('lightbox').style.display = 'flex';
@@ -285,6 +364,13 @@
     function closeLightbox() {
         document.getElementById('lightbox').style.display = 'none';
     }
+
+    // --- Keyboard Accessibility ---
+    document.addEventListener('keydown', function(event) {
+        if (event.key === "Escape") {
+            closeLightbox();
+        }
+    });
     /*]]>*/
 </script>
 
