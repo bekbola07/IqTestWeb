@@ -122,10 +122,6 @@
                     <label for="points">Points</label>
                     <input type="number" id="points" th:field="*{points}" min="1" required placeholder="e.g., 10">
                 </div>
-                <div class="form-group" th:if="${quiz.timeType.name() == 'PER_QUESTION'}">
-                    <label for="timeLimitSeconds">Time Limit (seconds)</label>
-                    <input type="number" id="timeLimitSeconds" th:field="*{timeLimitSeconds}" min="10" required placeholder="e.g., 60">
-                </div>
             </div>
         </div>
 
@@ -163,7 +159,7 @@
                                    required>
 
                             <!-- Option Image Uploader -->
-                            <div class="file-upload-wrapper" style="margin-top: 5px;" x-init="initUploader($el, 'optionImages')">
+                            <div class="file-upload-wrapper" style="margin-top: 5px;" x-init="initUploader($el, 'optionImages', index)">
                                 <!-- Uploader injected here -->
                             </div>
                         </div>
@@ -317,9 +313,9 @@
                 event.target.submit();
             },
 
-            initUploader(wrapper, inputName) {
-                // Generate unique ID
+            initUploader(wrapper, inputName, optionIndex = null) {
                 const uploaderId = 'file-' + Math.random().toString(36).substr(2, 9);
+                const textInput = optionIndex !== null ? wrapper.previousElementSibling : null;
 
                 wrapper.innerHTML = `
                     <div class="file-upload-area" id="area-${uploaderId}">
@@ -345,10 +341,7 @@
                 const name = document.getElementById(`name-${uploaderId}`);
                 const removeBtn = document.getElementById(`remove-${uploaderId}`);
 
-                // Click area to upload
                 area.addEventListener('click', () => input.click());
-
-                // Click preview to open lightbox
                 preview.addEventListener('click', () => openLightbox(preview.src));
 
                 input.addEventListener('change', (e) => {
@@ -360,23 +353,24 @@
                             name.textContent = file.name;
                             area.style.display = 'none';
                             card.style.display = 'flex';
+                            if (textInput) textInput.required = false;
                         };
                         reader.readAsDataURL(file);
                     }
                 });
 
                 removeBtn.addEventListener('click', () => {
-                    input.value = ''; // Clear the file input
+                    input.value = '';
                     preview.src = '';
                     name.textContent = '';
                     area.style.display = 'flex';
                     card.style.display = 'none';
+                    if (textInput) textInput.required = true;
                 });
             }
         }
     }
 
-    // Lightbox functions
     function openLightbox(src) {
         document.getElementById('lightbox-img').src = src;
         document.getElementById('lightbox').style.display = 'flex';

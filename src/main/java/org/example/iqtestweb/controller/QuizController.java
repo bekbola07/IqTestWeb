@@ -227,11 +227,19 @@ public class QuizController {
         List<AnswerOption> answerOptions = new ArrayList<>();
         for (int i = 0; i < optionTexts.size(); i++) {
             String text = optionTexts.get(i);
-            if (text == null || text.trim().isEmpty()) continue;
+            MultipartFile image = (optionImages != null && optionImages.size() > i) ? optionImages.get(i) : null;
+
+            boolean isTextEmpty = (text == null || text.trim().isEmpty());
+            boolean isImageEmpty = (image == null || image.isEmpty());
+
+            // Skip if both text and image are empty
+            if (isTextEmpty && isImageEmpty) {
+                continue;
+            }
 
             Attachment optionAttachment = null;
-            if (optionImages != null && optionImages.size() > i && !optionImages.get(i).isEmpty()) {
-                optionAttachment = attachmentService.saveAttachment(optionImages.get(i));
+            if (!isImageEmpty) {
+                optionAttachment = attachmentService.saveAttachment(image);
             }
 
             boolean isCorrect = determineIsCorrect(question.getQuestionType(), i, correctOptionIndex, correctOptionIndices);
@@ -335,12 +343,20 @@ public class QuizController {
 
         for (int i = 0; i < optionTexts.size(); i++) {
             String text = optionTexts.get(i);
-            if (text == null || text.trim().isEmpty()) continue;
+            MultipartFile image = (optionImages != null && optionImages.size() > i) ? optionImages.get(i) : null;
+
+            boolean isTextEmpty = (text == null || text.trim().isEmpty());
+            boolean isImageEmpty = (image == null || image.isEmpty());
+
+            // This logic is still simplified and doesn't handle existing attachments well,
+            // but it implements the requested validation.
+            if (isTextEmpty && isImageEmpty) {
+                continue;
+            }
 
             Attachment optionAttachment = null;
-            // Simplified attachment logic for edit, assuming new files are always uploaded
-            if (optionImages != null && optionImages.size() > i && !optionImages.get(i).isEmpty()) {
-                optionAttachment = attachmentService.saveAttachment(optionImages.get(i));
+            if (!isImageEmpty) {
+                optionAttachment = attachmentService.saveAttachment(image);
             }
 
             boolean isCorrect = determineIsCorrect(question.getQuestionType(), i, correctOptionIndex, correctOptionIndices);

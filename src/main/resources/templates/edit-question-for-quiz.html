@@ -143,10 +143,6 @@
                     <label for="points">Points</label>
                     <input type="number" id="points" th:field="*{points}" min="1" required placeholder="e.g., 10">
                 </div>
-                <div class="form-group" th:if="${quiz.timeType.name() == 'PER_QUESTION'}">
-                    <label for="timeLimitSeconds">Time Limit (seconds)</label>
-                    <input type="number" id="timeLimitSeconds" th:field="*{timeLimitSeconds}" min="10" required placeholder="e.g., 60">
-                </div>
             </div>
         </div>
 
@@ -182,7 +178,7 @@
                         <div class="option-content">
                             <input type="text" name="optionTexts" x-model="option.text" placeholder="Answer text"
                                    :disabled="questionType !== 'MULTIPLE_CHOICE_SINGLE' && questionType !== 'MULTIPLE_CHOICE_MULTI'"
-                                   required>
+                                   :required="!option.imageUrl && !option.hasNewImage">
 
                             <!-- Existing Option Image -->
                             <div x-show="option.imageUrl" class="file-preview-card" style="display: flex; margin-top: 5px;">
@@ -195,7 +191,9 @@
 
                             <!-- Option Image Uploader -->
                             <div class="file-upload-wrapper" style="margin-top: 5px;" x-show="!option.imageUrl || option.removeImage">
-                                <input type="file" name="optionImages" class="form-control-file" accept="image/*" :disabled="questionType !== 'MULTIPLE_CHOICE_SINGLE' && questionType !== 'MULTIPLE_CHOICE_MULTI'">
+                                <input type="file" name="optionImages" class="form-control-file" accept="image/*"
+                                       :disabled="questionType !== 'MULTIPLE_CHOICE_SINGLE' && questionType !== 'MULTIPLE_CHOICE_MULTI'"
+                                       @change="handleImageChange($event, index)">
                             </div>
                         </div>
                         <div class="option-actions">
@@ -317,7 +315,8 @@
                         text: opt.optionText,
                         isCorrect: opt.isCorrect,
                         imageUrl: opt.attachment ? (opt.attachment.webUrl || '/attachment/' + opt.attachment.id) : null,
-                        removeImage: false
+                        removeImage: false,
+                        hasNewImage: false
                     }));
 
                     // Ensure at least 2 options
@@ -341,7 +340,7 @@
             },
 
             addOption() {
-                this.options.push({ id: Date.now(), text: '', isCorrect: false, imageUrl: null, removeImage: false });
+                this.options.push({ id: Date.now(), text: '', isCorrect: false, imageUrl: null, removeImage: false, hasNewImage: false });
             },
 
             removeOption(index) {
@@ -362,9 +361,15 @@
 
             removeOptionImage(index) {
                 this.options[index].removeImage = true;
-                // We don't remove the imageUrl immediately to allow undo if we implemented it,
-                // but for now we just hide it via x-show logic in template
                 this.options[index].imageUrl = null;
+            },
+
+            handleImageChange(event, index) {
+                if (event.target.files.length > 0) {
+                    this.options[index].hasNewImage = true;
+                } else {
+                    this.options[index].hasNewImage = false;
+                }
             },
 
             getOptionsTitle() {
