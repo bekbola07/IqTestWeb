@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${certificateName}">IQ Assessment Certificate</title>
+
+    <!-- Page setup for A4 Landscape printing -->
+    <style>
+        @page {
+            size: A4 landscape;
+            margin: 15mm;
+        }
+
+        html, body {
+            width: 297mm;
+            height: 210mm;
+            margin: 0;
+            padding: 0;
+            background: #f7f4ef;
+            font-family: "Times New Roman", Georgia, serif;
+            color: #1e1e1e;
+        }
+
+        /* Main certificate container */
+        .certificate {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            padding: 18mm;
+            box-sizing: border-box;
+            border: 4px double #2c2c2c;
+        }
+
+        /* Inner decorative border */
+        .certificate::before {
+            content: "";
+            position: absolute;
+            top: 8mm;
+            left: 8mm;
+            right: 8mm;
+            bottom: 8mm;
+            border: 2px solid #bfa76a;
+            pointer-events: none;
+        }
+
+        /* Header section */
+        .header {
+            text-align: center;
+            margin-bottom: 18mm;
+        }
+
+        .logo {
+            margin-bottom: 10mm;
+        }
+
+        .logo img {
+            height: 50px;
+        }
+
+        .certificate-title {
+            font-size: 34px;
+            letter-spacing: 3px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 0;
+        }
+
+        .subtitle-line {
+            width: 120px;
+            height: 2px;
+            background-color: #bfa76a;
+            margin: 10px auto 0 auto;
+        }
+
+        /* Body content */
+        .content {
+            text-align: center;
+            margin-top: 10mm;
+        }
+
+        .presented-to {
+            font-size: 16px;
+            margin-bottom: 6mm;
+            letter-spacing: 1px;
+        }
+
+        .user-name {
+            font-size: 30px;
+            font-weight: bold;
+            margin-bottom: 8mm;
+        }
+
+        .description {
+            font-size: 16px;
+            line-height: 1.6;
+            margin: 0 25mm 14mm 25mm;
+        }
+
+        /* Score block */
+        .score-section {
+            margin: 12mm auto;
+            text-align: center;
+        }
+
+        .score-label {
+            font-size: 16px;
+            letter-spacing: 1px;
+            margin-bottom: 4mm;
+        }
+
+        .score-value {
+            font-size: 56px;
+            font-weight: bold;
+            color: #2c2c2c;
+            border: 2px solid #bfa76a;
+            display: inline-block;
+            padding: 8mm 16mm;
+        }
+
+        /* Footer section */
+        .footer {
+            position: absolute;
+            bottom: 18mm;
+            left: 18mm;
+            right: 18mm;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .issuer {
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .issuer-name {
+            font-weight: bold;
+            margin-top: 6mm;
+        }
+
+        /* QR verification block */
+        .verification {
+            text-align: center;
+        }
+
+        .verification img {
+            width: 110px;
+            height: 110px;
+            border: 1px solid #bfa76a;
+            padding: 4mm;
+            background: #ffffff;
+        }
+
+        .verification-code {
+            font-size: 11px;
+            margin-top: 4mm;
+            color: #555555;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="certificate">
+
+    <!-- Header: Logo and Certificate Title -->
+    <div class="header">
+        <div class="logo">
+            <img th:src="@{/images/logo.png}" alt="Organization Logo"/>
+        </div>
+        <h1 class="certificate-title" th:text="${certificateName}">
+            Certificate of Intelligence Assessment
+        </h1>
+        <div class="subtitle-line"></div>
+    </div>
+
+    <!-- Main content: User name and description -->
+    <div class="content">
+        <div class="presented-to">
+            THIS CERTIFICATE IS PROUDLY PRESENTED TO
+        </div>
+
+        <div class="user-name" th:text="${userFullName}">
+            John Alexander Doe
+        </div>
+
+        <p class="description">
+            This document hereby certifies that the above-named individual has successfully completed a
+            standardized intelligence assessment designed to evaluate cognitive reasoning, analytical
+            thinking, and problem-solving abilities under controlled academic conditions.
+            The results reflected herein are issued as an official record of performance.
+        </p>
+
+        <!-- Score section -->
+        <div class="score-section">
+            <div class="score-label">ACHIEVED INTELLIGENCE SCORE</div>
+            <div class="score-value" th:text="${score}">128</div>
+        </div>
+    </div>
+
+    <!-- Footer: Issuer and QR verification -->
+    <div class="footer">
+
+        <!-- Issuer information -->
+        <div class="issuer">
+            Issued and verified by<br/>
+            <div class="issuer-name" th:text="${assessmentCreator}">
+                International Cognitive Assessment Board
+            </div>
+        </div>
+
+        <!-- QR Code verification block -->
+        <div class="verification">
+            <img th:src="'data:image/png;base64,' + ${qrCodeBase64}" alt="Verification QR Code"/>
+            <div class="verification-code" th:text="${verificationCode}">
+                VER-9F3A-82KD-2026
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
