@@ -1,10 +1,12 @@
 package org.example.iqtestweb.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.iqtestweb.entity.Certificate;
+import org.example.iqtestweb.entity.AuthorCertificate;
+import org.example.iqtestweb.entity.Quiz;
+import org.example.iqtestweb.entity.UserCertificate;
 import org.example.iqtestweb.entity.TestSession;
-import org.example.iqtestweb.entity.User;
-import org.example.iqtestweb.repository.CertificateRepository;
+import org.example.iqtestweb.repository.AuthorCertificateRepository;
+import org.example.iqtestweb.repository.UserCertificateRepository;
 import org.example.iqtestweb.repository.TestSessionRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -21,7 +23,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CertificateService {
 
-    private final CertificateRepository certificateRepository;
+    private final UserCertificateRepository userCertificateRepository;
+    private final AuthorCertificateRepository authorCertificateRepository;
     private final TestSessionRepository testSessionRepository;
     private final PdfGenerationService pdfGenerationService;
     private final QrCodeService qrCodeService;
@@ -29,61 +32,114 @@ public class CertificateService {
     @Value("${app.base-url:http://localhost:8080}")
     private String baseUrl;
 
-    private static final String CHARACTERS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // No I, O, 1, 0 to avoid confusion
+    private static final String CHARACTERS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
     private static final int CODE_LENGTH = 4;
     private final SecureRandom random = new SecureRandom();
 
     @Transactional
-    public Certificate generateCertificate(Long sessionId, String displayName) {
+    public UserCertificate generateCertificate(Long sessionId, String displayName) {
         TestSession session = testSessionRepository.findById(sessionId)
                 .orElseThrow(() -> new IllegalArgumentException("Test session not found"));
 
-        if (certificateRepository.findByTestSessionSessionId(sessionId).isPresent()) {
-            return certificateRepository.findByTestSessionSessionId(sessionId).get();
+        if (userCertificateRepository.findByTestSession_SessionId(sessionId).isPresent()) {
+            return userCertificateRepository.findByTestSession_SessionId(sessionId).get();
         }
 
         if (!session.getQuizSnapshot().getQuiz().isCertificateEnabled()) {
             throw new IllegalStateException("Certificates are not enabled for this quiz");
         }
 
-        Certificate certificate = new Certificate();
-        certificate.setVerificationCode(generateUniqueCode());
-        certificate.setCertificateName(session.getQuizSnapshot().getTitle() + " Certificate");
-        certificate.setScore(session.getIqScore()); // Assuming IQ score is what we want to display
-        certificate.setIssuedAt(LocalDateTime.now());
-        certificate.setAssessedUser(session.getUser());
-        certificate.setAssessedUserDisplayName(displayName);
-        certificate.setAssessmentOwner(session.getQuizSnapshot().getQuiz().getUser());
-        certificate.setTestSession(session);
+        AuthorCertificate authorCertificate = authorCertificateRepository.findByQuizId(session.getQuizSnapshot().getQuiz().getId())
+                .orElseGet(() -> {
+                    // Fallback: create a default author certificate for existing quizzes
+                    Quiz quiz = session.getQuizSnapshot().getQuiz();
+                    AuthorCertificate newCert = AuthorCertificate.builder()
+                            .quiz(quiz)
+                            .title(quiz.getName() + " Certificate")
+                            .description("Certificate of Completion")
+                            .createdBy(quiz.getUser())
+                            .templatePath("certificate/template")
+                            .build();
+                    return authorCertificateRepository.save(newCert);
+                });
 
-        return certificateRepository.save(certificate);
+        if (authorCertificate.getPassingScore() != null && session.getIqScore() < authorCertificate.getPassingScore()) {
+             throw new IllegalStateException("Score is below passing score for certificate");
+        }
+
+        UserCertificate certificate = UserCertificate.builder()
+                .authorCertificate(authorCertificate)
+                .assessedUser(session.getUser())
+                .testSession(session)
+                .certificateName(displayName != null ? displayName : session.getUser().getUsername())
+                .verificationCode(generateUniqueCode())
+                .build();
+
+        return userCertificateRepository.save(certificate);
     }
 
-    public Optional<Certificate> getCertificateBySessionId(Long sessionId) {
-        return certificateRepository.findByTestSessionSessionId(sessionId);
+    public Optional<UserCertificate> getUserCertificateBySessionId(Long sessionId) {
+        return userCertificateRepository.findByTestSession_SessionId(sessionId);
     }
 
+    @Transactional
+    public UserCertificate getOrCreateCertificate(Long sessionId) {
+        return userCertificateRepository.findByTestSession_SessionId(sessionId)
+                .orElseGet(() -> {
+                    TestSession session = testSessionRepository.findById(sessionId)
+                            .orElseThrow(() -> new IllegalArgumentException("Test session not found"));
+                    return generateCertificate(sessionId, session.getUser().getUsername());
+                });
+    }
+
+    @Transactional
+    public UserCertificate updateCertificateName(Long sessionId, String newName) {
+        UserCertificate certificate = userCertificateRepository.findByTestSession_SessionId(sessionId)
+                .orElseThrow(() -> new IllegalArgumentException("Certificate not found"));
+        
+        certificate.setCertificateName(newName);
+        return userCertificateRepository.save(certificate);
+    }
+
+    @Transactional
     public byte[] downloadCertificatePdf(Long sessionId) {
-        Certificate certificate = certificateRepository.findByTestSessionSessionId(sessionId)
+        UserCertificate certificate = userCertificateRepository.findByTestSession_SessionId(sessionId)
                 .orElseThrow(() -> new IllegalArgumentException("Certificate not found for this session"));
 
+        certificate.setDownloaded(true);
+        certificate.setLastDownloadedAt(LocalDateTime.now());
+        certificate.setCountDownloads(certificate.getCountDownloads() + 1);
+        userCertificateRepository.save(certificate);
+
         Map<String, Object> variables = new HashMap<>();
-        variables.put("certificateName", certificate.getCertificateName());
-        variables.put("userFullName", certificate.getAssessedUserDisplayName());
-        variables.put("score", certificate.getScore());
-        variables.put("assessmentCreator", certificate.getAssessmentOwner().getUsername()); // Or a display name if available
+        variables.put("certificateName", certificate.getAuthorCertificate().getTitle());
+        variables.put("userFullName", certificate.getCertificateName());
+        variables.put("score", certificate.getTestSession().getIqScore());
+        variables.put("assessmentCreator", certificate.getAuthorCertificate().getCreatedBy().getUsername());
         variables.put("verificationCode", certificate.getVerificationCode());
-        variables.put("issuedDate", certificate.getIssuedAt());
+        variables.put("issuedDate", certificate.getAssessmentDate());
         
         String verificationUrl = baseUrl + "/cert/verify/" + certificate.getVerificationCode();
         variables.put("qrCodeBase64", qrCodeService.generateBase64(verificationUrl));
 
-        return pdfGenerationService.generatePdfFromTemplate("certificate/template", variables);
+        String templatePath = certificate.getAuthorCertificate().getTemplatePath();
+        if (templatePath == null || templatePath.isEmpty()) {
+            templatePath = "certificate/template";
+        }
+
+        return pdfGenerationService.generatePdfFromTemplate(templatePath, variables);
     }
 
-    public Certificate verifyCertificate(String verificationCode) {
-        return certificateRepository.findByVerificationCode(verificationCode)
+    public UserCertificate verifyCertificate(String verificationCode) {
+        UserCertificate certificate = userCertificateRepository.findByVerificationCode(verificationCode)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid verification code"));
+        
+        certificate.setVerified(true);
+        certificate.setLastVerifiedAt(LocalDateTime.now());
+        certificate.setCountVerification(certificate.getCountVerification() + 1);
+        userCertificateRepository.save(certificate);
+        
+        return certificate;
     }
 
     private String generateUniqueCode() {
@@ -93,7 +149,7 @@ public class CertificateService {
                 generateRandomString(CODE_LENGTH), 
                 generateRandomString(CODE_LENGTH), 
                 Year.now().getValue());
-        } while (certificateRepository.existsByVerificationCode(code));
+        } while (userCertificateRepository.existsByVerificationCode(code));
         return code;
     }
 

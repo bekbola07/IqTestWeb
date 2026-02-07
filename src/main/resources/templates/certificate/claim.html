@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Claim Your Certificate</title>
+    <div th:replace="~{fragments :: common-styles}"></div>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        .claim-container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        .header p {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+        }
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: center;
+        }
+        .certificate-preview-wrapper {
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+        }
+        .certificate-preview {
+            aspect-ratio: 1.414 / 1; /* A4 ratio */
+            border: 10px solid #e0e7ff;
+            background: #f8f9fa;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+        .cert-title {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 1.8rem;
+            color: #374151;
+            font-weight: bold;
+        }
+        .cert-subtitle {
+            font-size: 1rem;
+            color: #6b7280;
+            margin: 0.5rem 0 1.5rem 0;
+        }
+        .cert-name {
+            font-family: 'Brush Script MT', cursive;
+            font-size: 2.5rem;
+            color: #1e3a8a;
+            border-bottom: 2px solid #93c5fd;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .cert-date, .cert-creator {
+            font-size: 0.8rem;
+            color: #9ca3af;
+        }
+        .controls-wrapper {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+        }
+        .controls-wrapper h2 {
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .btn-download {
+            background: var(--success-color);
+            color: white;
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.2rem;
+        }
+        .btn-download:hover {
+            background: #27AE60;
+        }
+        .btn-share {
+            background: #3B5998; /* Facebook blue */
+            color: white;
+            width: 100%;
+        }
+        .btn-share:hover {
+            background: #324b81;
+        }
+        .action-buttons {
+            margin-top: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        #updateStatus {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--success-color);
+            height: 1em;
+        }
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{fragments :: navbar(backLink=@{/test/results})}"></div>
+
+    <div class="claim-container" th:if="${certificate}">
+        <div class="header">
+            <h1>Claim Your Certificate</h1>
+            <p>Congratulations on your achievement! You can now claim and download your certificate.</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Certificate Preview -->
+            <div class="certificate-preview-wrapper">
+                <div class="certificate-preview">
+                    <h2 class="cert-title" th:text="${certificate.authorCertificate.title}">Certificate of Achievement</h2>
+                    <p class="cert-subtitle">is hereby awarded to</p>
+                    <h1 id="previewName" class="cert-name" th:text="${certificate.certificateName}">Your Name Here</h1>
+                    <p class="cert-date">on <span th:text="${#temporals.format(certificate.assessmentDate, 'MMMM dd, yyyy')}"></span></p>
+                    <p class="cert-creator">by <span th:text="${certificate.authorCertificate.createdBy.username}"></span></p>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls-wrapper">
+                <h2>Customize & Download</h2>
+                <div class="form-group">
+                    <label for="certificateNameInput">Name on Certificate</label>
+                    <input type="text" id="certificateNameInput" class="form-control" th:value="${certificate.certificateName}" maxlength="50">
+                    <div id="updateStatus"></div>
+                </div>
+
+                <div class="action-buttons">
+                    <a th:href="@{/api/certificates/download/{sessionId}(sessionId=${certificate.testSession.sessionId})}" class="btn btn-download">
+                        <i class="fas fa-download"></i> Download PDF
+                    </a>
+                    <button class="btn btn-share" disabled>
+                        <i class="fas fa-share-alt"></i> Share (Coming Soon)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const nameInput = document.getElementById('certificateNameInput');
+        const previewName = document.getElementById('previewName');
+        const updateStatus = document.getElementById('updateStatus');
+        const sessionId = /*[[${certificate.testSession.id}]]*/ null;
+        let debounceTimer;
+
+        if (nameInput) {
+            nameInput.addEventListener('input', (e) => {
+                const newName = e.target.value;
+                previewName.textContent = newName || 'Your Name Here';
+
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    if (newName.trim()) {
+                        updateCertificateName(newName);
+                    }
+                }, 1000); // Debounce for 1 second
+            });
+        }
+
+        function updateCertificateName(name) {
+            updateStatus.textContent = 'Saving...';
+            fetch(`/api/certificates/update-name/${sessionId}?newName=${encodeURIComponent(name)}`, {
+                method: 'POST'
+            })
+            .then(response => {
+                if (response.ok) {
+                    updateStatus.textContent = 'Name updated!';
+                    setTimeout(() => { updateStatus.textContent = ''; }, 3000);
+                } else {
+                    updateStatus.textContent = 'Error updating name.';
+                    updateStatus.style.color = 'var(--danger-color)';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                updateStatus.textContent = 'An error occurred.';
+                updateStatus.style.color = 'var(--danger-color)';
+            });
+        }
+        /*]]>*/
+    </script>
+</body>
+</html>

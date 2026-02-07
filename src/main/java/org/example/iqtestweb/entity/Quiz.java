@@ -16,7 +16,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = "questions")
+@ToString(exclude = {"questions", "authorCertificate"})
 public class Quiz {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,17 +56,29 @@ public class Quiz {
     @Column(name = "certificate_enabled")
     private boolean certificateEnabled = false;
 
-    @Column(name = "certificate_title")
+    @OneToOne(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
+    private AuthorCertificate authorCertificate;
+
+    @Transient
     private String certificateTitle;
 
-    @Column(name = "passing_score")
+    @Transient
     private Integer passingScore;
 
-    @Column(name = "certificate_template_name")
-    private String certificateTemplateName; // For future extensibility
+    @Transient
+    private String certificateDescription;
 
     @PreUpdate
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
+    }
+
+    @PostLoad
+    public void postLoad() {
+        if (authorCertificate != null) {
+            this.certificateTitle = authorCertificate.getTitle();
+            this.passingScore = authorCertificate.getPassingScore();
+            this.certificateDescription = authorCertificate.getDescription();
+        }
     }
 }

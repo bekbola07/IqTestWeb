@@ -206,7 +206,7 @@ public class TestController {
         
         boolean certificateGenerated = false;
         if (certificateEnabled) {
-            certificateGenerated = certificateService.getCertificateBySessionId(testSession.getSessionId()).isPresent();
+            certificateGenerated = certificateService.getUserCertificateBySessionId(testSession.getSessionId()).isPresent();
         }
         model.addAttribute("certificateGenerated", certificateGenerated);
 

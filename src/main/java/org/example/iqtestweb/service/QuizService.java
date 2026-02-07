@@ -2,9 +2,11 @@ package org.example.iqtestweb.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.iqtestweb.entity.Attachment;
+import org.example.iqtestweb.entity.AuthorCertificate;
 import org.example.iqtestweb.entity.Quiz;
 import org.example.iqtestweb.entity.enums.QuizStatus;
 import org.example.iqtestweb.entity.enums.QuizTimeType;
+import org.example.iqtestweb.repository.AuthorCertificateRepository;
 import org.example.iqtestweb.repository.QuizRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
 public class QuizService {
 
     private final QuizRepository quizRepository;
+    private final AuthorCertificateRepository authorCertificateRepository;
 
     public List<Quiz> getAllQuizzes() {
         return quizRepository.findAll().stream()
@@ -31,9 +34,14 @@ public class QuizService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public Quiz saveQuiz(Quiz quiz) {
         quiz.preUpdate();
-        return quizRepository.save(quiz);
+        Quiz savedQuiz = quizRepository.save(quiz);
+        
+        handleCertificateUpdate(savedQuiz);
+        
+        return savedQuiz;
     }
 
     @Transactional
@@ -63,13 +71,13 @@ public class QuizService {
         }
 
         quiz.setCertificateEnabled(quizUpdates.isCertificateEnabled());
-        if (quiz.isCertificateEnabled()) {
-            quiz.setCertificateTitle(quizUpdates.getCertificateTitle());
-            quiz.setPassingScore(quizUpdates.getPassingScore());
-        } else {
-            quiz.setCertificateTitle(null);
-            quiz.setPassingScore(null);
-        }
+        
+        // Update transient fields from updates to use in handleCertificateUpdate
+        quiz.setCertificateTitle(quizUpdates.getCertificateTitle());
+        quiz.setPassingScore(quizUpdates.getPassingScore());
+        quiz.setCertificateDescription(quizUpdates.getCertificateDescription());
+
+        handleCertificateUpdate(quiz);
 
         if (removeImage) {
             quiz.setAttachment(null);
@@ -78,6 +86,37 @@ public class QuizService {
         }
 
         return quizRepository.save(quiz);
+    }
+
+    private void handleCertificateUpdate(Quiz quiz) {
+        if (quiz.isCertificateEnabled()) {
+            AuthorCertificate authorCertificate = quiz.getAuthorCertificate();
+            if (authorCertificate == null) {
+                // Try to find by quiz ID if not loaded in relationship
+                authorCertificate = authorCertificateRepository.findByQuizId(quiz.getId()).orElse(null);
+            }
+            
+            if (authorCertificate == null) {
+                authorCertificate = AuthorCertificate.builder()
+                        .quiz(quiz)
+                        .createdBy(quiz.getUser())
+                        .templatePath("certificate/template") // Default template
+                        .build();
+            }
+            
+            // Update fields
+            if (quiz.getCertificateTitle() != null && !quiz.getCertificateTitle().isEmpty()) {
+                authorCertificate.setTitle(quiz.getCertificateTitle());
+            } else if (authorCertificate.getTitle() == null) {
+                 authorCertificate.setTitle(quiz.getName() + " Certificate");
+            }
+            
+            authorCertificate.setPassingScore(quiz.getPassingScore());
+            authorCertificate.setDescription(quiz.getCertificateDescription());
+            
+            authorCertificateRepository.save(authorCertificate);
+            quiz.setAuthorCertificate(authorCertificate); // Update reference
+        }
     }
 
     @Transactional
