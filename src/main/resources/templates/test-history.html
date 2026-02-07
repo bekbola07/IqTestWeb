@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Test History - IQ Test</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}">
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/images/favicon.ico}">
     <style>
         /* Global Reset and Typography - Classic & Highly Legible */
         body {
@@ -360,7 +362,7 @@
                                 Monday, January 01, 2024 - 10:00
                             </div>
 
-                            <h3 th:text="${test_session.quizSnapshot != null ? test_session.quizSnapshot.name : 'Test Session #' + test_session.sessionId}">Test Session #1</h3>
+                            <h3 th:text="${test_session.quizSnapshot != null ? test_session.quizSnapshot.title : 'Test Session #' + test_session.sessionId}">Test Session #1</h3>
                         </div>
                         <div>
                             <div class="test-score"

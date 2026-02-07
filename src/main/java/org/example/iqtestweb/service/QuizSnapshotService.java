@@ -23,7 +23,7 @@ public class QuizSnapshotService {
     @Transactional
     public QuizSnapshot getOrCreateSnapshot(Quiz quiz) {
         // Check if a snapshot exists for this quiz
-        Optional<QuizSnapshot> existingSnapshot = quizSnapshotRepository.findTopByOriginalQuizOrderByCreatedAtDesc(quiz);
+        Optional<QuizSnapshot> existingSnapshot = quizSnapshotRepository.findTopByQuizOrderByCreatedAtDesc(quiz);
 
         if (existingSnapshot.isPresent()) {
             QuizSnapshot snapshot = existingSnapshot.get();
@@ -40,8 +40,8 @@ public class QuizSnapshotService {
 
     private QuizSnapshot createSnapshot(Quiz quiz) {
         QuizSnapshot snapshot = new QuizSnapshot();
-        snapshot.setOriginalQuiz(quiz);
-        snapshot.setName(quiz.getName());
+        snapshot.setQuiz(quiz);
+        snapshot.setTitle(quiz.getName());
         snapshot.setQuizType(quiz.getQuizType());
         snapshot.setAttachment(quiz.getAttachment());
         snapshot.setTimeType(quiz.getTimeType());

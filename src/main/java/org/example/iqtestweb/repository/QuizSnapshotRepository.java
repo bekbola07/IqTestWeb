@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface QuizSnapshotRepository extends JpaRepository<QuizSnapshot, Long> {
-    Optional<QuizSnapshot> findTopByOriginalQuizOrderByCreatedAtDesc(Quiz originalQuiz);
+    Optional<QuizSnapshot> findTopByQuizOrderByCreatedAtDesc(Quiz originalQuiz);
     
-    List<QuizSnapshot> findByOriginalQuizId(Long originalQuizId);
+    List<QuizSnapshot> findByQuizId(Long originalQuizId);
 }

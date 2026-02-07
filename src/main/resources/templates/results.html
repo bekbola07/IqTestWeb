@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Test Results - IQ Test</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}">
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/images/favicon.ico}">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, sans-serif;
@@ -170,6 +172,11 @@
             color: #667eea;
             border: 2px solid #667eea;
         }
+        .btn-certificate {
+            background: linear-gradient(135deg, #bfa76a 0%, #e3c478 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(191, 167, 106, 0.4);
+        }
         .accuracy-bar {
             width: 100%;
             height: 10px;
@@ -195,6 +202,49 @@
         }
         .iq-score {
             animation: scoreReveal 0.5s ease-out;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .modal-input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
         }
     </style>
 </head>
@@ -260,11 +310,93 @@
 
         <!-- Action Buttons -->
         <div class="buttons">
+            <!-- Certificate Button Logic -->
+            <div th:if="${certificateEnabled}">
+                <div th:if="${certificateGenerated}">
+                    <a th:href="@{/api/certificates/download/{sessionId}(sessionId=${testSession.sessionId})}" class="btn btn-certificate">
+                        📜 Download Certificate
+                    </a>
+                </div>
+                <div th:unless="${certificateGenerated}">
+                    <button id="generateCertBtn" class="btn btn-certificate">
+                        📜 Generate Certificate
+                    </button>
+                </div>
+            </div>
+
             <a th:href="@{/dashboard}" class="btn btn-primary">Back to Dashboard</a>
             <a th:href="@{/test/select-quiz}" class="btn btn-secondary">Take Another Test</a>
             <a th:href="@{/test/history}" class="btn btn-secondary">View History</a>
         </div>
     </div>
 </div>
+
+<!-- Certificate Generation Modal -->
+<div id="certModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Generate Certificate</h2>
+        <p>Please enter the name you want to appear on your certificate:</p>
+        <input type="text" id="displayNameInput" class="modal-input" th:value="${userName}" placeholder="Enter your full name">
+        <button id="confirmGenerateBtn" class="btn btn-primary">Generate & Download</button>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var sessionId = /*[[${testSession.sessionId}]]*/ 0;
+
+    var modal = document.getElementById("certModal");
+    var btn = document.getElementById("generateCertBtn");
+    var span = document.getElementsByClassName("close")[0];
+    var confirmBtn = document.getElementById("confirmGenerateBtn");
+
+    if (btn) {
+        btn.onclick = function() {
+            modal.style.display = "block";
+        }
+    }
+
+    if (span) {
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    if (confirmBtn) {
+        confirmBtn.onclick = function() {
+            var displayName = document.getElementById("displayNameInput").value;
+            if (!displayName.trim()) {
+                alert("Please enter a name.");
+                return;
+            }
+
+            // Call API to generate certificate
+            fetch('/api/certificates/generate/' + sessionId + '?displayName=' + encodeURIComponent(displayName), {
+                method: 'POST'
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Reload page to show download button
+                    window.location.reload();
+                } else {
+                    alert("Failed to generate certificate. Please try again.");
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("An error occurred.");
+            });
+        }
+    }
+    /*]]>*/
+</script>
+
 </body>
 </html>

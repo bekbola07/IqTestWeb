@@ -21,9 +21,10 @@ public class QuizSnapshot {
 
     @ManyToOne
     @JoinColumn(name = "original_quiz_id")
-    private Quiz originalQuiz;
+    private Quiz quiz;
 
-    private String name;
+    @Column(name = "title")
+    private String title;
 
     @ManyToOne
     @JoinColumn(name = "quiz_type_id")

@@ -70,6 +70,12 @@ public class QuizController {
             Attachment attachment = attachmentService.saveAttachment(file);
             quiz.setAttachment(attachment);
         }
+        
+        if (!quiz.isCertificateEnabled()) {
+            quiz.setCertificateTitle(null);
+            quiz.setPassingScore(null);
+        }
+        
         quizService.saveQuiz(quiz);
         redirectAttributes.addFlashAttribute("success", "Quiz created successfully!");
         return "redirect:/quiz/list";
@@ -118,6 +124,11 @@ public class QuizController {
             quiz.setTimeLimitSeconds(totalSeconds);
         } else {
             quiz.setTimeLimitSeconds(null);
+        }
+        
+        if (!quiz.isCertificateEnabled()) {
+            quiz.setCertificateTitle(null);
+            quiz.setPassingScore(null);
         }
         
         Attachment newAttachment = null;

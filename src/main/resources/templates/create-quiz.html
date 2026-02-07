@@ -56,7 +56,7 @@
             display: none;
         }
 
-        .time-settings {
+        .time-settings, .certificate-settings {
             margin-top: 1rem;
             padding: 1rem;
             background: #f8f9fa;
@@ -170,6 +170,29 @@
             </div>
         </div>
 
+        <!-- Certificate Settings -->
+        <div class="form-group">
+            <label style="display: flex; align-items: center; gap: 1rem;">
+                <span>Enable Certificate</span>
+                <label class="switch">
+                    <input type="checkbox" id="certificateSwitch" th:field="*{certificateEnabled}" onchange="toggleCertificateSettings()">
+                    <span class="slider"></span>
+                </label>
+            </label>
+        </div>
+
+        <div id="certificateSettings" class="certificate-settings" style="display: none;">
+            <div class="form-group">
+                <label for="certificateTitle">Certificate Title</label>
+                <input type="text" id="certificateTitle" th:field="*{certificateTitle}" placeholder="e.g. Certificate of Achievement">
+            </div>
+            <div class="form-group">
+                <label for="passingScore">Passing Score (Optional)</label>
+                <input type="number" id="passingScore" th:field="*{passingScore}" min="0" placeholder="e.g. 80">
+                <small class="text-muted">Minimum score required to receive a certificate. Leave blank if any score qualifies.</small>
+            </div>
+        </div>
+
         <button type="submit" class="btn btn-primary">Create Quiz</button>
     </form>
 </div>
@@ -180,6 +203,10 @@
     const timeSettings = document.getElementById('timeSettings');
     const minutesInput = document.getElementById('minutes');
 
+    const certificateSwitch = document.getElementById('certificateSwitch');
+    const certificateSettings = document.getElementById('certificateSettings');
+    const certificateTitle = document.getElementById('certificateTitle');
+
     function toggleTimeSettings() {
         if (timeSwitch.checked) {
             timeSettings.style.display = 'block';
@@ -189,6 +216,16 @@
             timeSettings.style.display = 'none';
             timeTypeInput.value = 'NO_LIMIT';
             minutesInput.required = false;
+        }
+    }
+
+    function toggleCertificateSettings() {
+        if (certificateSwitch.checked) {
+            certificateSettings.style.display = 'block';
+            certificateTitle.required = true;
+        } else {
+            certificateSettings.style.display = 'none';
+            certificateTitle.required = false;
         }
     }
 
@@ -210,6 +247,7 @@
             timeSwitch.checked = true;
         }
         toggleTimeSettings();
+        toggleCertificateSettings();
     });
 </script>
 

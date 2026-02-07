@@ -62,6 +62,15 @@ public class QuizService {
             quiz.setTimeLimitSeconds(quizUpdates.getTimeLimitSeconds());
         }
 
+        quiz.setCertificateEnabled(quizUpdates.isCertificateEnabled());
+        if (quiz.isCertificateEnabled()) {
+            quiz.setCertificateTitle(quizUpdates.getCertificateTitle());
+            quiz.setPassingScore(quizUpdates.getPassingScore());
+        } else {
+            quiz.setCertificateTitle(null);
+            quiz.setPassingScore(null);
+        }
+
         if (removeImage) {
             quiz.setAttachment(null);
         } else if (newAttachment != null) {

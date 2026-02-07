@@ -3,6 +3,8 @@
 <head>
     <!-- Common Styles Fragment -->
     <div th:fragment="common-styles">
+        <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}">
+        <link rel="shortcut icon" type="image/x-icon" th:href="@{/images/favicon.ico}">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
         <style>
@@ -99,6 +101,13 @@
                 font-size: 1.25rem;
                 margin: 0;
                 color: var(--primary-color);
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .navbar h1 img {
+                height: 32px;
+                width: auto;
             }
             .user-section {
                 display: flex;
@@ -349,7 +358,12 @@
                 <a th:if="${backLink != null}" th:href="@{${backLink}}" class="btn btn-secondary" style="padding: 0.5rem 1rem; margin-right: 1rem; text-decoration: none;">
                     <i class="fas fa-arrow-left"></i> Back
                 </a>
-                <a th:href="@{/dashboard}" style="text-decoration: none; color: inherit;"><h1>IQ Assessment Platform</h1></a>
+                <a th:href="@{/dashboard}" style="text-decoration: none; color: inherit;">
+                    <h1>
+                        <img th:src="@{/images/icon.png}" alt="Logo">
+                        IQ Assessment Platform
+                    </h1>
+                </a>
             </div>
             <div class="user-section">
                 <div class="user-info">

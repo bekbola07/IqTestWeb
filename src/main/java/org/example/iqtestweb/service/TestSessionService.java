@@ -21,6 +21,8 @@ public class TestSessionService {
     private final TestSessionRepository sessionRepository;
 
     private final UserAnswerRepository userAnswerRepository;
+    
+    private final CertificateService certificateService;
 
     @Transactional
     public TestSession startSession(User user, QuizSnapshot quizSnapshot) {
@@ -72,8 +74,16 @@ public class TestSessionService {
             session.setStatus(Status.FINISHED);
 
             calculateResults(session);
+            
+            TestSession savedSession = sessionRepository.save(session);
+            
+            // Auto-generate certificate if enabled
+            if (savedSession.getQuizSnapshot().getQuiz().isCertificateEnabled()) {
+                // Use username as default display name, user can update it later if we add that feature
+                certificateService.generateCertificate(savedSession.getSessionId(), savedSession.getUser().getUsername());
+            }
 
-            return sessionRepository.save(session);
+            return savedSession;
         }
         return null;
     }
@@ -83,7 +93,16 @@ public class TestSessionService {
         session.setStatus(Status.TIMEOUT);
         session.setCompletedAt(session.getExpiresAt() != null ? session.getExpiresAt() : LocalDateTime.now());
         calculateResults(session);
-        return sessionRepository.save(session);
+        
+        TestSession savedSession = sessionRepository.save(session);
+        
+        // Auto-generate certificate if enabled (even on timeout if they passed?)
+        // For now, let's assume yes if they have a score
+        if (savedSession.getQuizSnapshot().getQuiz().isCertificateEnabled()) {
+             certificateService.generateCertificate(savedSession.getSessionId(), savedSession.getUser().getUsername());
+        }
+        
+        return savedSession;
     }
 
     private void calculateResults(TestSession session) {

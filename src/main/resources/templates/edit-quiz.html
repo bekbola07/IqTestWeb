@@ -261,7 +261,8 @@
             </div>
 
             <!-- Edit Quiz Form (Collapsible) -->
-            <div x-show="editing" x-cloak x-transition style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #E5E7EB;">
+            <div x-show="editing" x-cloak x-transition style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #E5E7EB;"
+                 x-data="{ isCertificateEnabled: '[[${quiz.certificateEnabled}]]' === 'true' }">
                 <h2 style="margin-top: 0; margin-bottom: 1.5rem;">Quiz Settings</h2>
                 <form th:action="@{/quiz/{id}/edit(id=${quiz.id})}" th:object="${quiz}" method="post" enctype="multipart/form-data">
                     <div class="form-group">
@@ -306,6 +307,32 @@
                                 </div>
                                 <small class="text-muted">Set the total time allowed for the entire quiz in minutes.</small>
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 1rem;">
+                            <span>Enable Certificate</span>
+                            <label class="switch">
+                                <input type="checkbox" th:field="*{certificateEnabled}" x-model="isCertificateEnabled">
+                                <span class="slider"></span>
+                            </label>
+                        </label>
+                        <small class="text-muted">If enabled, users will receive a downloadable certificate upon completion.</small>
+                    </div>
+
+                    <div x-show="isCertificateEnabled" x-cloak x-transition
+                         style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                        <h4>Certificate Configuration</h4>
+                        <div class="form-group">
+                            <label for="certificateTitle">Certificate Title</label>
+                            <input type="text" id="certificateTitle" th:field="*{certificateTitle}" class="form-control" placeholder="e.g. Certificate of Achievement">
+                            <small class="text-muted">The main title displayed on the certificate.</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="passingScore">Minimum Score to Pass (%)</label>
+                            <input type="number" id="passingScore" th:field="*{passingScore}" class="form-control" min="0" max="100" placeholder="e.g. 75">
+                            <small class="text-muted">The minimum percentage of correct answers required to earn the certificate.</small>
                         </div>
                     </div>
 

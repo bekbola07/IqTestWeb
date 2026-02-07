@@ -32,6 +32,7 @@ public class TestController {
     private final AnswerOptionSnapshotService answerOptionSnapshotService;
     private final QuestionSnapshotService questionSnapshotService;
     private final QuizSnapshotService quizSnapshotService;
+    private final CertificateService certificateService;
 
     @GetMapping("/select-quiz")
     public String selectQuizForTest(Model model, HttpSession session) {
@@ -198,6 +199,16 @@ public class TestController {
         model.addAttribute("totalQuestions", totalQuestions);
         model.addAttribute("iqScore", score);
         model.addAttribute("accuracy", totalQuestions > 0 ? (int) (((double) correctAnswers / totalQuestions) * 100) : 0);
+        
+        // Add certificate enabled flag and check if already generated
+        boolean certificateEnabled = testSession.getQuizSnapshot().getQuiz().isCertificateEnabled();
+        model.addAttribute("certificateEnabled", certificateEnabled);
+        
+        boolean certificateGenerated = false;
+        if (certificateEnabled) {
+            certificateGenerated = certificateService.getCertificateBySessionId(testSession.getSessionId()).isPresent();
+        }
+        model.addAttribute("certificateGenerated", certificateGenerated);
 
         session.removeAttribute("testSession"); // Clear session after showing results
 

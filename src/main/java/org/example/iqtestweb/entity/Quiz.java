@@ -53,6 +53,18 @@ public class Quiz {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
 
+    @Column(name = "certificate_enabled")
+    private boolean certificateEnabled = false;
+
+    @Column(name = "certificate_title")
+    private String certificateTitle;
+
+    @Column(name = "passing_score")
+    private Integer passingScore;
+
+    @Column(name = "certificate_template_name")
+    private String certificateTemplateName; // For future extensibility
+
     @PreUpdate
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();

@@ -163,6 +163,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Sign In - IQ Assessment Platform</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}">
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/images/favicon.ico}">
     <style>
         body {
             display: flex;
@@ -190,6 +192,14 @@
             font-size: 1.75rem;
             margin-bottom: 0.5rem;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .login-header h1 img {
+            height: 32px;
+            width: auto;
         }
         .login-header p {
             color: rgba(255,255,255,0.8);
@@ -297,7 +307,10 @@
 <body>
 <div class="login-container">
     <div class="login-header">
-        <h1>IQ Assessment Platform</h1>
+        <h1>
+            <img th:src="@{/images/icon.png}" alt="Logo">
+            IQ Assessment Platform
+        </h1>
         <p>Professional cognitive evaluation system</p>
     </div>
 

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Certificate Verification</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        .valid {
+            color: green;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .invalid {
+            color: red;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .details {
+            text-align: left;
+            margin-top: 1.5rem;
+        }
+        .detail-row {
+            margin-bottom: 0.5rem;
+        }
+        .label {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div th:if="${valid}">
+        <div class="valid">✔ Valid Certificate</div>
+        <p>This certificate is authentic and was issued by our platform.</p>
+
+        <div class="details">
+            <div class="detail-row">
+                <span class="label">Recipient:</span> <span th:text="${certificate.assessedUserDisplayName}">John Doe</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">Certificate Name:</span> <span th:text="${certificate.certificateName}">IQ Test Certificate</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">Score:</span> <span th:text="${certificate.score}">120</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">Issued Date:</span> <span th:text="${#temporals.format(certificate.issuedAt, 'dd-MM-yyyy')}">01-01-2024</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">Verification Code:</span> <span th:text="${certificate.verificationCode}">VER-XXXX</span>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${!valid}">
+        <div class="invalid">✘ Invalid Certificate</div>
+        <p>The verification code provided does not match any valid certificate in our records.</p>
+    </div>
+</div>
+
+</body>
+</html>
