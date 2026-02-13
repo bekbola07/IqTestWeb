@@ -15,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Controller
@@ -76,9 +75,9 @@ public class QuizController {
             quiz.setPassingScore(null);
         }
         
-        quizService.saveQuiz(quiz);
+        Quiz savedQuiz = quizService.saveQuiz(quiz);
         redirectAttributes.addFlashAttribute("success", "Quiz created successfully!");
-        return "redirect:/quiz/list";
+        return "redirect:/quiz/" + savedQuiz.getId() + "/edit";
     }
 
     // Edit Quiz
