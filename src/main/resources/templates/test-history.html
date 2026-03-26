@@ -3,89 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Test History - IQ Test</title>
-    <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}">
-    <link rel="shortcut icon" type="image/x-icon" th:href="@{/images/favicon.ico}">
+    <div th:replace="~{fragments :: common-styles}"></div>
     <style>
-        /* Global Reset and Typography - Classic & Highly Legible */
-        body {
-            font-family: 'Georgia', 'Times New Roman', serif;
-            /* Solid, clean background for high contrast */
-            background-color: #ffffff;
-            min-height: 100vh;
-            margin: 0;
-            padding: 0;
-            color: #212529; /* Dark charcoal for excellent readability */
-        }
-
-        /* Primary Color Palette - Conservative Tones */
-        :root {
-            --primary-color: #004a99; /* Deep Navy Blue - Trustworthy */
-            --primary-dark: #003366;
-            --secondary-color: #6c757d; /* Medium Gray */
-            --background-light: #f8f9fa; /* Very light off-white/gray */
-            --border-color: #dee2e6;
-            --shadow-subtle: 0 2px 5px rgba(0, 0, 0, 0.08);
-        }
-
-        /* Navigation Bar */
-        .navbar {
-            background: var(--primary-color);
-            padding: 1.25rem 2.5rem;
-            border-bottom: 1px solid var(--primary-dark);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
-        }
-        .navbar h1 {
-            color: white;
-            font-size: 1.75rem; /* Slightly larger title */
-            font-weight: 700;
-            margin: 0;
-            letter-spacing: 0.5px;
-        }
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            font-size: 1rem;
-        }
-        .user-info span {
-            color: #cccccc; /* Light gray text for user info */
-            font-weight: 400;
-        }
-        .navbar a {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.2s;
-            border: 1px solid transparent;
-            padding: 5px 10px;
-            border-radius: 4px;
-        }
-        .navbar a:hover {
-            color: #ffffcc; /* Slight warm tint on hover */
-            border-color: #ffffcc;
-        }
-
-        /* Main Container */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem 3rem;
-        }
-
-        /* Headings */
-        h2 {
-            color: var(--primary-dark);
-            font-size: 1.6rem;
-            font-weight: 600;
-            padding-bottom: 0.75rem;
-            margin-bottom: 2rem;
-            border-bottom: 3px solid var(--border-color);
-        }
-
         /* Statistics Summary Cards */
         .stats-summary {
             display: grid;
@@ -97,9 +16,9 @@
             background: white;
             border-radius: 8px;
             padding: 1.75rem;
-            box-shadow: var(--shadow-subtle);
+            box-shadow: var(--shadow-sm);
             text-align: center;
-            border-top: 4px solid var(--primary-color); /* Conservative highlight */
+            border-top: 4px solid var(--primary-color);
             transition: transform 0.1s;
         }
         .stat-card:hover {
@@ -111,25 +30,17 @@
             color: var(--primary-color);
         }
         .stat-value {
-            font-size: 2.2rem; /* Slightly reduced size for visual balance */
+            font-size: 2.2rem;
             font-weight: 700;
-            color: var(--primary-dark);
+            color: var(--text-main);
             line-height: 1.1;
         }
         .stat-label {
-            color: var(--secondary-color);
+            color: var(--text-secondary);
             font-size: 0.9rem;
             margin-top: 0.5rem;
             font-weight: 500;
             text-transform: uppercase;
-        }
-
-        /* General Card for Timeline */
-        .card {
-            background: white;
-            border-radius: 10px;
-            padding: 2.5rem;
-            box-shadow: var(--shadow-subtle);
         }
 
         /* Timeline Styling */
@@ -160,15 +71,15 @@
 
         /* Individual Test Card */
         .test-card {
-            background: var(--background-light);
+            background: var(--bg-body);
             border-radius: 8px;
             padding: 1.5rem;
             border: 1px solid var(--border-color);
             transition: all 0.2s;
         }
         .test-card:hover {
-            border-color: #b3cde0;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-md);
         }
         .test-header {
             display: flex;
@@ -177,20 +88,20 @@
             margin-bottom: 1rem;
         }
         .test-date {
-            color: #777;
+            color: var(--text-secondary);
             font-size: 0.95rem;
             font-style: italic;
         }
         .test-card h3 {
             margin: 0;
             font-size: 1.25rem;
-            color: var(--primary-dark);
+            color: var(--text-main);
             font-weight: 600;
         }
 
-        /* IQ Score Display - Clear and Bold */
+        /* IQ Score Display */
         .test-score {
-            font-size: 1.8rem; /* Reduced slightly for classic feel */
+            font-size: 1.8rem;
             font-weight: 700;
             padding: 0.5rem 1.2rem;
             border-radius: 6px;
@@ -200,27 +111,12 @@
             box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
         }
 
-        /* Score Color Coding - Muted Professional Palette */
-        .score-genius {
-            background-color: #ffecb3; /* Light Beige/Gold */
-            color: #b8860b; /* Darker Gold Text */
-        }
-        .score-superior {
-            background-color: #c8e6c9; /* Pale Green */
-            color: #2e7d32; /* Dark Green Text */
-        }
-        .score-high {
-            background-color: #bbdefb; /* Pale Blue */
-            color: #1565c0; /* Medium Blue Text */
-        }
-        .score-average {
-            background-color: #cfd8dc; /* Light Gray/Blue */
-            color: #455a64; /* Dark Gray Text */
-        }
-        .score-low {
-            background-color: #ffcdd2; /* Pale Red */
-            color: #c62828; /* Dark Red Text */
-        }
+        /* Score Color Coding */
+        .score-genius { background-color: #FEF3C7; color: #92400E; }
+        .score-superior { background-color: #D1FAE5; color: #065F46; }
+        .score-high { background-color: #DBEAFE; color: #1E40AF; }
+        .score-average { background-color: #F3F4F6; color: #374151; }
+        .score-low { background-color: #FEE2E2; color: #991B1B; }
 
         /* Test Details Grid */
         .test-details {
@@ -240,32 +136,17 @@
             color: var(--primary-color);
         }
         .detail-label {
-            color: var(--secondary-color);
+            color: var(--text-secondary);
             font-size: 0.85rem;
             margin-top: 0.2rem;
             text-transform: uppercase;
-        }
-
-        /* Interpretation Text */
-        .test-card > div:last-child {
-            margin-top: 1.5rem;
-            padding-top: 1rem;
-            border-top: 1px dashed var(--border-color);
-            font-size: 0.9rem;
-        }
-        .test-card > div:last-child strong {
-            color: #333;
-            font-weight: 600;
         }
 
         /* Empty State */
         .empty-state {
             text-align: center;
             padding: 4rem 2rem;
-            color: #555;
-            background-color: #fcfcfc;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
         }
         .empty-state-icon {
             font-size: 3rem;
@@ -273,43 +154,19 @@
             color: var(--primary-color);
         }
         .empty-state h3 {
-            color: var(--primary-dark);
+            color: var(--text-main);
             margin-bottom: 0.5rem;
             font-size: 1.4rem;
-        }
-
-        /* Button Style - Traditional */
-        .btn-start {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 14px 35px;
-            border: none;
-            border-radius: 5px; /* Sharper corner radius */
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            margin-top: 1.5rem;
-            box-shadow: 0 3px 6px rgba(0, 74, 153, 0.4);
-            transition: all 0.2s ease;
-        }
-        .btn-start:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-1px);
         }
     </style>
 </head>
 <body>
-<nav class="navbar">
-    <h1>📚 Your Test History</h1>
-    <div class="user-info">
-        <span th:text="${userName}">User</span>
-        <a th:href="@{/dashboard}">← Back to Dashboard</a>
-    </div>
-</nav>
+
+<div th:replace="~{fragments :: navbar(backLink='/dashboard')}"></div>
 
 <div class="container">
+    <h1>Your Test History</h1>
+
     <!-- Statistics Summary -->
     <div class="stats-summary">
         <div class="stat-card">
@@ -335,7 +192,6 @@
             <div class="stat-value" th:text="${avgAccuracy + '%'}">0%</div>
             <div class="stat-label">Avg Accuracy</div>
         </div>
-
     </div>
 
     <!-- Test History -->
@@ -347,7 +203,7 @@
             <div class="empty-state-icon">📭</div>
             <h3>No Tests Yet</h3>
             <p>You haven't taken any tests yet. Start your first IQ test now!</p>
-            <a th:href="@{/test/select-quiz}" class="btn-start">🚀 Start Your First Test</a>
+            <a th:href="@{/test/select-quiz}" class="btn btn-primary" style="margin-top: 1.5rem;">🚀 Start Your First Test</a>
         </div>
 
         <!-- Timeline -->
@@ -391,16 +247,16 @@
                         </div>
                     </div>
 
-                    <div th:if="${test_session.iqScore != null}" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e0e0e0;">
+                    <div th:if="${test_session.iqScore != null}" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
                         <strong>Interpretation: </strong>
-                        <span th:if="${test_session.iqScore >= 130}" style="color: #996600;">🌟 Genius - Exceptional intelligence!</span>
-                        <span th:if="${test_session.iqScore >= 120 and test_session.iqScore < 130}" style="color: #006633;">⭐ Superior - Excellent performance!</span>
-                        <span th:if="${test_session.iqScore >= 110 and test_session.iqScore < 120}" style="color: #006600;">✨ High Average - Great job!</span>
-                        <span th:if="${test_session.iqScore >= 90 and test_session.iqScore < 110}" style="color: #003366;">👍 Average - Good work!</span>
-                        <span th:if="${test_session.iqScore < 90}" style="color: #cc3300;">💪 Keep practicing!</span>
+                        <span th:if="${test_session.iqScore >= 130}" style="color: #92400E;">🌟 Genius - Exceptional intelligence!</span>
+                        <span th:if="${test_session.iqScore >= 120 and test_session.iqScore < 130}" style="color: #065F46;">⭐ Superior - Excellent performance!</span>
+                        <span th:if="${test_session.iqScore >= 110 and test_session.iqScore < 120}" style="color: #1E40AF;">✨ High Average - Great job!</span>
+                        <span th:if="${test_session.iqScore >= 90 and test_session.iqScore < 110}" style="color: #374151;">👍 Average - Good work!</span>
+                        <span th:if="${test_session.iqScore < 90}" style="color: #991B1B;">💪 Keep practicing!</span>
                     </div>
 
-                    <div th:if="${test_session.completedAt == null}" style="margin-top: 1rem; color: #ff9900; font-weight: 600;">
+                    <div th:if="${test_session.completedAt == null}" style="margin-top: 1rem; color: var(--warning-color); font-weight: 600;">
                         ⏳ Test in progress...
                     </div>
                 </div>
