@@ -5,44 +5,25 @@
     <title>Select Assessment</title>
     <div th:replace="~{fragments :: common-styles}"></div>
     <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .hero-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 4rem 2rem;
-            text-align: center;
-            border-radius: 0 0 30px 30px;
-            margin-bottom: 3rem;
-        }
-        .hero-section h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-        .hero-section p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
         .quiz-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 2rem;
-            padding: 0 2rem;
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-xl);
         }
         .quiz-card {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
             overflow: hidden;
             display: flex;
             flex-direction: column;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: 1px solid var(--border-color);
         }
         .quiz-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
         }
         .quiz-image {
             width: 100%;
@@ -50,7 +31,7 @@
             object-fit: cover;
         }
         .quiz-content {
-            padding: 1.5rem;
+            padding: var(--spacing-lg);
             flex-grow: 1;
             display: flex;
             flex-direction: column;
@@ -58,29 +39,33 @@
         .quiz-title {
             font-size: 1.25rem;
             font-weight: 600;
-            color: #333;
-            margin-bottom: 0.5rem;
+            color: var(--text-main);
+            margin-bottom: var(--spacing-sm);
         }
         .quiz-meta {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            color: #6c757d;
+            color: var(--text-secondary);
             font-size: 0.9rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: var(--spacing-md);
         }
         .badge {
             padding: 0.3rem 0.75rem;
             border-radius: 20px;
             font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
         }
         .badge-type {
-            background-color: #e9ecef;
-            color: #495057;
+            background-color: var(--bg-body);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
         }
         .badge-time {
-            background-color: #d6f5e7;
-            color: #198754;
+            background-color: #e0f2f7; /* Light blue */
+            color: #0288d1; /* Darker blue */
         }
         .quiz-actions {
             margin-top: auto; /* Pushes button to the bottom */
@@ -90,7 +75,7 @@
             padding: 0.75rem;
             font-size: 1rem;
             font-weight: 600;
-            border-radius: 8px;
+            border-radius: var(--radius-md);
         }
     </style>
 </head>
@@ -98,14 +83,14 @@
 
 <div th:replace="~{fragments :: navbar(backLink='/dashboard')}"></div>
 
-<div class="hero-section">
-    <h1>Choose Your Challenge</h1>
-    <p>Select an assessment below to test your skills.</p>
-</div>
-
 <div class="container">
-    <div th:if="${#lists.isEmpty(quizzes)}" class="alert alert-info text-center">
-        No assessments are available at the moment. Please check back later.
+    <h1>Select Your Assessment</h1>
+    <p style="margin-bottom: var(--spacing-xl); color: var(--text-secondary);">Choose an assessment below to test your skills and measure your IQ.</p>
+
+    <div th:if="${#lists.isEmpty(quizzes)}" class="card empty-state">
+        <div class="empty-state-icon"><i class="fas fa-box-open"></i></div>
+        <h3>No Assessments Available</h3>
+        <p>There are no IQ assessments available at the moment. Please check back later!</p>
     </div>
 
     <div class="quiz-grid" th:if="${!#lists.isEmpty(quizzes)}">
