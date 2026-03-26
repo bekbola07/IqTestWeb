@@ -6,21 +6,22 @@
     <div th:replace="~{fragments :: common-styles}"></div>
     <style>
         body {
-            background-color: #f4f7f9;
+            background-color: var(--bg-body);
             font-family: 'Inter', sans-serif;
-            padding-top: 80px; /* Space for fixed header */
+            padding-top: 70px;
+            min-height: 100vh;
         }
 
-        /* Header */
+        /* Header - Professional & Balanced */
         .assessment-header {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             background: white;
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-            border-bottom: 1px solid #e5e7eb;
+            padding: 0.75rem 2rem;
+            box-shadow: var(--shadow-sm);
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -32,111 +33,121 @@
             gap: 0.75rem;
         }
         .user-badge img {
-            width: 40px;
-            height: 40px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            border: 2px solid #3498db;
+            border: 2px solid var(--primary-color);
         }
         .timer {
-            font-size: 1.5rem;
+            font-size: 1.35rem;
             font-weight: 700;
-            color: #e74c3c;
+            color: var(--danger-color);
             background-color: #fdecea;
-            padding: 0.5rem 1rem;
+            padding: 0.4rem 1rem;
             border-radius: 8px;
         }
 
         /* Progress Bar */
         .progress-container {
             max-width: 900px;
-            margin: 2rem auto 0;
-            padding: 0 2rem;
+            margin: 1rem auto;
+            padding: 0 1.5rem;
         }
         .progress-info {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.4rem;
             font-size: 0.9rem;
-            color: #7f8c8d;
-            font-weight: 500;
+            color: var(--text-secondary);
+            font-weight: 600;
         }
         .progress-bar {
             width: 100%;
-            height: 8px;
+            height: 7px;
             background: #e5e7eb;
             border-radius: 10px;
             overflow: hidden;
         }
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #3498db 0%, #2980b9 100%);
+            background: var(--primary-color);
             transition: width 0.4s ease;
         }
 
-        /* Main Content */
+        /* Main Container */
         .container {
             max-width: 900px;
-            margin: 1rem auto;
-            padding: 0 2rem 2rem;
+            margin: 0 auto;
+            padding: 0 1.5rem 2rem;
         }
         .question-card {
             background: white;
-            border-radius: 12px;
+            border-radius: var(--radius-lg);
             padding: 2rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            border: 1px solid #e5e7eb;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
         }
         .question-number {
-            color: #7f8c8d;
-            font-size: 0.875rem;
-            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
         }
         .question-text {
-            font-size: 1.5rem;
-            color: #2c3e50;
-            line-height: 1.6;
-            margin-bottom: 2rem;
+            font-size: 1.35rem;
+            color: var(--text-main);
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
             font-weight: 500;
         }
         .question-image {
             max-width: 100%;
-            height: auto;
+            max-height: 35vh; /* Balanced height for visibility without pushing content too far */
+            object-fit: contain;
             border-radius: 8px;
             margin-bottom: 2rem;
-            border: 1px solid #e5e7eb;
+            border: 1px solid var(--border-color);
             cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .question-image:hover {
-            transform: scale(1.02);
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        /* Option Cards */
+        /* Option Cards - Balanced & Clickable */
         .options-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
+            grid-template-columns: 1fr;
+            gap: 0.85rem;
         }
+        @media (min-width: 768px) {
+            .options-grid {
+                /* Intelligent layout: stacks horizontally if space permits */
+                grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            }
+        }
+
         .option-card {
             position: relative;
-            background: #f8f9fa;
-            padding: 1.5rem;
+            background: #f9fafb;
+            padding: 1rem 1.5rem;
             border: 2px solid #e5e7eb;
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
         .option-card:hover {
-            border-color: #a9cce3;
-            background: #eaf2f8;
+            border-color: #cbd5e1;
+            background: #f1f5f9;
         }
         .option-card.selected {
-            border-color: #3498db;
-            background: #eaf2f8;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+            border-color: var(--primary-color);
+            background: #f0f9ff;
+            box-shadow: 0 2px 4px rgba(52, 152, 219, 0.1);
         }
         .option-card input[type="radio"] {
             position: absolute;
@@ -144,66 +155,76 @@
             width: 0;
             height: 0;
         }
+
+        /* Radio Icon - Standard 20px */
         .radio-icon {
-            position: absolute;
-            top: 1rem;
-            left: 1rem;
-            width: 24px;
-            height: 24px;
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
             border: 2px solid #bdc3c7;
             border-radius: 50%;
             background: white;
+            position: relative;
         }
         .option-card.selected .radio-icon {
-            border-color: #3498db;
-            background-color: #3498db;
+            border-color: var(--primary-color);
+            background-color: var(--primary-color);
         }
         .radio-icon::after {
             content: '';
             position: absolute;
             display: none;
-            left: 6px;
-            top: 6px;
-            width: 8px;
-            height: 8px;
+            left: 5px;
+            top: 5px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
             background: white;
         }
         .option-card.selected .radio-icon::after {
             display: block;
         }
+
         .option-content {
-            padding-left: 30px; /* Space for radio icon */
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
         .option-text {
-            font-size: 1.1rem;
-            color: #2c3e50;
+            font-size: 1.05rem;
+            color: var(--text-main);
+            font-weight: 400;
         }
         .option-image {
-            max-width: 100%;
-            border-radius: 6px;
-            margin-top: 1rem;
-            cursor: pointer;
+            max-width: 100px;
+            max-height: 60px;
+            object-fit: contain;
+            border-radius: 4px;
         }
 
         /* Action Buttons */
         .actions-footer {
             margin-top: 2rem;
-            text-align: right;
+            display: flex;
+            justify-content: flex-end;
         }
         .btn-next {
-            background: #3498db;
+            background: var(--primary-color);
             color: white;
-            padding: 0.875rem 2.5rem;
+            padding: 0.85rem 2.5rem;
             border: none;
             border-radius: 8px;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
         }
         .btn-next:hover:not(:disabled) {
-            background: #2980b9;
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
         }
         .btn-next:disabled {
             opacity: 0.5;
@@ -216,15 +237,10 @@
         .lightbox-close { position: absolute; top: 20px; right: 30px; color: white; font-size: 40px; cursor: pointer; }
 
         @media (max-width: 768px) {
-            .options-grid {
-                grid-template-columns: 1fr;
-            }
-            .assessment-header {
-                padding: 1rem;
-            }
-            .timer {
-                font-size: 1.2rem;
-            }
+            .container { padding: 0 1rem 1.5rem; }
+            .question-card { padding: 1.5rem; }
+            .question-text { font-size: 1.25rem; }
+            .btn-next { width: 100%; }
         }
     </style>
 </head>
@@ -239,7 +255,6 @@
     <div id="timer" class="timer" th:if="${timeLimitSeconds != null}">00:00</div>
 </header>
 
-<!-- Progress Bar -->
 <div class="progress-container">
     <div class="progress-info">
         <span>Question <span th:text="${currentIndex + 1}">1</span> of <span th:text="${totalQuestions}">20</span></span>
@@ -252,7 +267,7 @@
 
 <div class="container">
     <form id="questionForm" th:action="@{/test/submit-answer}" method="post">
-        <!-- Hidden fields must be preserved -->
+        <!-- Hidden fields -->
         <input type="hidden" name="questionSnapshotId" th:value="${questionSnapshot.snapshotId}">
         <input type="hidden" name="nextIndex" th:value="${currentIndex + 1}">
         <input type="hidden" id="timeTakenSeconds" name="timeTakenSeconds" value="0">
@@ -260,7 +275,8 @@
         <div class="question-card">
             <div class="question-number">Question <span th:text="${currentIndex + 1}">1</span></div>
 
-            <div th:if="${questionSnapshot.questionText != null and !questionSnapshot.questionText.isEmpty()}" class="question-text" th:text="${questionSnapshot.questionText}"></div>
+            <div th:if="${questionSnapshot.questionText != null and !questionSnapshot.questionText.isEmpty()}"
+                 class="question-text" th:text="${questionSnapshot.questionText}"></div>
 
             <img th:if="${questionSnapshot.attachment != null}"
                  th:src="@{${questionSnapshot.attachment.webUrl != null ? questionSnapshot.attachment.webUrl : '/attachment/' + questionSnapshot.attachment.id}}"
@@ -268,7 +284,6 @@
                  alt="Question visual"
                  onclick="openLightbox(this.src)">
 
-            <!-- Options Grid -->
             <div class="options-grid">
                 <label th:each="option : ${optionSnapshots}" class="option-card">
                     <input type="radio"
@@ -277,7 +292,8 @@
                            required>
                     <div class="radio-icon"></div>
                     <div class="option-content">
-                        <span th:if="${option.optionText != null and !option.optionText.isEmpty()}" class="option-text" th:text="${option.optionText}"></span>
+                        <span th:if="${option.optionText != null and !option.optionText.isEmpty()}"
+                              class="option-text" th:text="${option.optionText}"></span>
                         <img th:if="${option.attachment != null}"
                              th:src="@{${option.attachment.webUrl != null ? option.attachment.webUrl : '/attachment/' + option.attachment.id}}"
                              class="option-image"
@@ -286,13 +302,13 @@
                     </div>
                 </label>
             </div>
-        </div>
 
-        <div class="actions-footer">
-            <button type="submit" id="submitBtn" class="btn-next"
-                    th:text="${currentIndex + 1 < totalQuestions} ? 'Next Question →' : 'Finish Assessment'"
-                    disabled>
-            </button>
+            <div class="actions-footer">
+                <button type="submit" id="submitBtn" class="btn-next"
+                        th:text="${currentIndex + 1 < totalQuestions} ? 'Next Question →' : 'Finish Assessment'"
+                        disabled>
+                </button>
+            </div>
         </div>
     </form>
 </div>
@@ -319,7 +335,6 @@
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
                 timerElement.textContent = "00:00";
-                // Auto-submit form without validation if time expires
                 const radios = form.querySelectorAll('input[type="radio"]');
                 radios.forEach(radio => radio.removeAttribute('required'));
                 form.submit();
@@ -331,7 +346,7 @@
             }
         };
         const timerInterval = setInterval(updateTimer, 1000);
-        updateTimer(); // Initial display
+        updateTimer();
     }
 
     // --- Time Taken Tracker ---
@@ -344,18 +359,13 @@
     const optionCards = document.querySelectorAll('.option-card');
     optionCards.forEach(card => {
         card.addEventListener('click', () => {
-            // Un-select all other cards
             optionCards.forEach(c => c.classList.remove('selected'));
-            // Select this card
             card.classList.add('selected');
-            // Check the hidden radio button inside
             card.querySelector('input[type="radio"]').checked = true;
-            // Enable the next button
             submitBtn.disabled = false;
         });
     });
 
-    // --- Lightbox Logic ---
     function openLightbox(src) {
         document.getElementById('lightbox-img').src = src;
         document.getElementById('lightbox').style.display = 'flex';
@@ -365,7 +375,6 @@
         document.getElementById('lightbox').style.display = 'none';
     }
 
-    // --- Keyboard Accessibility ---
     document.addEventListener('keydown', function(event) {
         if (event.key === "Escape") {
             closeLightbox();
