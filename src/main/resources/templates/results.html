@@ -3,282 +3,292 @@
 <head>
     <meta charset="UTF-8">
     <title>Test Results - IQ Test</title>
-    <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}">
-    <link rel="shortcut icon" type="image/x-icon" th:href="@{/images/favicon.ico}">
+    <div th:replace="~{fragments :: common-styles}"></div>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f7f4ef;
             min-height: 100vh;
-            padding: 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             margin: 0;
+            padding: 0;
         }
-        .results-container {
-            max-width: 700px;
-            width: 100%;
+        .results-wrapper {
+            max-width: 900px;
+            margin: 4rem auto;
+            padding: 0 1.5rem;
         }
         .results-card {
             background: white;
-            border-radius: 20px;
-            padding: 3rem;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+        .results-header {
+            background: white;
+            padding: 3rem 2rem;
             text-align: center;
+            border-bottom: 1px solid #edf2f7;
         }
         .user-info {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 1rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }
         .user-info img {
-            width: 50px;
-            height: 50px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
-            border: 3px solid #667eea;
+            border: 2px solid #3498db;
         }
-        .user-info .user-details {
+        .user-details {
             text-align: left;
         }
         .user-name {
             font-weight: 700;
             font-size: 1.1rem;
-            color: #333;
+            color: #2d3748;
         }
         .user-email {
-            font-size: 0.9rem;
-            color: #999;
+            font-size: 0.85rem;
+            color: #718096;
         }
-        h1 {
-            color: #667eea;
-            margin-bottom: 1rem;
-            font-size: 2rem;
+
+        .score-circle {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            border: 8px solid #edf2f7;
+            margin: 0 auto 1.5rem auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            transition: transform 0.3s ease;
         }
-        .completion-badge {
-            background: #00cc66;
-            color: white;
-            padding: 0.5rem 1.5rem;
-            border-radius: 25px;
-            display: inline-block;
-            margin-bottom: 2rem;
-            font-weight: 600;
+        .score-circle:hover {
+            transform: scale(1.05);
         }
         .iq-score {
-            font-size: 5rem;
-            font-weight: bold;
-            color: #667eea;
-            margin: 1rem 0;
+            font-size: 4rem;
+            font-weight: 800;
+            color: #2c3e50;
             line-height: 1;
         }
         .score-label {
-            font-size: 1.2rem;
-            color: #666;
-            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
         }
+
         .category-badge {
             display: inline-block;
             padding: 0.5rem 1.5rem;
-            border-radius: 20px;
-            font-weight: bold;
-            margin-bottom: 2rem;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 1rem;
         }
-        .category-genius {
-            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-            color: #996600;
-        }
-        .category-superior {
-            background: linear-gradient(135deg, #00ff88 0%, #00cc66 100%);
-            color: #006633;
-        }
-        .category-high {
-            background: linear-gradient(135deg, #66ff99 0%, #33cc66 100%);
-            color: #006600;
-        }
-        .category-average {
-            background: linear-gradient(135deg, #99ccff 0%, #6699ff 100%);
-            color: #003366;
-        }
-        .category-below {
-            background: linear-gradient(135deg, #ffaa88 0%, #ff8866 100%);
-            color: #cc3300;
-        }
-        .stats {
+
+        /* Color variants matching the system style */
+        .category-genius { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+        .category-superior { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+        .category-high { background: #ecfdf5; color: #047857; border: 1px solid #d1fae5; }
+        .category-average { background: #e0f2fe; color: #075985; border: 1px solid #bae6fd; }
+        .category-below { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+
+        .stats-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 1.5rem;
-            margin: 2rem 0;
+            padding: 2rem;
+            background: #f8fafc;
         }
-        .stat-box {
-            background: #f8f9fa;
-            padding: 1.5rem;
-            border-radius: 10px;
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
         }
-        .stat-value {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #667eea;
+        .stat-val {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a202c;
+            display: block;
         }
-        .stat-label {
-            color: #666;
-            margin-top: 0.5rem;
-            font-size: 0.9rem;
+        .stat-lbl {
+            font-size: 0.8rem;
+            color: #718096;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-top: 0.25rem;
         }
-        .interpretation {
-            background: #f0f4ff;
-            padding: 1.5rem;
-            border-radius: 10px;
-            margin-top: 2rem;
-            text-align: left;
-            border-left: 4px solid #667eea;
+
+        .interpretation-section {
+            padding: 2rem;
+            border-top: 1px solid #edf2f7;
         }
-        .interpretation h3 {
-            color: #667eea;
-            margin-bottom: 0.5rem;
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-        .interpretation p {
-            color: #666;
-            line-height: 1.6;
+        .interpretation-text {
+            color: #4a5568;
+            line-height: 1.7;
+            font-size: 1rem;
+            background: #f1f5f9;
+            padding: 1.25rem;
+            border-radius: 8px;
         }
-        .buttons {
+
+        .action-area {
+            padding: 2rem;
             display: flex;
             gap: 1rem;
             justify-content: center;
-            margin-top: 2rem;
             flex-wrap: wrap;
+            border-top: 1px solid #edf2f7;
         }
+
         .btn {
-            padding: 12px 30px;
-            border: none;
-            border-radius: 25px;
-            font-size: 16px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
             font-weight: 600;
-            transition: transform 0.2s;
+            text-decoration: none;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .btn-primary { background: #3498db; color: white; }
+        .btn-primary:hover { background: #2980b9; }
+
+        .btn-outline { border: 1px solid #cbd5e0; color: #4a5568; background: white; }
+        .btn-outline:hover { background: #f7fafc; border-color: #a0aec0; }
+
+        .btn-gold {
+            background: #bfa76a;
             color: white;
+            box-shadow: 0 4px 12px rgba(191, 167, 106, 0.3);
         }
-        .btn-secondary {
-            background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
+        .btn-gold:hover { background: #a68f55; transform: translateY(-1px); }
+
+        .accuracy-container {
+            padding: 0 2rem 2rem 2rem;
         }
-        .btn-certificate {
-            background: linear-gradient(135deg, #bfa76a 0%, #e3c478 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(191, 167, 106, 0.4);
-        }
-        .accuracy-bar {
-            width: 100%;
-            height: 10px;
-            background: #e0e0e0;
+        .progress-track {
+            height: 12px;
+            background: #e2e8f0;
             border-radius: 10px;
             overflow: hidden;
-            margin-top: 0.5rem;
         }
-        .accuracy-fill {
+        .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            transition: width 1s ease-out;
+            background: #3498db;
+            border-radius: 10px;
         }
-        @keyframes scoreReveal {
-            from {
-                opacity: 0;
-                transform: scale(0.5);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-        .iq-score {
-            animation: scoreReveal 0.5s ease-out;
+
+        @media (max-width: 640px) {
+            .results-wrapper { margin: 1rem auto; }
+            .score-circle { width: 140px; height: 140px; }
+            .iq-score { font-size: 3rem; }
         }
     </style>
 </head>
 <body>
-<div class="results-container">
-    <div class="results-card">
-        <!-- User Info -->
-        <div class="user-info" th:if="${userName}">
-            <img th:src="${profilePicture}" alt="Profile" th:if="${profilePicture}">
-            <div class="user-details">
-                <div class="user-name" th:text="${userName}">User Name</div>
-                <div class="user-email" th:text="${userEmail}" th:if="${userEmail}">user@email.com</div>
+    <div th:replace="~{fragments :: navbar(backLink=@{/dashboard})}"></div>
+
+    <div class="results-wrapper">
+        <div class="results-card">
+            <!-- Header Section -->
+            <div class="results-header">
+                <div class="user-info" th:if="${userName}">
+                    <img th:src="${profilePicture != null ? profilePicture : '/images/default-avatar.png'}" alt="Profile">
+                    <div class="user-details">
+                        <div class="user-name" th:text="${userName}">User Name</div>
+                        <div class="user-email" th:text="${userEmail}" th:if="${userEmail}">user@email.com</div>
+                    </div>
+                </div>
+
+                <div class="score-circle">
+                    <div class="iq-score" th:text="${iqScore != null ? iqScore : 'N/A'}">120</div>
+                    <div class="score-label">IQ Score</div>
+                </div>
+
+                <div th:if="${category}"
+                     class="category-badge"
+                     th:classappend="${iqScore >= 130} ? 'category-genius' :
+                                    (${iqScore >= 120} ? 'category-superior' :
+                                    (${iqScore >= 110} ? 'category-high' :
+                                    (${iqScore >= 90} ? 'category-average' : 'category-below')))"
+                     th:text="${category}">Category</div>
+
+                <p style="color: #718096; margin: 0;">Congratulations on completing the assessment!</p>
             </div>
-        </div>
 
-        <h1>🎉 Test Completed!</h1>
-        <div class="completion-badge">✓ Successfully Completed</div>
-
-        <!-- IQ Score -->
-        <div class="iq-score" th:text="${iqScore != null ? iqScore : 'N/A'}">120</div>
-        <div class="score-label">Your IQ Score</div>
-
-        <!-- Category Badge -->
-        <div th:if="${category}"
-             class="category-badge"
-             th:classappend="${iqScore >= 130} ? 'category-genius' :
-                                (${iqScore >= 120} ? 'category-superior' :
-                                (${iqScore >= 110} ? 'category-high' :
-                                (${iqScore >= 90} ? 'category-average' : 'category-below')))"
-             th:text="${category}">Category</div>
-
-        <!-- Statistics -->
-        <div class="stats">
-            <div class="stat-box">
-                <div class="stat-value" th:text="${correctAnswers != null ? correctAnswers : 0}">15</div>
-                <div class="stat-label">Correct Answers</div>
+            <!-- Stats Bar -->
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-val" th:text="${correctAnswers != null ? correctAnswers : 0}">15</span>
+                    <span class="stat-lbl">Correct</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-val" th:text="${totalQuestions != null ? totalQuestions : 0}">20</span>
+                    <span class="stat-lbl">Total</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-val" th:text="${testSession.timeTakenSeconds != null ? (testSession.timeTakenSeconds / 60) + ':' + #numbers.formatInteger(testSession.timeTakenSeconds % 60, 2) : 'N/A'}">15:00</span>
+                    <span class="stat-lbl">Time</span>
+                </div>
             </div>
-            <div class="stat-box">
-                <div class="stat-value" th:text="${totalQuestions != null ? totalQuestions : 0}">20</div>
-                <div class="stat-label">Total Questions</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-value" th:text="${testSession.timeTakenSeconds != null ? (testSession.timeTakenSeconds / 60) + ':' + #numbers.formatInteger(testSession.timeTakenSeconds % 60, 2) : 'N/A'}">15:00</div>
-                <div class="stat-label">Time Taken (mm:ss)</div>
-            </div>
-        </div>
 
-        <!-- Accuracy Bar -->
-        <div th:if="${accuracy != null}">
-            <div style="text-align: left; font-weight: 600; color: #667eea; margin-bottom: 0.5rem;">
-                Accuracy: <span th:text="${accuracy} + '%'">75%</span>
+            <!-- Accuracy -->
+            <div class="accuracy-container" th:if="${accuracy != null}">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 600; color: #4a5568;">
+                    <span>Assessment Accuracy</span>
+                    <span th:text="${accuracy} + '%'">75%</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" th:style="'width: ' + ${accuracy} + '%'"></div>
+                </div>
             </div>
-            <div class="accuracy-bar">
-                <div class="accuracy-fill" th:style="'width: ' + ${accuracy} + '%'"></div>
+
+            <!-- Interpretation -->
+            <div class="interpretation-section" th:if="${interpretation}">
+                <div class="section-title">
+                    <i class="fas fa-chart-line" style="color: #3498db;"></i>
+                    Analysis
+                </div>
+                <div class="interpretation-text" th:text="${interpretation}">
+                    Your score interpretation details.
+                </div>
             </div>
-        </div>
 
-        <!-- Interpretation -->
-        <div class="interpretation" th:if="${interpretation}">
-            <h3>📊 Score Interpretation</h3>
-            <p th:text="${interpretation}">Your score interpretation will appear here.</p>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="buttons">
-            <!-- Certificate Button Logic -->
-            <div th:if="${certificateEnabled}">
-                <a th:href="@{/certificate/claim/{sessionId}(sessionId=${testSession.sessionId})}" class="btn btn-certificate">
-                    📜 Claim Certificate
+            <!-- Actions -->
+            <div class="action-area">
+                <div th:if="${certificateEnabled}">
+                    <a th:href="@{/certificate/claim/{sessionId}(sessionId=${testSession.sessionId})}" class="btn btn-gold">
+                        <i class="fas fa-certificate"></i> Claim Certificate
+                    </a>
+                </div>
+                <a th:href="@{/dashboard}" class="btn btn-primary">
+                    <i class="fas fa-th-large"></i> Dashboard
+                </a>
+                <a th:href="@{/test/select-quiz}" class="btn btn-outline">
+                    <i class="fas fa-redo"></i> Retake
+                </a>
+                <a th:href="@{/test/history}" class="btn btn-outline">
+                    <i class="fas fa-history"></i> History
                 </a>
             </div>
-
-            <a th:href="@{/dashboard}" class="btn btn-primary">Back to Dashboard</a>
-            <a th:href="@{/test/select-quiz}" class="btn btn-secondary">Take Another Test</a>
-            <a th:href="@{/test/history}" class="btn btn-secondary">View History</a>
         </div>
     </div>
-</div>
 </body>
 </html>
