@@ -3,44 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <title>Certificate Verification</title>
+    <div th:replace="~{fragments :: common-styles}"></div>
     <style>
         body {
-            font-family: sans-serif;
-            background-color: #f4f4f4;
+            background: #f7f4ef;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
+            padding: 20px;
         }
         .container {
             background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
             text-align: center;
-            max-width: 500px;
+            max-width: 550px;
             width: 100%;
+            border: 1px solid #e2e8f0;
         }
-        .valid {
-            color: green;
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
+        .status-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
         }
-        .invalid {
-            color: red;
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
-        .details {
-            text-align: left;
-            margin-top: 1.5rem;
-        }
-        .detail-row {
+        .valid-icon { color: #27ae60; }
+        .invalid-icon { color: #e74c3c; }
+
+        .status-title {
+            font-size: 1.8rem;
+            font-weight: 700;
             margin-bottom: 0.5rem;
+            color: #2c3e50;
         }
+
+        .status-desc {
+            color: #7f8c8d;
+            margin-bottom: 2rem;
+            line-height: 1.5;
+        }
+
+        .details-box {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: left;
+            border: 1px solid #edf2f7;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
         .label {
-            font-weight: bold;
+            font-weight: 600;
+            color: #64748b;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .value {
+            color: #1e293b;
+            font-weight: 700;
+        }
+
+        .btn-home {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .btn-home:hover {
+            background: #2980b9;
         }
     </style>
 </head>
@@ -48,32 +95,49 @@
 
 <div class="container">
     <div th:if="${valid}">
-        <div class="valid">✔ Valid Certificate</div>
-        <p>This certificate is authentic and was issued by our platform.</p>
+        <div class="status-icon valid-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h1 class="status-title">Authentic Certificate</h1>
+        <p class="status-desc">This digital certificate is valid and was officially issued by our platform's intelligence assessment system.</p>
 
-        <div class="details">
+        <div class="details-box">
             <div class="detail-row">
-                <span class="label">Recipient:</span> <span th:text="${certificate.assessedUserDisplayName}">John Doe</span>
+                <span class="label">Recipient</span>
+                <span class="value" th:text="${certificate.certificateName}">John Doe</span>
             </div>
             <div class="detail-row">
-                <span class="label">Certificate Name:</span> <span th:text="${certificate.certificateName}">IQ Test Certificate</span>
+                <span class="label">Assessment</span>
+                <span class="value" th:text="${certificate.authorCertificate.title}">IQ Test Certificate</span>
             </div>
             <div class="detail-row">
-                <span class="label">Score:</span> <span th:text="${certificate.score}">120</span>
+                <span class="label">Verified Score</span>
+                <span class="value" th:text="${certificate.testSession.iqScore}">120</span>
             </div>
             <div class="detail-row">
-                <span class="label">Issued Date:</span> <span th:text="${#temporals.format(certificate.issuedAt, 'dd-MM-yyyy')}">01-01-2024</span>
+                <span class="label">Issue Date</span>
+                <span class="value" th:text="${#temporals.format(certificate.assessmentDate, 'MMMM dd, yyyy')}">January 01, 2024</span>
             </div>
             <div class="detail-row">
-                <span class="label">Verification Code:</span> <span th:text="${certificate.verificationCode}">VER-XXXX</span>
+                <span class="label">Serial Number</span>
+                <span class="value" style="font-family: monospace;" th:text="${certificate.verificationCode}">VER-XXXX-XXXX</span>
             </div>
         </div>
     </div>
 
     <div th:if="${!valid}">
-        <div class="invalid">✘ Invalid Certificate</div>
-        <p>The verification code provided does not match any valid certificate in our records.</p>
+        <div class="status-icon invalid-icon">
+            <i class="fas fa-times-circle"></i>
+        </div>
+        <h1 class="status-title">Verification Failed</h1>
+        <p class="status-desc">The provided verification code does not match any official record in our database. This document cannot be verified as authentic.</p>
+
+        <div class="details-box" style="text-align: center; color: #e74c3c;">
+            <strong>Warning:</strong> This may be an altered or fraudulent document.
+        </div>
     </div>
+
+    <a href="/" class="btn-home">Return to Home</a>
 </div>
 
 </body>

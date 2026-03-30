@@ -3,43 +3,44 @@
 <head>
     <meta charset="UTF-8" />
     <title th:text="${certificateName}">IQ Assessment Certificate</title>
-
-    <!-- Page setup for A4 Landscape printing -->
     <style>
+        /* PDF Generation specific settings */
         @page {
             size: A4 landscape;
-            margin: 15mm;
+            margin: 0; /* Remove default page margins */
         }
 
         html, body {
-            width:100%;
+            width: 297mm;
             height: 210mm;
             margin: 0;
             padding: 0;
-            background: #f7f4ef;
+            background: #ffffff;
             font-family: "Times New Roman", Georgia, serif;
-            color: #1e1e1e;
+            overflow: hidden; /* Prevent content overflow into second page */
         }
 
-        /* Main certificate container */
+        /* Main certificate container - fills the whole page */
         .certificate {
             position: relative;
-            width: 100%;
-            height: 100%;
-            background: #ffffff;
-            padding: 18mm;
+            width: 297mm;
+            height: 210mm;
+            padding: 15mm;
             box-sizing: border-box;
-            border: 4px double #2c2c2c;
+            background-color: #fdfcf9;
+            border: 15px solid #2c2c2c;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
-        /* Inner decorative border */
-        .certificate::before {
-            content: "";
+        /* Inner decorative gold border */
+        .inner-border {
             position: absolute;
-            top: 8mm;
-            left: 8mm;
-            right: 8mm;
-            bottom: 8mm;
+            top: 5mm;
+            left: 5mm;
+            right: 5mm;
+            bottom: 5mm;
             border: 2px solid #bfa76a;
             pointer-events: none;
         }
@@ -47,131 +48,163 @@
         /* Header section */
         .header {
             text-align: center;
-            margin-bottom: 18mm;
+            margin-bottom: 8mm;
         }
 
         .logo {
-            margin-bottom: 10mm;
+            margin-bottom: 5mm;
         }
 
         .logo img {
-            height: 50px;
+            height: 45px;
         }
 
         .certificate-title {
-            font-size: 34px;
-            letter-spacing: 3px;
+            font-size: 38px;
+            letter-spacing: 4px;
             font-weight: bold;
             text-transform: uppercase;
             margin: 0;
+            color: #1a1a1a;
         }
 
         .subtitle-line {
-            width: 120px;
+            width: 150px;
             height: 2px;
             background-color: #bfa76a;
-            margin: 10px auto 0 auto;
+            margin: 8px auto 0 auto;
         }
 
         /* Body content */
         .content {
             text-align: center;
-            margin-top: 10mm;
+            padding: 0 20mm;
         }
 
         .presented-to {
             font-size: 16px;
             margin-bottom: 6mm;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
+            color: #444;
+            font-style: italic;
         }
 
         .user-name {
-            font-size: 30px;
+            font-size: 42px;
             font-weight: bold;
-            margin-bottom: 8mm;
+            margin-bottom: 6mm;
+            color: #1e3a8a;
+            border-bottom: 1px solid #eee;
+            display: inline-block;
+            padding: 0 20px 5px 20px;
         }
 
         .description {
-            font-size: 16px;
-            line-height: 1.6;
-            margin: 0 25mm 14mm 25mm;
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 0 auto 8mm auto;
+            max-width: 200mm;
+            color: #333;
         }
 
         /* Score block */
         .score-section {
-            margin: 12mm auto;
+            margin: 5mm auto;
             text-align: center;
         }
 
         .score-label {
-            font-size: 16px;
+            font-size: 14px;
             letter-spacing: 1px;
-            margin-bottom: 4mm;
+            margin-bottom: 3mm;
+            color: #666;
         }
 
         .score-value {
-            font-size: 56px;
+            font-size: 48px;
             font-weight: bold;
             color: #2c2c2c;
             border: 2px solid #bfa76a;
             display: inline-block;
-            padding: 8mm 16mm;
+            padding: 5mm 15mm;
+            background: #fff;
         }
 
         /* Footer section */
         .footer {
-            position: absolute;
-            bottom: 18mm;
-            left: 18mm;
-            right: 18mm;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
+            margin-top: auto;
+            display: table;
+            width: 100%;
+            padding: 0 10mm;
+        }
+
+        .footer-cell {
+            display: table-cell;
+            vertical-align: bottom;
+            width: 33.33%;
         }
 
         .issuer {
-            font-size: 15px;
-            line-height: 1.6;
+            text-align: left;
+            font-size: 13px;
+            color: #555;
         }
 
         .issuer-name {
             font-weight: bold;
-            margin-top: 6mm;
+            font-size: 15px;
+            color: #1a1a1a;
+            margin-top: 5px;
+            border-top: 1px solid #bfa76a;
+            padding-top: 5px;
+            display: inline-block;
         }
 
         /* QR verification block */
         .verification {
+            text-align: right;
+        }
+
+        .qr-container {
+            display: inline-block;
             text-align: center;
         }
 
         .verification img {
-            width: 110px;
-            height: 110px;
-            border: 1px solid #bfa76a;
-            padding: 4mm;
+            width: 85px;
+            height: 85px;
+            border: 1px solid #eee;
+            padding: 2mm;
             background: #ffffff;
         }
 
         .verification-code {
-            font-size: 11px;
-            margin-top: 4mm;
-            color: #555555;
+            font-size: 10px;
+            margin-top: 3mm;
+            color: #777;
             letter-spacing: 1px;
+            font-family: monospace;
+        }
+
+        .date-section {
+            text-align: center;
+            font-size: 13px;
+            color: #555;
         }
     </style>
 </head>
 <body>
 
 <div class="certificate">
+    <div class="inner-border"></div>
 
     <!-- Header: Logo and Certificate Title -->
     <div class="header">
         <div class="logo">
-            <!-- Removed th:src because it requires IWebContext which is not available during PDF generation -->
-            <img src="/static/images/icon.png" alt="Organization Logo"/>
+            <img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/award.svg" style="height: 40px; filter: contrast(0.5);" alt="Icon"/>
         </div>
         <h1 class="certificate-title" th:text="${certificateName}">
-            Certificate of Intelligence Assessment
+            Certificate of Intelligence
         </h1>
         <div class="subtitle-line"></div>
     </div>
@@ -179,7 +212,7 @@
     <!-- Main content: User name and description -->
     <div class="content">
         <div class="presented-to">
-            THIS CERTIFICATE IS PROUDLY PRESENTED TO
+            THIS OFFICIAL DOCUMENT IS PROUDLY PRESENTED TO
         </div>
 
         <div class="user-name" th:text="${userFullName}">
@@ -187,35 +220,39 @@
         </div>
 
         <p class="description">
-            This document hereby certifies that the above-named individual has successfully completed a
-            standardized intelligence assessment designed to evaluate cognitive reasoning, analytical
-            thinking, and problem-solving abilities under controlled academic conditions.
-            The results reflected herein are issued as an official record of performance.
+            For successfully demonstrating exceptional cognitive capabilities in our standardized
+            intelligence assessment. This award recognizes proficiency in logical reasoning,
+            pattern recognition, and complex problem-solving strategies evaluated
+            under supervised testing conditions.
         </p>
 
         <!-- Score section -->
         <div class="score-section">
-            <div class="score-label">ACHIEVED INTELLIGENCE SCORE</div>
+            <div class="score-label">VERIFIED ASSESSMENT SCORE</div>
             <div class="score-value" th:text="${score}">128</div>
         </div>
     </div>
 
-    <!-- Footer: Issuer and QR verification -->
+    <!-- Footer: Issuer, Date and QR verification -->
     <div class="footer">
-
-        <!-- Issuer information -->
-        <div class="issuer">
-            Issued and verified by<br />
+        <div class="footer-cell issuer">
+            Authorized Signature<br />
             <div class="issuer-name" th:text="${assessmentCreator}">
-                International Cognitive Assessment Board
+                Lead Psychometrician
             </div>
         </div>
 
-        <!-- QR Code verification block -->
-        <div class="verification">
-            <img th:src="'data:image/png;base64,' + ${qrCodeBase64}" alt="Verification QR Code" />
-            <div class="verification-code" th:text="${verificationCode}">
-                VER-9F3A-82KD-2026
+        <div class="footer-cell date-section">
+            Date of Issue<br />
+            <strong th:text="${#temporals.format(issuedDate, 'MMMM dd, yyyy')}">January 01, 2024</strong>
+        </div>
+
+        <div class="footer-cell verification">
+            <div class="qr-container">
+                <img th:src="'data:image/png;base64,' + ${qrCodeBase64}" alt="QR" />
+                <div class="verification-code" th:text="${verificationCode}">
+                    VER-9F3A-82KD-2024
+                </div>
             </div>
         </div>
     </div>
