@@ -103,6 +103,7 @@ public class CertificateService {
 
     @Transactional
     public byte[] downloadCertificatePdf(Long sessionId) {
+        // Use findByTestSession_SessionId to ensure we get the latest state from DB
         UserCertificate certificate = userCertificateRepository.findByTestSession_SessionId(sessionId)
                 .orElseThrow(() -> new IllegalArgumentException("Certificate not found for this session"));
 
