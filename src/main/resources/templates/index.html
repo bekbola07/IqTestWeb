@@ -38,7 +38,7 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>IQ Assessment Platform - Professional Cognitive Evaluation</title>
+    <title>IQ baholash platformasi - Professional kognitiv baholash</title>
     <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}">
     <link rel="shortcut icon" type="image/x-icon" th:href="@{/images/favicon.ico}">
     <style>
@@ -191,33 +191,33 @@
     <div class="header-content">
         <div class="logo">
             <img th:src="@{/images/icon.png}" alt="Logo">
-            IQ Assessment Platform
+            IQ baholash platformasi
         </div>
         <div class="header-actions" sec:authorize="!isAuthenticated()">
-            <a th:href="@{/login}" class="btn btn-outline">Sign In</a>
-            <a th:href="@{/signup}" class="btn btn-primary">Get Started</a>
+            <a th:href="@{/login}" class="btn btn-outline">Kirish</a>
+            <a th:href="@{/signup}" class="btn btn-primary">Boshlash</a>
         </div>
     </div>
 </div>
 
 <div sec:authorize="isAuthenticated()" class="user-badge">
     <img th:src="${session.profilePicture}" alt="" th:if="${session.profilePicture}">
-    <span style="font-weight: 500; color: #2C3E50;" th:text="${session.userName}">User</span>
+    <span style="font-weight: 500; color: #2C3E50;" th:text="${session.userName}">Foydalanuvchi</span>
     <form th:action="@{/logout}" method="post" style="margin: 0;">
-        <button type="submit" style="background: #E74C3C; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 500;">Sign Out</button>
+        <button type="submit" style="background: #E74C3C; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 500;">Chiqish</button>
     </form>
 </div>
 
 <div class="hero">
-    <h1>Professional Cognitive Assessment</h1>
-    <p>Evaluate your intellectual capabilities through our scientifically validated assessment system. Get detailed insights into your cognitive performance.</p>
+    <h1>Professional kognitiv baholash</h1>
+    <p>Ilmiy jihatdan tasdiqlangan baholash tizimimiz orqali intellektual qobiliyatingizni baholang. Kognitiv faoliyatingiz haqida batafsil ma'lumotga ega bo'ling.</p>
     <div class="cta-buttons">
         <div sec:authorize="isAuthenticated()">
-            <a th:href="@{/test/start}" class="btn btn-primary btn-large">Start Assessment</a>
-            <a th:href="@{/dashboard}" class="btn btn-outline btn-large" style="color: white; border-color: white;">Dashboard</a>
+            <a th:href="@{/test/start}" class="btn btn-primary btn-large">Baholashni boshlash</a>
+            <a th:href="@{/dashboard}" class="btn btn-outline btn-large" style="color: white; border-color: white;">Boshqaruv paneli</a>
         </div>
         <div sec:authorize="!isAuthenticated()">
-            <a th:href="@{/signup}" class="btn btn-primary btn-large">Begin Evaluation</a>
+            <a th:href="@{/signup}" class="btn btn-primary btn-large">Baholashni boshlash</a>
         </div>
     </div>
 </div>
@@ -225,18 +225,18 @@
 <div class="features">
     <div class="feature">
         <div class="feature-icon">⚡</div>
-        <h3>Efficient Testing</h3>
-        <p>Complete assessment in approximately 15-20 minutes with optimized question sequencing</p>
+        <h3>Samarali testlash</h3>
+        <p>Optimallashtirilgan savollar ketma-ketligi bilan baholashni taxminan 15-20 daqiqada yakunlang</p>
     </div>
     <div class="feature">
         <div class="feature-icon">📊</div>
-        <h3>Validated Methodology</h3>
-        <p>Based on established psychometric principles and standardized scoring protocols</p>
+        <h3>Tasdiqlangan metodologiya</h3>
+        <p>Belgilangan psixometrik printsiplar va standartlashtirilgan ball hisoblash protokollariga asoslangan</p>
     </div>
     <div class="feature">
         <div class="feature-icon">🎯</div>
-        <h3>Immediate Results</h3>
-        <p>Receive comprehensive score analysis and performance breakdown instantly</p>
+        <h3>Tezkor natijalar</h3>
+        <p>Keng qamrovli ball tahlili va natijalar haqida darhol ma'lumot oling</p>
     </div>
 </div>
 </body>

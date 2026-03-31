@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Quiz Management</title>
+    <title>Testlarni boshqarish</title>
     <div th:replace="~{fragments :: common-styles}"></div>
     <style>
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
@@ -29,33 +29,33 @@
 
 <div class="container">
     <div class="header">
-        <h1>My Quizzes</h1>
-        <a th:href="@{/quiz/create}" class="btn btn-primary"><i class="fas fa-plus"></i> Create New Quiz</a>
+        <h1>Mening testlarim</h1>
+        <a th:href="@{/quiz/create}" class="btn btn-primary"><i class="fas fa-plus"></i> Yangi test yaratish</a>
     </div>
 
     <table>
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Type</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <th>Nomi</th>
+                <th>Turi</th>
+                <th>Holati</th>
+                <th>Amallar</th>
             </tr>
         </thead>
         <tbody>
             <tr th:each="quiz : ${quizzes}">
                 <td>
-                    <img th:if="${quiz.attachment != null}" th:src="@{'/attachment/' + ${quiz.attachment.id}}" class="quiz-image" alt="Quiz Image">
-                    <span th:text="${quiz.name}">Quiz Name</span>
+                    <img th:if="${quiz.attachment != null}" th:src="@{'/attachment/' + ${quiz.attachment.id}}" class="quiz-image" alt="Test rasmi">
+                    <span th:text="${quiz.name}">Test nomi</span>
                 </td>
-                <td th:text="${quiz.quizType.name}">Quiz Type</td>
+                <td th:text="${quiz.quizType.name}">Test turi</td>
                 <td>
-                    <span th:if="${quiz.status.name() == 'STARTED'}" class="status status-started">Started</span>
-                    <span th:if="${quiz.status.name() == 'STOPPED'}" class="status status-stopped">Stopped</span>
+                    <span th:if="${quiz.status.name() == 'STARTED'}" class="status status-started">Boshlangan</span>
+                    <span th:if="${quiz.status.name() == 'STOPPED'}" class="status status-stopped">To'xtatilgan</span>
                 </td>
                 <td class="actions">
-                    <a th:href="@{/quiz/{id}/edit(id=${quiz.id})}" class="btn btn-secondary"><i class="fas fa-edit"></i> Edit</a>
-                    <a th:href="@{/quiz/{id}/delete(id=${quiz.id})}" class="btn btn-danger" onclick="return confirm('Are you sure?')"><i class="fas fa-trash"></i></a>
+                    <a th:href="@{/quiz/{id}/edit(id=${quiz.id})}" class="btn btn-secondary"><i class="fas fa-edit"></i> Tahrirlash</a>
+                    <a th:href="@{/quiz/{id}/delete(id=${quiz.id})}" class="btn btn-danger" onclick="return confirm('Ishonchingiz komilmi?')"><i class="fas fa-trash"></i></a>
                     <a th:if="${quiz.status.name() == 'STOPPED'}" th:href="@{/quiz/{id}/start(id=${quiz.id})}" class="btn btn-success"><i class="fas fa-play"></i></a>
                     <a th:if="${quiz.status.name() == 'STARTED'}" th:href="@{/quiz/{id}/stop(id=${quiz.id})}" class="btn btn-warning"><i class="fas fa-stop"></i></a>
                 </td>

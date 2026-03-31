@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>View Quiz</title>
+    <title>Testni ko'rish</title>
     <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}">
     <link rel="shortcut icon" type="image/x-icon" th:href="@{/images/favicon.ico}">
     <style>
@@ -53,25 +53,25 @@
 <body>
 
 <div class="container">
-    <img th:if="${quiz.attachment != null}" th:src="@{'/attachment/' + ${quiz.attachment.id}}" class="quiz-image" alt="Quiz Image">
-    <h1 th:text="${quiz.name}">Quiz Name</h1>
-    <p>Created by: <span th:text="${quiz.user.username}">User</span></p>
-    <p>Type: <span th:text="${quiz.quizType.name}">Type</span></p>
+    <img th:if="${quiz.attachment != null}" th:src="@{'/attachment/' + ${quiz.attachment.id}}" class="quiz-image" alt="Test rasmi">
+    <h1 th:text="${quiz.name}">Test nomi</h1>
+    <p>Yaratuvchi: <span th:text="${quiz.user.username}">Foydalanuvchi</span></p>
+    <p>Turi: <span th:text="${quiz.quizType.name}">Turi</span></p>
 
-    <a th:href="@{/test/start/{quizId}(quizId=${quiz.id})}" class="btn">Start Quiz</a>
+    <a th:href="@{/test/start/{quizId}(quizId=${quiz.id})}" class="btn">Testni boshlash</a>
 
     <div th:each="question : ${quiz.questions}" class="question">
         <h3 th:text="${question.questionText}"></h3>
-        <img th:if="${question.attachment != null}" th:src="@{'/attachment/' + ${question.attachment.id}}" class="question-image" alt="Question Image">
+        <img th:if="${question.attachment != null}" th:src="@{'/attachment/' + ${question.attachment.id}}" class="question-image" alt="Savol rasmi">
         <ul>
             <li th:each="option : ${question.answerOptions}">
                 <span th:text="${option.optionText}"></span>
-                <img th:if="${option.attachment != null}" th:src="@{'/attachment/' + ${option.attachment.id}}" class="option-image" alt="Option Image">
+                <img th:if="${option.attachment != null}" th:src="@{'/attachment/' + ${option.attachment.id}}" class="option-image" alt="Variant rasmi">
             </li>
         </ul>
     </div>
 
-    <a th:href="@{/quiz/{id}/add-question(id=${quiz.id})}" class="btn" style="margin-top: 2rem;">Add Question</a>
+    <a th:href="@{/quiz/{id}/add-question(id=${quiz.id})}" class="btn" style="margin-top: 2rem;">Savol qo'shish</a>
 </div>
 
 </body>

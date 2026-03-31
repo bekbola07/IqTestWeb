@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Test Results - IQ Test</title>
+    <title>Test natijalari - IQ testi</title>
     <div th:replace="~{fragments :: common-styles}"></div>
     <style>
         body {
@@ -87,8 +87,7 @@
 
         .category-badge {
             display: inline-block;
-            padding: 0.5rem 1.5rem;
-            border-radius: 30px;
+            padding: 0.5rem 1.5rem;            border-radius: 30px;
             font-weight: 700;
             font-size: 1rem;
             margin-bottom: 1rem;
@@ -210,16 +209,16 @@
             <!-- Header Section -->
             <div class="results-header">
                 <div class="user-info" th:if="${userName}">
-                    <img th:src="${profilePicture != null ? profilePicture : '/images/default-avatar.png'}" alt="Profile">
+                    <img th:src="${profilePicture != null ? profilePicture : '/images/default-avatar.png'}" alt="Profil">
                     <div class="user-details">
-                        <div class="user-name" th:text="${userName}">User Name</div>
+                        <div class="user-name" th:text="${userName}">Foydalanuvchi ismi</div>
                         <div class="user-email" th:text="${userEmail}" th:if="${userEmail}">user@email.com</div>
                     </div>
                 </div>
 
                 <div class="score-circle">
                     <div class="iq-score" th:text="${iqScore != null ? iqScore : 'N/A'}">120</div>
-                    <div class="score-label">IQ Score</div>
+                    <div class="score-label">IQ Balli</div>
                 </div>
 
                 <div th:if="${category}"
@@ -228,31 +227,31 @@
                                     (${iqScore >= 120} ? 'category-superior' :
                                     (${iqScore >= 110} ? 'category-high' :
                                     (${iqScore >= 90} ? 'category-average' : 'category-below')))"
-                     th:text="${category}">Category</div>
+                     th:text="${category}">Kategoriya</div>
 
-                <p style="color: #718096; margin: 0;">Congratulations on completing the assessment!</p>
+                <p style="color: #718096; margin: 0;">Baholashni yakunlaganingiz bilan tabriklaymiz!</p>
             </div>
 
             <!-- Stats Bar -->
             <div class="stats-grid">
                 <div class="stat-item">
                     <span class="stat-val" th:text="${correctAnswers != null ? correctAnswers : 0}">15</span>
-                    <span class="stat-lbl">Correct</span>
+                    <span class="stat-lbl">To'g'ri</span>
                 </div>
                 <div class="stat-item">
                     <span class="stat-val" th:text="${totalQuestions != null ? totalQuestions : 0}">20</span>
-                    <span class="stat-lbl">Total</span>
+                    <span class="stat-lbl">Jami</span>
                 </div>
                 <div class="stat-item">
                     <span class="stat-val" th:text="${testSession.timeTakenSeconds != null ? (testSession.timeTakenSeconds / 60) + ':' + #numbers.formatInteger(testSession.timeTakenSeconds % 60, 2) : 'N/A'}">15:00</span>
-                    <span class="stat-lbl">Time</span>
+                    <span class="stat-lbl">Vaqt</span>
                 </div>
             </div>
 
             <!-- Accuracy -->
             <div class="accuracy-container" th:if="${accuracy != null}">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 600; color: #4a5568;">
-                    <span>Assessment Accuracy</span>
+                    <span>Baholash aniqligi</span>
                     <span th:text="${accuracy} + '%'">75%</span>
                 </div>
                 <div class="progress-track">
@@ -264,10 +263,10 @@
             <div class="interpretation-section" th:if="${interpretation}">
                 <div class="section-title">
                     <i class="fas fa-chart-line" style="color: #3498db;"></i>
-                    Analysis
+                    Tahlil
                 </div>
                 <div class="interpretation-text" th:text="${interpretation}">
-                    Your score interpretation details.
+                    Sizning balingiz talqini tafsilotlari.
                 </div>
             </div>
 
@@ -275,17 +274,17 @@
             <div class="action-area">
                 <div th:if="${certificateEnabled}">
                     <a th:href="@{/certificate/claim/{sessionId}(sessionId=${testSession.sessionId})}" class="btn btn-gold">
-                        <i class="fas fa-certificate"></i> Claim Certificate
+                        <i class="fas fa-certificate"></i> Sertifikatni olish
                     </a>
                 </div>
                 <a th:href="@{/dashboard}" class="btn btn-primary">
-                    <i class="fas fa-th-large"></i> Dashboard
+                    <i class="fas fa-th-large"></i> Boshqaruv paneli
                 </a>
                 <a th:href="@{/test/select-quiz}" class="btn btn-outline">
-                    <i class="fas fa-redo"></i> Retake
+                    <i class="fas fa-redo"></i> Qayta topshirish
                 </a>
                 <a th:href="@{/test/history}" class="btn btn-outline">
-                    <i class="fas fa-history"></i> History
+                    <i class="fas fa-history"></i> Tarix
                 </a>
             </div>
         </div>

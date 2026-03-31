@@ -136,7 +136,7 @@
                 <tr th:each="user_session : ${sessions}">
                     <td th:text="${user_session.sessionId}"></td>
                     <td th:text="${user_session.user.username}"></td>
-                    <td th:text="${user_session.quizSnapshot != null ? user_session.quizSnapshot.name : 'N/A'}"></td>
+                    <td th:text="${user_session.quizSnapshot != null ? user_session.quizSnapshot.quiz.name : 'N/A'}"></td>
                     <td th:text="${user_session.iqScore}"></td>
                     <td th:text="${user_session.completedAt != null ? #temporals.format(user_session.completedAt, 'dd-MMM-yyyy HH:mm') : 'In Progress'}"></td>
                 </tr>

@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Test History - IQ Test</title>
+    <title>Testlar tarixi - IQ testi</title>
     <div th:replace="~{fragments :: common-styles}"></div>
     <style>
         /* Statistics Summary Cards */
@@ -165,45 +165,45 @@
 <div th:replace="~{fragments :: navbar(backLink='/dashboard')}"></div>
 
 <div class="container">
-    <h1>Your Test History</h1>
+    <h1>Sizning testlaringiz tarixi</h1>
 
     <!-- Statistics Summary -->
     <div class="stats-summary">
         <div class="stat-card">
             <div class="stat-icon">📝</div>
             <div class="stat-value" th:text="${totalTests}">0</div>
-            <div class="stat-label">Total Tests</div>
+            <div class="stat-label">Jami testlar</div>
         </div>
 
         <div class="stat-card">
             <div class="stat-icon">🏆</div>
             <div class="stat-value" th:text="${bestScore}">0</div>
-            <div class="stat-label">Best Score</div>
+            <div class="stat-label">Eng yaxshi natija</div>
         </div>
 
         <div class="stat-card">
             <div class="stat-icon">📈</div>
             <div class="stat-value" th:text="${avgScore}">0</div>
-            <div class="stat-label">Average Score</div>
+            <div class="stat-label">O'rtacha ball</div>
         </div>
 
         <div class="stat-card">
             <div class="stat-icon">✅</div>
             <div class="stat-value" th:text="${avgAccuracy + '%'}">0%</div>
-            <div class="stat-label">Avg Accuracy</div>
+            <div class="stat-label">O'rtacha aniqlik</div>
         </div>
     </div>
 
     <!-- Test History -->
     <div class="card">
-        <h2>Test History Timeline</h2>
+        <h2>Testlar tarixi xronologiyasi</h2>
 
         <!-- Empty State -->
         <div th:if="${#lists.isEmpty(sessions)}" class="empty-state">
             <div class="empty-state-icon">📭</div>
-            <h3>No Tests Yet</h3>
-            <p>You haven't taken any tests yet. Start your first IQ test now!</p>
-            <a th:href="@{/test/select-quiz}" class="btn btn-primary" style="margin-top: 1.5rem;">🚀 Start Your First Test</a>
+            <h3>Hali testlar yo'q</h3>
+            <p>Siz hali hech qanday test topshirmadingiz. Birinchi IQ testingizni hozir boshlang!</p>
+            <a th:href="@{/test/select-quiz}" class="btn btn-primary" style="margin-top: 1.5rem;">🚀 Birinchi testni boshlash</a>
         </div>
 
         <!-- Timeline -->
@@ -214,11 +214,11 @@
                     <div class="test-header">
                         <div>
                             <div class="test-date"
-                                 th:text="${#temporals.format(test_session.completedAt != null ? test_session.completedAt : test_session.startedAt, 'EEEE, MMMM dd, yyyy - HH:mm')}">
-                                Monday, January 01, 2024 - 10:00
+                                 th:text="${#temporals.format(test_session.completedAt != null ? test_session.completedAt : test_session.startedAt, 'EEEE, dd-MMMM, yyyy - HH:mm')}">
+                                Dushanba, 01-Yanvar, 2024 - 10:00
                             </div>
 
-                            <h3 th:text="${test_session.quizSnapshot != null ? test_session.quizSnapshot.title : 'Test Session #' + test_session.sessionId}">Test Session #1</h3>
+                            <h3 th:text="${test_session.quizSnapshot != null ? test_session.quizSnapshot.title : 'Test seansi #' + test_session.sessionId}">Test seansi #1</h3>
                         </div>
                         <div>
                             <div class="test-score"
@@ -235,29 +235,29 @@
                     <div class="test-details">
                         <div class="detail-item">
                             <div class="detail-value" th:text="${test_session.totalQuestions ?: '-'}">20</div>
-                            <div class="detail-label">Questions</div>
+                            <div class="detail-label">Savollar</div>
                         </div>
                         <div class="detail-item">
                             <div class="detail-value" th:text="${test_session.correctAnswers ?: '-'}">15</div>
-                            <div class="detail-label">Correct</div>
+                            <div class="detail-label">To'g'ri</div>
                         </div>
                         <div class="detail-item">
-                            <div class="detail-value" th:text="${test_session.timeTakenSeconds != null ? #numbers.formatInteger(test_session.timeTakenSeconds / 60, 0) + ' min' : '-'}">15 min</div>
-                            <div class="detail-label">Time Taken</div>
+                            <div class="detail-value" th:text="${test_session.timeTakenSeconds != null ? #numbers.formatInteger(test_session.timeTakenSeconds / 60, 0) + ' daqiqa' : '-'}">15 daqiqa</div>
+                            <div class="detail-label">Sarflangan vaqt</div>
                         </div>
                     </div>
 
                     <div th:if="${test_session.iqScore != null}" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
-                        <strong>Interpretation: </strong>
-                        <span th:if="${test_session.iqScore >= 130}" style="color: #92400E;">🌟 Genius - Exceptional intelligence!</span>
-                        <span th:if="${test_session.iqScore >= 120 and test_session.iqScore < 130}" style="color: #065F46;">⭐ Superior - Excellent performance!</span>
-                        <span th:if="${test_session.iqScore >= 110 and test_session.iqScore < 120}" style="color: #1E40AF;">✨ High Average - Great job!</span>
-                        <span th:if="${test_session.iqScore >= 90 and test_session.iqScore < 110}" style="color: #374151;">👍 Average - Good work!</span>
-                        <span th:if="${test_session.iqScore < 90}" style="color: #991B1B;">💪 Keep practicing!</span>
+                        <strong>Talqin: </strong>
+                        <span th:if="${test_session.iqScore >= 130}" style="color: #92400E;">🌟 Daholik - Ajoyib intellekt!</span>
+                        <span th:if="${test_session.iqScore >= 120 and test_session.iqScore < 130}" style="color: #065F46;">⭐ Yuqori - Ajoyib natija!</span>
+                        <span th:if="${test_session.iqScore >= 110 and test_session.iqScore < 120}" style="color: #1E40AF;">✨ O'rtachadan yuqori - Yaxshi natija!</span>
+                        <span th:if="${test_session.iqScore >= 90 and test_session.iqScore < 110}" style="color: #374151;">👍 O'rtacha - Yaxshi ish!</span>
+                        <span th:if="${test_session.iqScore < 90}" style="color: #991B1B;">💪 Mashq qilishda davom eting!</span>
                     </div>
 
                     <div th:if="${test_session.completedAt == null}" style="margin-top: 1rem; color: var(--warning-color); font-weight: 600;">
-                        ⏳ Test in progress...
+                        ⏳ Test davom etmoqda...
                     </div>
                 </div>
             </div>

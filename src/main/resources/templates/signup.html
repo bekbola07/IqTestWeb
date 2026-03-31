@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Create Account - IQ Assessment Platform</title>
+    <title>Hisob yaratish - IQ baholash platformasi</title>
     <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}">
     <link rel="shortcut icon" type="image/x-icon" th:href="@{/images/favicon.ico}">
     <style>
@@ -138,9 +138,9 @@
     <div class="signup-header">
         <h2>
             <img th:src="@{/images/icon.png}" alt="Logo">
-            Create Your Account
+            Hisob yaratish
         </h2>
-        <p>Join the professional cognitive assessment platform</p>
+        <p>Professional kognitiv baholash platformasiga qo'shiling</p>
     </div>
 
     <div class="signup-body">
@@ -148,66 +148,66 @@
 
         <form th:action="@{/signup}" th:object="${signupRequest}" method="post" id="signupForm">
             <div class="form-group">
-                <label for="username">Username <span class="required">*</span></label>
+                <label for="username">Foydalanuvchi nomi <span class="required">*</span></label>
                 <input type="text" id="username" th:field="*{username}" required
-                       placeholder="Choose a unique username" minlength="3" maxlength="50">
+                       placeholder="Yagona foydalanuvchi nomini tanlang" minlength="3" maxlength="50">
                 <div class="validation-message error" id="usernameError"></div>
                 <div class="validation-message success" id="usernameSuccess"></div>
             </div>
 
             <div class="form-group">
-                <label for="email">Email Address <span class="required">*</span></label>
+                <label for="email">Email manzili <span class="required">*</span></label>
                 <input type="email" id="email" th:field="*{email}" required
-                       placeholder="your.email@example.com">
+                       placeholder="sizning.email@example.com">
                 <div class="validation-message error" id="emailError"></div>
                 <div class="validation-message success" id="emailSuccess"></div>
             </div>
 
             <div class="form-group">
-                <label for="password">Password <span class="required">*</span></label>
+                <label for="password">Parol <span class="required">*</span></label>
                 <input type="password" id="password" th:field="*{password}" required
-                       placeholder="Minimum 6 characters" minlength="6">
+                       placeholder="Kamida 6 ta belgi" minlength="6">
                 <div class="validation-message error" id="passwordError"></div>
             </div>
 
             <div class="form-group">
-                <label for="confirmPassword">Confirm Password <span class="required">*</span></label>
+                <label for="confirmPassword">Parolni tasdiqlash <span class="required">*</span></label>
                 <input type="password" id="confirmPassword" th:field="*{confirmPassword}" required
-                       placeholder="Re-enter your password">
+                       placeholder="Parolni qayta kiriting">
                 <div class="validation-message error" id="confirmPasswordError"></div>
                 <div class="validation-message success" id="confirmPasswordSuccess"></div>
             </div>
 
             <div class="form-group">
-                <label for="age">Age <span class="required">*</span></label>
+                <label for="age">Yosh <span class="required">*</span></label>
                 <input type="number" id="age" th:field="*{age}" min="10" max="120" required
-                       placeholder="Your age">
+                       placeholder="Yoshingiz">
             </div>
 
             <div class="form-group">
-                <label for="country">Country</label>
+                <label for="country">Mamlakat</label>
                 <select id="country" th:field="*{country}">
-                    <option value="">Select your country (optional)</option>
-                    <option value="USA">United States</option>
-                    <option value="UK">United Kingdom</option>
-                    <option value="Canada">Canada</option>
-                    <option value="Australia">Australia</option>
-                    <option value="Germany">Germany</option>
-                    <option value="France">France</option>
-                    <option value="India">India</option>
-                    <option value="China">China</option>
-                    <option value="Japan">Japan</option>
-                    <option value="Brazil">Brazil</option>
-                    <option value="Uzbekistan">Uzbekistan</option>
-                    <option value="Other">Other</option>
+                    <option value="">Mamlakatingizni tanlang (ixtiyoriy)</option>
+                    <option value="USA">AQSH</option>
+                    <option value="UK">Buyuk Britaniya</option>
+                    <option value="Canada">Kanada</option>
+                    <option value="Australia">Avstraliya</option>
+                    <option value="Germany">Germaniya</option>
+                    <option value="France">Fransiya</option>
+                    <option value="India">Hindiston</option>
+                    <option value="China">Xitoy</option>
+                    <option value="Japan">Yaponiya</option>
+                    <option value="Brazil">Braziliya</option>
+                    <option value="Uzbekistan">O'zbekiston</option>
+                    <option value="Other">Boshqa</option>
                 </select>
             </div>
 
-            <button type="submit" class="btn-submit" id="submitBtn">Create Account</button>
+            <button type="submit" class="btn-submit" id="submitBtn">Hisob yaratish</button>
         </form>
 
         <div class="login-link">
-            Already have an account? <a th:href="@{/login}">Sign in here</a>
+            Hisobingiz bormi? <a th:href="@{/login}">Tizimga kirish</a>
         </div>
     </div>
 </div>
@@ -220,7 +220,7 @@
     document.getElementById('username').addEventListener('blur', async function() {
         const username = this.value;
         if (username.length < 3) {
-            showError('username', 'Username must be at least 3 characters');
+            showError('username', 'Foydalanuvchi nomi kamida 3 ta belgidan iborat bo\'lishi kerak');
             usernameAvailable = false;
             return;
         }
@@ -230,14 +230,14 @@
             const data = await response.json();
 
             if (data.available) {
-                showSuccess('username', 'Username is available');
+                showSuccess('username', 'Foydalanuvchi nomi mavjud');
                 usernameAvailable = true;
             } else {
-                showError('username', 'Username is already taken');
+                showError('username', 'Foydalanuvchi nomi band');
                 usernameAvailable = false;
             }
         } catch (error) {
-            console.error('Error checking username:', error);
+            console.error('Foydalanuvchi nomini tekshirishda xatolik:', error);
         }
         updateSubmitButton();
     });
@@ -247,7 +247,7 @@
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         if (!emailRegex.test(email)) {
-            showError('email', 'Please enter a valid email address');
+            showError('email', 'Iltimos, to\'g\'ri email manzilini kiriting');
             emailAvailable = false;
             return;
         }
@@ -257,14 +257,14 @@
             const data = await response.json();
 
             if (data.available) {
-                showSuccess('email', 'Email is available');
+                showSuccess('email', 'Email mavjud');
                 emailAvailable = true;
             } else {
-                showError('email', 'Email is already registered');
+                showError('email', 'Ushbu email allaqachon ro\'yxatdan o\'tgan');
                 emailAvailable = false;
             }
         } catch (error) {
-            console.error('Error checking email:', error);
+            console.error('Emailni tekshirishda xatolik:', error);
         }
         updateSubmitButton();
     });
@@ -272,7 +272,7 @@
     document.getElementById('password').addEventListener('input', function() {
         const password = this.value;
         if (password.length < 6) {
-            showError('password', 'Password must be at least 6 characters');
+            showError('password', 'Parol kamida 6 ta belgidan iborat bo\'lishi kerak');
         } else {
             hideError('password');
             checkPasswordMatch();
@@ -296,10 +296,10 @@
         }
 
         if (password === confirmPassword && password.length >= 6) {
-            showSuccess('confirmPassword', 'Passwords match');
+            showSuccess('confirmPassword', 'Parollar mos keldi');
             passwordsMatch = true;
         } else {
-            showError('confirmPassword', 'Passwords do not match');
+            showError('confirmPassword', 'Parollar mos kelmadi');
             passwordsMatch = false;
         }
         updateSubmitButton();

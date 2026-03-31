@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard - IQ Assessment Platform</title>
+    <title>Boshqaruv paneli - IQ baholash platformasi</title>
     <div th:replace="~{fragments :: common-styles}"></div>
     <style>
         .dashboard-grid {
@@ -69,42 +69,42 @@
         <!-- Admin Card -->
         <div class="card admin-card" th:if="${session.userRole == 'ADMIN'}">
             <div class="card-icon">⚙</div>
-            <h2>Admin Control Panel</h2>
-            <p>Manage users, categories, and review all test sessions.</p>
-            <a th:href="@{/admin/dashboard}" class="btn btn-admin">Access Admin Panel</a>
+            <h2>Admin boshqaruv paneli</h2>
+            <p>Foydalanuvchilarni, kategoriyalarni boshqarish va barcha test seanslarini ko'rish.</p>
+            <a th:href="@{/admin/dashboard}" class="btn btn-admin">Admin paneliga kirish</a>
         </div>
 
         <!-- Start Test -->
         <div class="card">
             <div class="card-icon">📋</div>
-            <h2>Start Assessment</h2>
-            <p>Begin a comprehensive cognitive assessment to evaluate your intelligence quotient.</p>
-            <a th:href="@{/test/select-quiz}" class="btn btn-primary">Begin Assessment</a>
+            <h2>Testni boshlash</h2>
+            <p>Intellektual koeffitsiyentingizni aniqlash uchun har tomonlama kognitiv baholashni boshlang.</p>
+            <a th:href="@{/test/select-quiz}" class="btn btn-primary">Baholashni boshlash</a>
         </div>
 
         <!-- Quiz Management -->
         <div class="card">
             <div class="card-icon">✍️</div>
-            <h2>Quiz Management</h2>
-            <p>Create, edit, and manage your own quizzes and their questions.</p>
-            <a th:href="@{/quiz/list}" class="btn btn-secondary">Manage Quizzes</a>
+            <h2>Testlarni boshqarish</h2>
+            <p>O'z testlaringiz va savollaringizni yarating, tahrirlang va boshqaring.</p>
+            <a th:href="@{/quiz/list}" class="btn btn-secondary">Testlarni boshqarish</a>
         </div>
 
         <!-- Statistics -->
         <div class="card">
             <div class="card-icon">📊</div>
-            <h2>Your Performance</h2>
+            <h2>Sizning natijangiz</h2>
             <div class="stat-value" th:text="${testCount}">0</div>
-            <p>Completed assessments</p>
-            <a th:href="@{/test/history}" class="btn btn-secondary">View History</a>
+            <p>Yakunlangan testlar</p>
+            <a th:href="@{/test/history}" class="btn btn-secondary">Tarixni ko'rish</a>
         </div>
 
         <!-- Best Score -->
         <div class="card">
             <div class="card-icon">🏆</div>
-            <h2>Peak Score</h2>
+            <h2>Eng yuqori ball</h2>
             <div class="stat-value" th:text="${bestScore}">0</div>
-            <p>Your highest IQ score achieved</p>
+            <p>Eritilgan eng yuqori IQ ballingiz</p>
         </div>
     </div>
 </div>

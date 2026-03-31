@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Add Question</title>
+    <title>Savol qo'shish</title>
     <div th:replace="~{fragments :: common-styles}"></div>
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -84,34 +84,34 @@
 <div class="container" x-data="questionForm()">
     <form th:action="@{/quiz/{quizId}/questions/add(quizId=${quiz.id})}" th:object="${question}" method="post" enctype="multipart/form-data" autocomplete="off" @submit.prevent="submitForm($event)">
         <div class="card">
-            <h1 th:text="|Add Question to: ${quiz.name}|">Add Question</h1>
+            <h1 th:text="|Savol qo'shish: ${quiz.name}|">Savol qo'shish</h1>
 
             <div class="grid-2-col">
                 <div class="form-group">
-                    <label for="questionType">Question Type</label>
+                    <label for="questionType">Savol turi</label>
                     <select id="questionType" th:field="*{questionType}" x-model="questionType" class="form-control" @change="handleTypeChange()">
-                        <option value="MULTIPLE_CHOICE_SINGLE">Multiple Choice (Single Answer)</option>
-                        <option value="MULTIPLE_CHOICE_MULTI">Multiple Choice (Multiple Answers)</option>
-                        <option value="TRUE_FALSE">True / False</option>
-                        <option value="FILL_IN_THE_BLANK">Fill in the Blank</option>
+                        <option value="MULTIPLE_CHOICE_SINGLE">Ko'p tanlovli (Yagona javob)</option>
+                        <option value="MULTIPLE_CHOICE_MULTI">Ko'p tanlovli (Bir nechta javoblar)</option>
+                        <option value="TRUE_FALSE">To'g'ri / Noto'g'ri</option>
+                        <option value="FILL_IN_THE_BLANK">Bo'shliqni to'ldirish</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="category">Category</label>
+                    <label for="category">Kategoriya</label>
                     <select id="category" th:field="*{questionCategory.categoryId}" required>
-                        <option value="">-- Select Category --</option>
+                        <option value="">-- Kategoriyani tanlang --</option>
                         <option th:each="cat : ${categories}" th:value="${cat.categoryId}" th:text="${cat.categoryName}"></option>
                     </select>
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="questionText">Question Text</label>
-                <textarea id="questionText" th:field="*{questionText}" rows="3" placeholder="Enter your question here..." required></textarea>
+                <label for="questionText">Savol matni</label>
+                <textarea id="questionText" th:field="*{questionText}" rows="3" placeholder="Savolingizni bu yerga kiriting..." required></textarea>
             </div>
 
             <div class="form-group" x-show="questionType !== 'FILL_IN_THE_BLANK'">
-                <label>Question Image (Optional)</label>
+                <label>Savol rasmi (ixtiyoriy)</label>
                 <div class="file-upload-wrapper" id="q-image-uploader" x-init="initUploader($el, 'questionImage')">
                     <!-- Uploader will be injected here -->
                 </div>
@@ -119,15 +119,15 @@
 
             <div class="grid-2-col">
                 <div class="form-group">
-                    <label for="points">Points</label>
-                    <input type="number" id="points" th:field="*{points}" min="1" required placeholder="e.g., 10">
+                    <label for="points">Ballar</label>
+                    <input type="number" id="points" th:field="*{points}" min="1" required placeholder="masalan, 10">
                 </div>
             </div>
         </div>
 
         <!-- Answer Options Section -->
         <div class="card" x-show="questionType !== 'FILL_IN_THE_BLANK'">
-            <h2 x-text="getOptionsTitle()">Answer Options</h2>
+            <h2 x-text="getOptionsTitle()">Javob variantlari</h2>
             <p class="text-secondary" style="margin-top: -1rem; margin-bottom: 1rem;" x-text="getOptionsSubtitle()"></p>
 
             <!-- Dynamic Options Container -->
@@ -154,7 +154,7 @@
                                    :disabled="questionType !== 'MULTIPLE_CHOICE_MULTI'">
                         </div>
                         <div class="option-content">
-                            <input type="text" name="optionTexts" x-model="option.text" placeholder="Answer text"
+                            <input type="text" name="optionTexts" x-model="option.text" placeholder="Javob matni"
                                    :disabled="questionType !== 'MULTIPLE_CHOICE_SINGLE' && questionType !== 'MULTIPLE_CHOICE_MULTI'"
                                    required>
 
@@ -177,7 +177,7 @@
                         <input type="radio" name="correctOptionIndex" value="0" checked :disabled="questionType !== 'TRUE_FALSE'">
                     </div>
                     <div class="option-content">
-                        <input type="text" name="optionTexts" value="True" readonly style="background-color: #f8f9fa; cursor: not-allowed;" :disabled="questionType !== 'TRUE_FALSE'">
+                        <input type="text" name="optionTexts" value="To'g'ri" readonly style="background-color: #f8f9fa; cursor: not-allowed;" :disabled="questionType !== 'TRUE_FALSE'">
                     </div>
                 </div>
                 <div class="answer-option-card" x-show="questionType === 'TRUE_FALSE'">
@@ -185,7 +185,7 @@
                         <input type="radio" name="correctOptionIndex" value="1" :disabled="questionType !== 'TRUE_FALSE'">
                     </div>
                     <div class="option-content">
-                        <input type="text" name="optionTexts" value="False" readonly style="background-color: #f8f9fa; cursor: not-allowed;" :disabled="questionType !== 'TRUE_FALSE'">
+                        <input type="text" name="optionTexts" value="Noto'g'ri" readonly style="background-color: #f8f9fa; cursor: not-allowed;" :disabled="questionType !== 'TRUE_FALSE'">
                     </div>
                 </div>
 
@@ -194,20 +194,20 @@
             <button type="button" class="btn btn-secondary" style="margin-top: var(--spacing-md); width: 100%;"
                     @click="addOption()"
                     x-show="questionType === 'MULTIPLE_CHOICE_SINGLE' || questionType === 'MULTIPLE_CHOICE_MULTI'">
-                <i class="fas fa-plus"></i> Add Answer Option
+                <i class="fas fa-plus"></i> Javob varianti qo'shish
             </button>
         </div>
 
         <!-- Fill in the Blank Section -->
         <div class="card" x-show="questionType === 'FILL_IN_THE_BLANK'">
-            <h2>Correct Answers</h2>
-            <p class="text-secondary">Enter all possible correct answers. The user's input will be matched against these.</p>
+            <h2>To'g'ri javoblar</h2>
+            <p class="text-secondary">Barcha mumkin bo'lgan to'g'ri javoblarni kiriting. Foydalanuvchi kiritgan ma'lumotlar bularga mos kelishi tekshiriladi.</p>
 
             <div id="fill-options-container" style="display: grid; gap: var(--spacing-md);">
                 <template x-for="(option, index) in fillBlankOptions" :key="option.id">
                     <div class="answer-option-card">
                         <div class="option-content">
-                            <input type="text" name="optionTexts" x-model="option.text" placeholder="e.g., Paris"
+                            <input type="text" name="optionTexts" x-model="option.text" placeholder="masalan, Toshkent"
                                    :disabled="questionType !== 'FILL_IN_THE_BLANK'"
                                    required>
                         </div>
@@ -222,18 +222,18 @@
 
             <button type="button" class="btn btn-secondary" style="margin-top: var(--spacing-md); width: 100%;"
                     @click="addFillOption()">
-                <i class="fas fa-plus"></i> Add Another Correct Answer
+                <i class="fas fa-plus"></i> Boshqa to'g'ri javob qo'shish
             </button>
 
             <div class="alert alert-info" style="margin-top: 1rem;">
-                <i class="fas fa-info-circle"></i> The answer will be checked case-insensitively (e.g., "Paris" and "paris" are both correct).
+                <i class="fas fa-info-circle"></i> Javob katta-kichik harflarni hisobga olmasdan tekshiriladi (masalan, "Toshkent" va "toshkent" ikkalasi ham to'g'ri).
             </div>
         </div>
 
         <div style="display: flex; justify-content: flex-end; gap: var(--spacing-md); margin-top: var(--spacing-lg);">
-            <a th:href="@{/quiz/{id}/edit(id=${quiz.id})}" class="btn btn-secondary">Cancel</a>
+            <a th:href="@{/quiz/{id}/edit(id=${quiz.id})}" class="btn btn-secondary">Bekor qilish</a>
             <button type="submit" class="btn btn-primary">
-                <i class="fas fa-save"></i> Save Question
+                <i class="fas fa-save"></i> Savolni saqlash
             </button>
         </div>
     </form>
@@ -292,21 +292,21 @@
             },
 
             getOptionsTitle() {
-                if (this.questionType === 'TRUE_FALSE') return 'Select Correct Option';
-                return 'Answer Options';
+                if (this.questionType === 'TRUE_FALSE') return 'To\'g\'ri variantni tanlang';
+                return 'Javob variantlari';
             },
 
             getOptionsSubtitle() {
-                if (this.questionType === 'MULTIPLE_CHOICE_MULTI') return 'Select all correct answers (Checkboxes).';
-                if (this.questionType === 'TRUE_FALSE') return 'Select whether the statement is True or False.';
-                return 'Select the single correct answer (Radio button).';
+                if (this.questionType === 'MULTIPLE_CHOICE_MULTI') return 'Barcha to\'g\'ri javoblarni tanlang (Checkboxlar).';
+                if (this.questionType === 'TRUE_FALSE') return 'Bayonot To\'g\ri yoki Noto\'g\'ri ekanligini tanlang.';
+                return 'Yagona to\'g\'ri javobni tanlang (Radio tugmasi).';
             },
 
             submitForm(event) {
                 if (this.questionType === 'MULTIPLE_CHOICE_MULTI') {
                     const checkboxes = document.querySelectorAll('input[name="correctOptionIndices"]:checked');
                     if (checkboxes.length === 0) {
-                        alert('Please select at least one correct answer.');
+                        alert('Iltimos, kamida bitta to\'g\'ri javobni tanlang.');
                         return;
                     }
                 }
@@ -320,15 +320,15 @@
                 wrapper.innerHTML = `
                     <div class="file-upload-area" id="area-${uploaderId}">
                         <i class="fas fa-cloud-upload-alt"></i>
-                        <span>Attach Image</span>
+                        <span>Rasm biriktirish</span>
                     </div>
                     <div class="file-preview-card" id="card-${uploaderId}" style="display: none;">
-                        <img class="file-preview-thumb" id="preview-${uploaderId}" src="" title="Click to enlarge">
+                        <img class="file-preview-thumb" id="preview-${uploaderId}" src="" title="Kattalashtirish uchun bosing">
                         <div class="file-info">
                             <span class="file-name" id="name-${uploaderId}"></span>
                         </div>
                         <div class="file-actions">
-                            <button type="button" class="btn-remove-file" id="remove-${uploaderId}" title="Remove file"><i class="fas fa-trash"></i></button>
+                            <button type="button" class="btn-remove-file" id="remove-${uploaderId}" title="Faylni o'chirish"><i class="fas fa-trash"></i></button>
                         </div>
                     </div>
                     <input type="file" name="${inputName}" id="${uploaderId}" accept="image/*" class="hidden-file-input">

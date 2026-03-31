@@ -356,23 +356,23 @@
         <div class="navbar-content">
             <div style="display: flex; align-items: center;">
                 <a th:if="${backLink != null}" th:href="@{${backLink}}" class="btn btn-secondary" style="padding: 0.5rem 1rem; margin-right: 1rem; text-decoration: none;">
-                    <i class="fas fa-arrow-left"></i> Back
+                    <i class="fas fa-arrow-left"></i> Orqaga
                 </a>
                 <a th:href="@{/dashboard}" style="text-decoration: none; color: inherit;">
                     <h1>
                         <img th:src="@{/images/icon.png}" alt="Logo">
-                        IQ Assessment Platform
+                        IQ baholash platformasi
                     </h1>
                 </a>
             </div>
             <div class="user-section">
                 <div class="user-info">
-                    <img th:src="${session.profilePicture}" alt="Profile" class="user-avatar" th:if="${session.profilePicture}">
-                    <span style="font-weight: 500;" th:text="${session.userName}">User</span>
+                    <img th:src="${session.profilePicture}" alt="Profil" class="user-avatar" th:if="${session.profilePicture}">
+                    <span style="font-weight: 500;" th:text="${session.userName}">Foydalanuvchi</span>
                     <span th:if="${session.userRole == 'ADMIN'}" class="admin-badge">ADMIN</span>
                 </div>
                 <form th:action="@{/logout}" method="post" style="margin: 0;">
-                    <button type="submit" class="btn btn-secondary btn-sm">Sign Out</button>
+                    <button type="submit" class="btn btn-secondary btn-sm">Chiqish</button>
                 </form>
             </div>
         </div>

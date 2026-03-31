@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Select Assessment</title>
+    <title>Baholashni tanlash</title>
     <div th:replace="~{fragments :: common-styles}"></div>
     <style>
         .quiz-grid {
@@ -84,34 +84,34 @@
 <div th:replace="~{fragments :: navbar(backLink='/dashboard')}"></div>
 
 <div class="container">
-    <h1>Select Your Assessment</h1>
-    <p style="margin-bottom: var(--spacing-xl); color: var(--text-secondary);">Choose an assessment below to test your skills and measure your IQ.</p>
+    <h1>Baholashni tanlang</h1>
+    <p style="margin-bottom: var(--spacing-xl); color: var(--text-secondary);">O'z mahoratingizni sinab ko'rish va IQ darajangizni o'lchash uchun quyidagi baholashlardan birini tanlang.</p>
 
     <div th:if="${#lists.isEmpty(quizzes)}" class="card empty-state">
         <div class="empty-state-icon"><i class="fas fa-box-open"></i></div>
-        <h3>No Assessments Available</h3>
-        <p>There are no IQ assessments available at the moment. Please check back later!</p>
+        <h3>Mavjud baholashlar yo'q</h3>
+        <p>Ayni damda hech qanday IQ baholashlari mavjud emas. Iltimos, keyinroq qayta tekshiring!</p>
     </div>
 
     <div class="quiz-grid" th:if="${!#lists.isEmpty(quizzes)}">
         <!-- Loop through quizzes -->
         <div th:each="quiz : ${quizzes}" class="quiz-card">
             <img th:src="${quiz.attachment != null ? (quiz.attachment.webUrl != null ? quiz.attachment.webUrl : '/attachment/' + quiz.attachment.id) : '/images/default-quiz.jpg'}"
-                 alt="Quiz Image" class="quiz-image"
+                 alt="Test tasviri" class="quiz-image"
                  onerror="this.onerror=null; this.src='/images/default-quiz.jpg';">
 
             <div class="quiz-content">
-                <h3 class="quiz-title" th:text="${quiz.name}">Quiz Name</h3>
+                <h3 class="quiz-title" th:text="${quiz.name}">Test nomi</h3>
                 <div class="quiz-meta">
-                    <span class="badge badge-type" th:text="${quiz.quizType.name}">Quiz Type</span>
+                    <span class="badge badge-type" th:text="${quiz.quizType.name}">Test turi</span>
                     <span class="badge badge-time" th:if="${quiz.timeType.name() == 'TOTAL_TIME'}">
                         <i class="fas fa-clock"></i>
-                        <span th:text="${(quiz.timeLimitSeconds / 60) + ' min'}">10 min</span>
+                        <span th:text="${(quiz.timeLimitSeconds / 60) + ' daqiqa'}">10 daqiqa</span>
                     </span>
                 </div>
                 <div class="quiz-actions">
                     <a th:href="@{/test/start/{quizId}(quizId=${quiz.id})}" class="btn btn-primary btn-start">
-                        Start Assessment
+                        Baholashni boshlash
                     </a>
                 </div>
             </div>

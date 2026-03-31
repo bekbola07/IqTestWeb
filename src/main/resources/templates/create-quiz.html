@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Create Quiz</title>
+    <title>Test yaratish</title>
     <div th:replace="~{fragments :: common-styles}"></div>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -125,34 +125,34 @@
 <div th:replace="~{fragments :: navbar(backLink='/quiz/list')}"></div>
 
 <div class="container">
-    <h1>Create a New Quiz</h1>
+    <h1>Yangi test yaratish</h1>
 
     <div th:if="${error}" class="alert-danger" th:text="${error}"></div>
 
     <form th:action="@{/quiz/create}" th:object="${quiz}" method="post" enctype="multipart/form-data" style="margin-top: 2rem;" autocomplete="off">
         <div class="form-group">
-            <label for="name">Quiz Name</label>
+            <label for="name">Test nomi</label>
             <input type="text" id="name" th:field="*{name}" required>
         </div>
         <div class="form-group">
-            <label for="quizType">Quiz Type</label>
+            <label for="quizType">Test turi</label>
             <select id="quizType" th:field="*{quizType.id}" required>
                 <option th:each="type : ${quizTypes}" th:value="${type.id}" th:text="${type.name}"></option>
             </select>
         </div>
 
         <div class="form-group">
-            <label>Quiz Image (Optional)</label>
+            <label>Test rasmi (ixtiyoriy)</label>
             <div class="image-input-group">
-                <input type="text" id="quizUrlInput" placeholder="Image URL" onchange="document.getElementById('fileInput').value = ''">
-                <i class="fas fa-paperclip paperclip-btn" onclick="document.getElementById('fileInput').click()" title="Attach File"></i>
+                <input type="text" id="quizUrlInput" placeholder="Rasm URL" onchange="document.getElementById('fileInput').value = ''">
+                <i class="fas fa-paperclip paperclip-btn" onclick="document.getElementById('fileInput').click()" title="Fayl biriktirish"></i>
                 <input type="file" id="fileInput" name="file" class="hidden-file-input" accept="image/*" onchange="updateTextInput(this, 'quizUrlInput')">
             </div>
         </div>
 
         <div class="form-group">
             <label style="display: flex; align-items: center; gap: 1rem;">
-                <span>Enable Time Limit</span>
+                <span>Vaqt chegarasini yoqish</span>
                 <label class="switch">
                     <input type="checkbox" id="timeSwitch" onchange="toggleTimeSettings()">
                     <span class="slider"></span>
@@ -163,18 +163,18 @@
 
         <div id="timeSettings" class="time-settings" style="display: none;">
             <div class="form-group" id="globalTimeInput">
-                <label for="minutes">Total Duration (Minutes)</label>
+                <label for="minutes">Umumiy davomiyligi (daqiqalar)</label>
                 <div th:object="${durationDto}">
-                    <input type="number" id="minutes" th:field="*{minutes}" min="1" max="180" placeholder="e.g. 30">
+                    <input type="number" id="minutes" th:field="*{minutes}" min="1" max="180" placeholder="masalan, 30">
                 </div>
-                <small class="text-muted">Set the total time allowed for the entire quiz in minutes.</small>
+                <small class="text-muted">Butun test uchun ruxsat etilgan umumiy vaqtni daqiqalarda belgilang.</small>
             </div>
         </div>
 
         <!-- Certificate Settings -->
         <div class="form-group">
             <label style="display: flex; align-items: center; gap: 1rem;">
-                <span>Enable Certificate</span>
+                <span>Sertifikatni yoqish</span>
                 <label class="switch">
                     <input type="checkbox" th:field="*{certificateEnabled}" onchange="toggleCertificateSettings()">
                     <span class="slider"></span>
@@ -184,17 +184,17 @@
 
         <div id="certificateSettings" class="certificate-settings" style="display: none;">
             <div class="form-group">
-                <label for="certificateTitle">Certificate Title</label>
-                <input type="text" id="certificateTitle" th:field="*{certificateTitle}" placeholder="e.g. Certificate of Achievement">
+                <label for="certificateTitle">Sertifikat nomi</label>
+                <input type="text" id="certificateTitle" th:field="*{certificateTitle}" placeholder="masalan, Muvaffaqiyat sertifikati">
             </div>
             <div class="form-group">
-                <label for="passingScore">Passing Score (Optional)</label>
-                <input type="number" id="passingScore" th:field="*{passingScore}" min="0" placeholder="e.g. 80">
-                <small class="text-muted">Minimum score required to receive a certificate. Leave blank if any score qualifies.</small>
+                <label for="passingScore">O'tish balli (ixtiyoriy)</label>
+                <input type="number" id="passingScore" th:field="*{passingScore}" min="0" placeholder="masalan, 80">
+                <small class="text-muted">Sertifikat olish uchun talab qilinadigan minimal ball. Agar har qanday ball mos kelsa, bo'sh qoldiring.</small>
             </div>
         </div>
 
-        <button type="submit" class="btn btn-primary">Create Quiz</button>
+        <button type="submit" class="btn btn-primary">Test yaratish</button>
     </form>
 </div>
 
