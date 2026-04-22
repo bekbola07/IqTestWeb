@@ -131,4 +131,44 @@ class AdminController {
         model.addAttribute("userName", session.getAttribute("userName"));
         return "admin/quizzes";
     }
+
+    @GetMapping("/quizzes/add")
+    public String showAddQuizForm(Model model, HttpSession session) {
+        model.addAttribute("quiz", new Quiz());
+        model.addAttribute("quizTypes", quizTypeService.getAllQuizTypes());
+        model.addAttribute("users", userService.getAllUsers());
+        model.addAttribute("userName", session.getAttribute("userName"));
+        return "admin/add-quiz";
+    }
+
+    @PostMapping("/quizzes/add")
+    public String addQuiz(@ModelAttribute Quiz quiz, RedirectAttributes redirectAttributes) {
+        quizService.saveQuiz(quiz);
+        redirectAttributes.addFlashAttribute("success", "Quiz added successfully!");
+        return "redirect:/admin/quizzes";
+    }
+
+    @GetMapping("/quizzes/edit/{id}")
+    public String showEditQuizForm(@PathVariable Long id, Model model, HttpSession session) {
+        model.addAttribute("quiz", quizService.getQuizById(id));
+        model.addAttribute("quizTypes", quizTypeService.getAllQuizTypes());
+        model.addAttribute("users", userService.getAllUsers());
+        model.addAttribute("userName", session.getAttribute("userName"));
+        return "admin/edit-quiz";
+    }
+
+    @PostMapping("/quizzes/edit/{id}")
+    public String editQuiz(@PathVariable Long id, @ModelAttribute Quiz quiz, RedirectAttributes redirectAttributes) {
+        quiz.setId(id);
+        quizService.saveQuiz(quiz);
+        redirectAttributes.addFlashAttribute("success", "Quiz updated successfully!");
+        return "redirect:/admin/quizzes";
+    }
+
+    @GetMapping("/quizzes/delete/{id}")
+    public String deleteQuiz(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        quizService.deleteQuiz(id);
+        redirectAttributes.addFlashAttribute("success", "Quiz deleted successfully!");
+        return "redirect:/admin/quizzes";
+    }
 }

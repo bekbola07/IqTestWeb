@@ -41,6 +41,9 @@ public class TestSession {
     private Integer iqScore;
     private Integer timeTakenSeconds;
 
+    @Column(name = "calculation_log", columnDefinition = "TEXT")
+    private String calculationLog;
+
     @Enumerated(EnumType.STRING)
     private Status status = Status.IN_PROGRESS;
 

@@ -39,6 +39,12 @@ public class QuizSnapshot {
 
     private Integer timeLimitSeconds;
 
+    // Psychometric settings (snapshotted)
+    private boolean ageFactorEnabled;
+    private boolean customFormulaEnabled;
+    private Double kCoeff;
+    private Double bCoeff;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 

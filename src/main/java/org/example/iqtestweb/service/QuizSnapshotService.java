@@ -46,6 +46,13 @@ public class QuizSnapshotService {
         snapshot.setAttachment(quiz.getAttachment());
         snapshot.setTimeType(quiz.getTimeType());
         snapshot.setTimeLimitSeconds(quiz.getTimeLimitSeconds());
+        
+        // Snapshot psychometric settings
+        snapshot.setAgeFactorEnabled(quiz.isAgeFactorEnabled());
+        snapshot.setCustomFormulaEnabled(quiz.isCustomFormulaEnabled());
+        snapshot.setKCoeff(quiz.getKCoeff());
+        snapshot.setBCoeff(quiz.getBCoeff());
+
         snapshot.setOriginalQuizUpdatedAt(quiz.getUpdatedAt() != null ? quiz.getUpdatedAt() : LocalDateTime.now());
         snapshot.setCreatedAt(LocalDateTime.now());
 

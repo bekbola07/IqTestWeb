@@ -37,6 +37,11 @@ public class QuizService {
     @Transactional
     public Quiz saveQuiz(Quiz quiz) {
         quiz.preUpdate();
+        
+        // Ensure default coefficients if not provided
+        if (quiz.getKCoeff() == null) quiz.setKCoeff(60.0);
+        if (quiz.getBCoeff() == null) quiz.setBCoeff(70.0);
+
         Quiz savedQuiz = quizRepository.save(quiz);
         
         handleCertificateUpdate(savedQuiz);
@@ -49,15 +54,21 @@ public class QuizService {
         Quiz quiz = getQuizById(id);
         if (quiz == null) throw new IllegalArgumentException("Quiz not found");
 
-        // Business Rule: Cannot change duration/structure if STARTED
+        // Business Rule: Cannot change structural settings if STARTED
         if (quiz.getStatus() == QuizStatus.STARTED) {
             if (quiz.getTimeType() != quizUpdates.getTimeType() ||
                 !Objects.equals(quiz.getTimeLimitSeconds(), quizUpdates.getTimeLimitSeconds())) {
                 throw new IllegalStateException("Cannot change time settings of a published (STARTED) quiz. Please stop the quiz first.");
             }
-            // We could also block QuizType changes here
             if (!Objects.equals(quiz.getQuizType().getId(), quizUpdates.getQuizType().getId())) {
                 throw new IllegalStateException("Cannot change quiz type of a published quiz.");
+            }
+            // Block IQ structural changes
+            if (quiz.isAgeFactorEnabled() != quizUpdates.isAgeFactorEnabled() ||
+                quiz.isCustomFormulaEnabled() != quizUpdates.isCustomFormulaEnabled() ||
+                !Objects.equals(quiz.getKCoeff(), quizUpdates.getKCoeff()) ||
+                !Objects.equals(quiz.getBCoeff(), quizUpdates.getBCoeff())) {
+                throw new IllegalStateException("Cannot change IQ calculation parameters of a published quiz.");
             }
         }
 
@@ -68,6 +79,12 @@ public class QuizService {
             quiz.setQuizType(quizUpdates.getQuizType());
             quiz.setTimeType(quizUpdates.getTimeType());
             quiz.setTimeLimitSeconds(quizUpdates.getTimeLimitSeconds());
+            
+            // IQ Settings update
+            quiz.setAgeFactorEnabled(quizUpdates.isAgeFactorEnabled());
+            quiz.setCustomFormulaEnabled(quizUpdates.isCustomFormulaEnabled());
+            quiz.setKCoeff(quizUpdates.getKCoeff() != null ? quizUpdates.getKCoeff() : 60.0);
+            quiz.setBCoeff(quizUpdates.getBCoeff() != null ? quizUpdates.getBCoeff() : 70.0);
         }
 
         quiz.setCertificateEnabled(quizUpdates.isCertificateEnabled());
@@ -92,7 +109,6 @@ public class QuizService {
         if (quiz.isCertificateEnabled()) {
             AuthorCertificate authorCertificate = quiz.getAuthorCertificate();
             if (authorCertificate == null) {
-                // Try to find by quiz ID if not loaded in relationship
                 authorCertificate = authorCertificateRepository.findByQuizId(quiz.getId()).orElse(null);
             }
             
@@ -115,7 +131,7 @@ public class QuizService {
             authorCertificate.setDescription(quiz.getCertificateDescription());
             
             authorCertificateRepository.save(authorCertificate);
-            quiz.setAuthorCertificate(authorCertificate); // Update reference
+            quiz.setAuthorCertificate(authorCertificate); 
         }
     }
 
@@ -124,14 +140,12 @@ public class QuizService {
         Quiz quiz = getQuizById(id);
         if (quiz == null) throw new IllegalArgumentException("Quiz not found");
 
-        // Business Rule: Validate Duration before Publish
         if (quiz.getTimeType() == QuizTimeType.TOTAL_TIME) {
             if (quiz.getTimeLimitSeconds() == null || quiz.getTimeLimitSeconds() <= 0) {
                 throw new IllegalStateException("Duration (seconds) is required for 'Total Time' quizzes.");
             }
         }
         
-        // Additional validation: Ensure quiz has questions
         if (quiz.getQuestions() == null || quiz.getQuestions().isEmpty()) {
              throw new IllegalStateException("Cannot start a quiz with no questions.");
         }

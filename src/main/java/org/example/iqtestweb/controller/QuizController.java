@@ -74,6 +74,12 @@ public class QuizController {
             quiz.setCertificateTitle(null);
             quiz.setPassingScore(null);
         }
+
+        // Psychometric Defaults if not provided
+        if (!quiz.isCustomFormulaEnabled()) {
+            quiz.setKCoeff(60.0);
+            quiz.setBCoeff(70.0);
+        }
         
         Quiz savedQuiz = quizService.saveQuiz(quiz);
         redirectAttributes.addFlashAttribute("success", "Quiz created successfully!");
@@ -128,6 +134,12 @@ public class QuizController {
         if (!quiz.isCertificateEnabled()) {
             quiz.setCertificateTitle(null);
             quiz.setPassingScore(null);
+        }
+
+        // Handle Psychometric Settings
+        if (!quiz.isCustomFormulaEnabled()) {
+            quiz.setKCoeff(60.0);
+            quiz.setBCoeff(70.0);
         }
         
         Attachment newAttachment = null;

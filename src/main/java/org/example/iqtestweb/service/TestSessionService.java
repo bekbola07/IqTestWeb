@@ -19,9 +19,7 @@ import java.util.Optional;
 public class TestSessionService {
 
     private final TestSessionRepository sessionRepository;
-
     private final UserAnswerRepository userAnswerRepository;
-    
     private final CertificateService certificateService;
 
     @Transactional
@@ -79,7 +77,6 @@ public class TestSessionService {
             
             // Auto-generate certificate if enabled
             if (savedSession.getQuizSnapshot().getQuiz().isCertificateEnabled()) {
-                // Use username as default display name, user can update it later if we add that feature
                 certificateService.generateCertificate(savedSession.getSessionId(), savedSession.getUser().getUsername());
             }
 
@@ -96,8 +93,6 @@ public class TestSessionService {
         
         TestSession savedSession = sessionRepository.save(session);
         
-        // Auto-generate certificate if enabled (even on timeout if they passed?)
-        // For now, let's assume yes if they have a score
         if (savedSession.getQuizSnapshot().getQuiz().isCertificateEnabled()) {
              certificateService.generateCertificate(savedSession.getSessionId(), savedSession.getUser().getUsername());
         }
@@ -107,14 +102,98 @@ public class TestSessionService {
 
     private void calculateResults(TestSession session) {
         List<UserAnswer> answers = userAnswerRepository.findBySessionSessionId(session.getSessionId());
-        long correctCount = answers.stream().filter(UserAnswer::getIsCorrect).count();
+        QuizSnapshot snapshot = session.getQuizSnapshot();
+        
+        // Sum points for correct answers
+        int userScore = answers.stream()
+                .filter(UserAnswer::getIsCorrect)
+                .mapToInt(ua -> ua.getQuestionSnapshot().getPoints() != null ? ua.getQuestionSnapshot().getPoints() : 1)
+                .sum();
+        
+        // Calculate max possible score from snapshot
+        int maxScore = snapshot.getQuestionSnapshots().stream()
+                .mapToInt(qs -> qs.getPoints() != null ? qs.getPoints() : 1)
+                .sum();
 
-        session.setTotalQuestions(answers.size());
-        session.setCorrectAnswers((int) correctCount);
-        session.setIqScore(calculateIQ(correctCount, answers.size()));
+        session.setTotalQuestions(snapshot.getQuestionSnapshots().size());
+        session.setCorrectAnswers((int) answers.stream().filter(UserAnswer::getIsCorrect).count());
+        
+        // Use psychometric calculation engine
+        IqCalculationResult calcResult = calculateFinalIQ(
+            (double) userScore,
+            (double) maxScore,
+            session.getUser().getAge(),
+            snapshot.isAgeFactorEnabled(),
+            snapshot.isCustomFormulaEnabled(),
+            snapshot.getKCoeff(),
+            snapshot.getBCoeff()
+        );
+
+        session.setIqScore(calcResult.finalIQ);
+        session.setCalculationLog(calcResult.calculationLog);
 
         Duration duration = Duration.between(session.getStartedAt(), session.getCompletedAt());
         session.setTimeTakenSeconds((int) duration.getSeconds());
+    }
+
+    private IqCalculationResult calculateFinalIQ(double userScore, double maxScore, Integer age, 
+                                                boolean ageFactorEnabled, boolean customFormulaEnabled, 
+                                                Double kCoeff, Double bCoeff) {
+        
+        if (maxScore <= 0) {
+            return new IqCalculationResult(40, "Error: Max score is zero.");
+        }
+
+        StringBuilder log = new StringBuilder();
+
+        // 1. Age Coefficient (C_age)
+        double cAge = 1.0;
+        if (ageFactorEnabled) {
+            if (age == null) {
+                log.append("Age factor enabled but user age missing (defaulting to 1.0). ");
+            } else {
+                if (age < 18) {
+                    cAge = 1.0 + (18.0 - age) / 20.0;
+                } else if (age > 30) {
+                    cAge = 1.0 + (age - 30.0) / 100.0;
+                }
+                log.append("Age Factor Applied (C_age=").append(String.format("%.2f", cAge)).append("). ");
+            }
+        } else {
+            log.append("Age Factor Disabled. ");
+        }
+
+        // 2. Coefficients
+        double k = (customFormulaEnabled && kCoeff != null) ? kCoeff : 60.0;
+        double b = (customFormulaEnabled && bCoeff != null) ? bCoeff : 70.0;
+        
+        if (customFormulaEnabled) {
+            log.append("Custom Formula Applied (K=").append(k).append(", B=").append(b).append("). ");
+        } else {
+            log.append("Standard Formula Applied (K=60, B=70). ");
+        }
+
+        // 3. Core Formula: Result = (userScore / maxScore) * K * C_age + B
+        double result = (userScore / maxScore) * k * cAge + b;
+
+        // 4. Validation & Integrity
+        int finalIQ = (int) Math.round(result);
+        
+        // Clamp between 40 and 160
+        if (finalIQ < 40) finalIQ = 40;
+        if (finalIQ > 160) finalIQ = 160;
+
+        return new IqCalculationResult(finalIQ, log.toString().trim());
+    }
+
+    private static class IqCalculationResult {
+        int finalIQ;
+        String calculationLog;
+
+        IqCalculationResult(int finalIQ, String calculationLog) {
+            this.finalIQ = finalIQ;
+            this.calculationLog = calculationLog;
+        }
     }
 
     public boolean isSessionExpired(TestSession session) {
@@ -122,12 +201,6 @@ public class TestSessionService {
             return false;
         }
         return LocalDateTime.now().isAfter(session.getExpiresAt());
-    }
-
-    private int calculateIQ(long correct, int total) {
-        if (total == 0) return 0;
-        double percentage = (double) correct / total;
-        return (int) (85 + (percentage * 30));
     }
 
     public TestSession getSession(Long sessionId) {

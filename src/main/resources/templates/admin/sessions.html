@@ -105,7 +105,18 @@
 </head>
 <body>
 
-<div th:replace="~{admin/fragments :: sidebar('sessions')}"></div>
+<div class="sidebar">
+    <div class="sidebar-header">Admin Panel</div>
+    <nav class="sidebar-menu">
+        <a th:href="@{/admin/dashboard}">Dashboard</a>
+        <a th:href="@{/admin/users}">User Management</a>
+        <a th:href="@{/admin/categories}">Categories</a>
+        <a th:href="@{/admin/questions}">Questions</a>
+        <a th:href="@{/admin/sessions}" class="active">Assessments</a>
+        <a th:href="@{/admin/quiz-types}">Quiz Types</a>
+        <a th:href="@{/admin/quizzes}">Quizzes</a>
+    </nav>
+</div>
 
 <div class="main-content">
     <nav class="navbar">

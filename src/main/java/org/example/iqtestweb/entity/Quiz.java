@@ -56,6 +56,19 @@ public class Quiz {
     @Column(name = "certificate_enabled")
     private boolean certificateEnabled = false;
 
+    // Psychometric switches
+    @Column(name = "age_factor_enabled")
+    private boolean ageFactorEnabled = false;
+
+    @Column(name = "custom_formula_enabled")
+    private boolean customFormulaEnabled = false;
+
+    @Column(name = "k_coeff")
+    private Double kCoeff = 60.0;
+
+    @Column(name = "b_coeff")
+    private Double bCoeff = 70.0;
+
     @OneToOne(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
     private AuthorCertificate authorCertificate;
 
