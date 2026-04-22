@@ -1,5 +1,6 @@
 package org.example.iqtestweb.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,7 @@ public class HomeController {
     @PostMapping("/signup")
     public String signup(@Valid @ModelAttribute SignupRequest signupRequest,
                          BindingResult bindingResult,
+                         HttpServletRequest request,
                          RedirectAttributes redirectAttributes,
                          Model model) {
 
@@ -69,9 +71,21 @@ public class HomeController {
             return "signup";
         }
 
-        userService.registerUser(signupRequest);
-        redirectAttributes.addFlashAttribute("success", "Registration successful! Please login.");
-        return "redirect:/login";
+        try {
+            // Determine base URL dynamically
+            String baseUrl = request.getScheme() + "://" + request.getServerName();
+            if (request.getServerPort() != 80 && request.getServerPort() != 443) {
+                baseUrl += ":" + request.getServerPort();
+            }
+            baseUrl += request.getContextPath();
+
+            userService.registerUser(signupRequest, baseUrl);
+            redirectAttributes.addFlashAttribute("success", "Registration successful! Please check your email to verify your account.");
+            return "redirect:/login";
+        } catch (Exception e) {
+            model.addAttribute("error", "An error occurred during registration. Please try again.");
+            return "signup";
+        }
     }
 
     @GetMapping("/check-username")
@@ -112,7 +126,7 @@ public class HomeController {
             user = userService.findByUsername(userDetails.getUsername()).orElse(null);
             if (user != null) {
                 userId = user.getUserId();
-                session.setAttribute("user", user); // Storing the whole user object
+                session.setAttribute("user", user);
                 session.setAttribute("userId", user.getUserId());
                 session.setAttribute("userName", user.getUsername());
                 session.setAttribute("userEmail", user.getEmail());

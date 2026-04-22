@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Verify Email - IqTestWeb</title>
+    <div th:replace="~{fragments :: common-styles}"></div>
+    <style>
+        .container { max-width: 500px; margin-top: 5rem; text-align: center; }
+        .otp-input {
+            font-size: 2rem;
+            letter-spacing: 0.5rem;
+            text-align: center;
+            font-weight: bold;
+            width: 80%;
+            margin: 2rem auto;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            padding: 0.5rem;
+        }
+        .info-text { color: #7f8c8d; margin-bottom: 2rem; }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{fragments :: navbar(backLink='/')}"></div>
+
+<div class="container card">
+    <div class="card-body">
+        <h1>Verify Your Email</h1>
+        <p class="info-text">We've sent a 6-digit code to your email. Please enter it below or click the link in the email.</p>
+
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+        <form th:action="@{/auth/verify}" method="post">
+            <input type="hidden" name="token" th:value="${token}">
+            <div class="form-group">
+                <input type="text" name="code" class="form-control otp-input"
+                       placeholder="000000" maxlength="6" required autofocus autocomplete="off">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block" style="width: 100%; padding: 0.75rem;">Verify Account</button>
+        </form>
+
+        <div style="margin-top: 2rem;">
+            <p style="font-size: 0.9rem;">Didn't receive the email?
+                <a th:href="@{/auth/resend-verification(token=${token})}" style="color: #3498db; text-decoration: none;">Resend</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
