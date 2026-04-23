@@ -2,6 +2,7 @@ package org.example.iqtestweb.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.iqtestweb.entity.User;
+import org.example.iqtestweb.entity.enums.Status;
 import org.example.iqtestweb.repository.UserRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,9 +23,14 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 
+        // Spring Security User ob'ekti orqali statusni tekshiramiz
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPasswordHash(),
+                user.getStatus() == Status.ACTIVE, // isEnabled: Faqat ACTIVE bo'lsa kiradi
+                true, // accountNonExpired
+                true, // credentialsNonExpired
+                true, // accountNonLocked
                 Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name()))
         );
     }
