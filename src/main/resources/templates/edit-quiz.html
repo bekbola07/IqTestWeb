@@ -255,10 +255,13 @@
     <div th:if="${success}" class="alert-success" th:text="${success}"></div>
 
     <!-- Quiz Header / Details -->
-    <div class="card" x-data="{
+    <div class="card"
+         th:data-is-cert="${quiz.certificateEnabled}"
+         th:data-is-formula="${quiz.customFormulaEnabled}"
+         x-data="{
         editing: false,
-        isCertificateEnabled: /*[[${quiz.certificateEnabled}]]*/ false,
-        customFormulaEnabled: /*[[${quiz.customFormulaEnabled}]]*/ false
+        isCertificateEnabled: $el.dataset.isCert === 'true',
+        customFormulaEnabled: $el.dataset.isFormula === 'true'
     }">
         <div class="card-body">
             <div class="flex justify-between items-start mb-4" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
