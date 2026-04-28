@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.example.iqtestweb.entity.enums.AcademicDegree;
+import org.example.iqtestweb.entity.enums.FieldOfActivity;
 import org.example.iqtestweb.entity.enums.Status;
 import org.example.iqtestweb.entity.enums.UserRole;
 
@@ -38,6 +40,14 @@ public class User {
     private Integer age;
     private String country;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "academic_degree")
+    private AcademicDegree academicDegree;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "field_of_activity")
+    private FieldOfActivity fieldOfActivity;
+
     @Column(name = "oauth_provider")
     private String oauthProvider; // "google", "github", "local"
 
@@ -58,6 +68,9 @@ public class User {
 
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<TestSession> testSessions;
 
     @PreRemove
     public void preRemove() {

@@ -40,9 +40,8 @@ public class TestController {
         User user = (User) session.getAttribute("user");
         if (user == null) {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-                UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-                user = userService.findByUsername(userDetails.getUsername()).orElse(null);
+            if (authentication != null && authentication.getPrincipal() instanceof UserDetails userDetails) {
+                user = userService.findByUsername(userDetails.getUsername());
                 if (user != null) {
                     session.setAttribute("user", user);
                     session.setAttribute("userId", user.getUserId());
@@ -70,7 +69,7 @@ public class TestController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
                 UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-                user = userService.findByUsername(userDetails.getUsername()).orElse(null);
+                user = userService.findByUsername(userDetails.getUsername());
                 if (user != null) {
                     session.setAttribute("user", user);
                     session.setAttribute("userId", user.getUserId());
@@ -163,10 +162,16 @@ public class TestController {
         if (nextIndex < questionSnapshots.size()) {
             return "redirect:/question/" + nextIndex;
         } else {
-            testSessionService.completeSession(testSession.getSessionId());
+            TestSessionService.TestSessionCompletionResult result = testSessionService.completeSession(testSession.getSessionId());
+            if (result.isProfileDataRequired()) { // Changed from isAgeRequired()
+                return "redirect:/profile"; // Redirect to the new user profile page
+            }
             return "redirect:/test/results";
         }
     }
+
+    // Removed the enterAge GET method
+    // Removed the submitAge POST method
 
     @GetMapping("/results")
     public String showResults(Model model, HttpSession session) {
@@ -180,7 +185,11 @@ public class TestController {
 
         if (testSession.getStatus() == Status.IN_PROGRESS) {
              // If user navigates to results manually, try to complete session
-             testSession = testSessionService.completeSession(testSession.getSessionId());
+             TestSessionService.TestSessionCompletionResult result = testSessionService.completeSession(testSession.getSessionId());
+             if (result.isProfileDataRequired()) { // Changed from isAgeRequired()
+                 return "redirect:/profile"; // Redirect to the new user profile page
+             }
+             testSession = result.getSession();
         }
 
         List<UserAnswer> userAnswers = userAnswerService.getUserAnswersBySessionId(testSession.getSessionId());
@@ -197,7 +206,7 @@ public class TestController {
         model.addAttribute("testSession", testSession);
         model.addAttribute("correctAnswers", correctAnswers);
         model.addAttribute("totalQuestions", totalQuestions);
-        model.addAttribute("iqScore", score);
+        model.addAttribute("iqScore", testSession.getIqScore()); // Use calculated IQ score
         model.addAttribute("accuracy", totalQuestions > 0 ? (int) (((double) correctAnswers / totalQuestions) * 100) : 0);
         
         // Add certificate enabled flag and check if already generated

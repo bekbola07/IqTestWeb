@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <!-- Common Styles Fragment -->
-    <div th:fragment="common-styles">
+    <!-- Common Head Content Fragment -->
+    <div th:fragment="head">
         <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}">
         <link rel="shortcut icon" type="image/x-icon" th:href="@{/images/favicon.ico}">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -83,7 +83,7 @@
             /* Navbar */
             .navbar {
                 background: var(--bg-card);
-                padding: var(--spacing-md) var(--spacing-xl);
+                padding: var(--spacing-sm) var(--spacing-xl);
                 box-shadow: var(--shadow-sm);
                 border-bottom: 1px solid var(--border-color);
                 position: sticky;
@@ -98,15 +98,15 @@
                 align-items: center;
             }
             .navbar h1 {
-                font-size: 1.25rem;
+                font-size: 1.15rem;
                 margin: 0;
                 color: var(--primary-color);
                 display: flex;
                 align-items: center;
-                gap: 10px;
+                gap: 8px;
             }
             .navbar h1 img {
-                height: 32px;
+                height: 24px;
                 width: auto;
             }
             .user-section {
@@ -121,8 +121,8 @@
                 font-size: 0.9rem;
             }
             .user-avatar {
-                width: 36px;
-                height: 36px;
+                width: 32px;
+                height: 32px;
                 border-radius: 50%;
                 object-fit: cover;
                 border: 2px solid var(--border-color);
@@ -338,6 +338,17 @@
                 padding-top: 4px;
             }
 
+            /* Footer Styles */
+            .footer {
+                padding: var(--spacing-xl) 0;
+                text-align: center;
+                color: var(--text-secondary);
+                font-size: 0.9rem;
+                border-top: 1px solid var(--border-color);
+                background: white;
+                margin-top: auto;
+            }
+
             /* Responsive */
             @media (max-width: 768px) {
                 .container { padding: var(--spacing-md); }
@@ -346,6 +357,11 @@
                 .radio-wrapper { align-self: flex-start; }
             }
         </style>
+    </div>
+
+    <!-- For backward compatibility -->
+    <div th:fragment="common-styles">
+        <div th:replace="~{fragments :: head}"></div>
     </div>
 </head>
 <body>
@@ -378,6 +394,13 @@
         </div>
     </nav>
 </div>
+
+<!-- Footer Fragment -->
+<footer th:fragment="footer" class="footer">
+    <div class="container">
+        <p>&copy; 2023 IQ baholash platformasi. Barcha huquqlar himoyalangan.</p>
+    </div>
+</footer>
 
 </body>
 </html>

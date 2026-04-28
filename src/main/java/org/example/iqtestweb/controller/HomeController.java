@@ -123,7 +123,7 @@ public class HomeController {
             }
         } else if (principal instanceof UserDetails) {
             UserDetails userDetails = (UserDetails) principal;
-            user = userService.findByUsername(userDetails.getUsername()).orElse(null);
+            user = userService.findByUsername(userDetails.getUsername());
             if (user != null) {
                 userId = user.getUserId();
                 session.setAttribute("user", user);

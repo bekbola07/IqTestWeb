@@ -31,7 +31,7 @@ public class TestHistoryController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
                 UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-                user = userService.findByUsername(userDetails.getUsername()).orElse(null);
+                user = userService.findByUsername(userDetails.getUsername());
                 if (user != null) {
                     session.setAttribute("user", user);
                     session.setAttribute("userId", user.getUserId());

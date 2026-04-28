@@ -22,6 +22,25 @@ public class TestSessionService {
     private final UserAnswerRepository userAnswerRepository;
     private final CertificateService certificateService;
 
+    // New DTO for completion result
+    public static class TestSessionCompletionResult {
+        private final TestSession session;
+        private final boolean profileDataRequired;
+
+        public TestSessionCompletionResult(TestSession session, boolean profileDataRequired) {
+            this.session = session;
+            this.profileDataRequired = profileDataRequired;
+        }
+
+        public TestSession getSession() {
+            return session;
+        }
+
+        public boolean isProfileDataRequired() {
+            return profileDataRequired;
+        }
+    }
+
     @Transactional
     public TestSession startSession(User user, QuizSnapshot quizSnapshot) {
         // Check for existing active session for this quiz
@@ -57,38 +76,75 @@ public class TestSessionService {
     }
 
     @Transactional
-    public TestSession completeSession(Long sessionId) {
+    public TestSessionCompletionResult completeSession(Long sessionId) {
         TestSession session = sessionRepository.findById(sessionId).orElse(null);
-        if (session != null) {
-            if (session.getStatus() == Status.FINISHED || session.getStatus() == Status.TIMEOUT) {
-                return session;
-            }
-
-            if (isSessionExpired(session)) {
-                return handleTimeout(session);
-            }
-
-            session.setCompletedAt(LocalDateTime.now());
-            session.setStatus(Status.FINISHED);
-
-            calculateResults(session);
-            
-            TestSession savedSession = sessionRepository.save(session);
-            
-            // Auto-generate certificate if enabled
-            if (savedSession.getQuizSnapshot().getQuiz().isCertificateEnabled()) {
-                certificateService.generateCertificate(savedSession.getSessionId(), savedSession.getUser().getUsername());
-            }
-
-            return savedSession;
+        if (session == null) {
+            return new TestSessionCompletionResult(null, false); // Session not found
         }
-        return null;
+
+        if (session.getStatus() == Status.FINISHED || session.getStatus() == Status.TIMEOUT) {
+            return new TestSessionCompletionResult(session, false); // Already completed
+        }
+
+        if (isSessionExpired(session)) {
+            TestSession timedOutSession = handleTimeout(session);
+            return new TestSessionCompletionResult(timedOutSession, false); // Timed out, results calculated
+        }
+
+        // Set completedAt IMMEDIATELY when the test is finished, before any data checks.
+        // This ensures timeTakenSeconds doesn't include form filling time.
+        if (session.getCompletedAt() == null) {
+            session.setCompletedAt(LocalDateTime.now());
+            sessionRepository.save(session); // Save it early
+        }
+
+        // Check if age is required before calculating results
+        if (session.getQuizSnapshot().isAgeFactorEnabled() && session.getUser().getAge() == null) {
+            return new TestSessionCompletionResult(session, true); // Profile data (age) is required
+        }
+
+        // If age is available or not required, proceed with calculation
+        session.setStatus(Status.FINISHED);
+
+        calculateResults(session); // This will now use the age if available and the early completedAt
+
+        TestSession savedSession = sessionRepository.save(session);
+
+        // Auto-generate certificate if enabled
+        if (savedSession.getQuizSnapshot().getQuiz().isCertificateEnabled()) {
+            certificateService.generateCertificate(savedSession.getSessionId(), savedSession.getUser().getUsername());
+        }
+
+        return new TestSessionCompletionResult(savedSession, false);
     }
+
+    @Transactional
+    public TestSessionCompletionResult completeSessionWithAge(Long sessionId, Integer age) {
+        TestSession session = sessionRepository.findById(sessionId).orElse(null);
+        if (session == null) {
+            return new TestSessionCompletionResult(null, false);
+        }
+
+        // Update user's age
+        User user = session.getUser();
+        if (user != null && age != null && age > 0) { // Basic validation
+            user.setAge(age);
+        }
+
+        // Now attempt to complete the session again
+        return completeSession(sessionId);
+    }
+
 
     @Transactional
     public TestSession handleTimeout(TestSession session) {
         session.setStatus(Status.TIMEOUT);
-        session.setCompletedAt(session.getExpiresAt() != null ? session.getExpiresAt() : LocalDateTime.now());
+        // For timeout, we use expiresAt or current time
+        if (session.getCompletedAt() == null) {
+            session.setCompletedAt(session.getExpiresAt() != null ? session.getExpiresAt() : LocalDateTime.now());
+        }
+        
+        // For timed-out sessions, we proceed with calculation even if age is missing
         calculateResults(session);
         
         TestSession savedSession = sessionRepository.save(session);
@@ -122,7 +178,7 @@ public class TestSessionService {
         IqCalculationResult calcResult = calculateFinalIQ(
             (double) userScore,
             (double) maxScore,
-            session.getUser().getAge(),
+            session.getUser().getAge(), // Pass user's age
             snapshot.isAgeFactorEnabled(),
             snapshot.isCustomFormulaEnabled(),
             snapshot.getKCoeff(),
@@ -132,6 +188,7 @@ public class TestSessionService {
         session.setIqScore(calcResult.finalIQ);
         session.setCalculationLog(calcResult.calculationLog);
 
+        // Time taken is now calculated based on the early completedAt set in completeSession()
         Duration duration = Duration.between(session.getStartedAt(), session.getCompletedAt());
         session.setTimeTakenSeconds((int) duration.getSeconds());
     }
@@ -173,7 +230,7 @@ public class TestSessionService {
             log.append("Standard Formula Applied (K=60, B=70). ");
         }
 
-        // 3. Core Formula: Result = (userScore / maxScore) * K * C_age + B
+        // 3. Core Formula: Result = (userScore / maxScore) * k * cAge + b
         double result = (userScore / maxScore) * k * cAge + b;
 
         // 4. Validation & Integrity
