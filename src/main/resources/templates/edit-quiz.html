@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:x-bind="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>Testni tahrirlash</title>
+    <title th:text="#{edit_quiz.title}"></title>
     <div th:replace="~{fragments :: common-styles}"></div>
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -48,201 +48,40 @@
             text-transform: uppercase;
         }
         .question-actions {
-            display: flex;
-            gap: 0.5rem;
+            display: flex; gap: 0.5rem;
         }
         .action-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #6B7280;
-            padding: 0.4rem;
-            border-radius: 4px;
-            transition: color 0.2s, background 0.2s;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+            background: none; border: none; cursor: pointer; color: #6B7280; padding: 0.4rem; border-radius: 4px; transition: color 0.2s, background 0.2s; text-decoration: none; display: inline-flex; align-items: center; justify-content: center;
         }
-        .action-btn:hover {
-            background: #E5E7EB;
-            color: #1F2937;
-        }
-        .action-btn.delete:hover {
-            background: #FEE2E2;
-            color: #DC2626;
-        }
-        .question-body {
-            padding: 1.5rem;
-        }
-        .question-text {
-            font-size: 1.1rem;
-            font-weight: 500;
-            color: #111827;
-            margin-bottom: 1rem;
-        }
-        .question-meta {
-            display: flex;
-            gap: 1.5rem;
-            font-size: 0.9rem;
-            color: #6B7280;
-            margin-bottom: 1rem;
-        }
-        .meta-item {
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
-
-        /* Options List */
-        .options-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 0.75rem;
-        }
-        .option-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem;
-            border: 1px solid #E5E7EB;
-            border-radius: 8px;
-            background: #F9FAFB;
-        }
-        .option-item.correct {
-            border-color: #10B981;
-            background: #ECFDF5;
-        }
-        .option-marker {
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            border: 2px solid #D1D5DB;
-            color: #D1D5DB;
-            font-size: 0.8rem;
-        }
-        .option-item.correct .option-marker {
-            border-color: #10B981;
-            background: #10B981;
-            color: white;
-        }
-
-        /* Add Question Button */
-        .add-question-card {
-            border: 2px dashed #D1D5DB;
-            border-radius: 12px;
-            padding: 2rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: #F9FAFB;
-            color: #6B7280;
-        }
-        .add-question-card:hover {
-            border-color: #3B82F6;
-            color: #3B82F6;
-            background: #EFF6FF;
-        }
-
-        .alert-danger {
-            color: #721c24;
-            background-color: #f8d7da;
-            border-color: #f5c6cb;
-            padding: 0.75rem 1.25rem;
-            margin-bottom: 1rem;
-            border: 1px solid transparent;
-            border-radius: 0.25rem;
-        }
-
-        .alert-success {
-            color: #155724;
-            background-color: #d4edda;
-            border-color: #c3e6cb;
-            padding: 0.75rem 1.25rem;
-            margin-bottom: 1rem;
-            border: 1px solid transparent;
-            border-radius: 0.25rem;
-        }
-
-        .duration-inputs {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-        .duration-field {
-            flex: 1;
-        }
-
-        /* Switch styles */
-        .switch {
-          position: relative;
-          display: inline-block;
-          width: 44px;
-          height: 24px;
-        }
-        .switch input {
-          opacity: 0;
-          width: 0;
-          height: 0;
-        }
-        .slider {
-          position: absolute;
-          cursor: pointer;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background-color: #ccc;
-          -webkit-transition: .4s;
-          transition: .4s;
-          border-radius: 24px;
-        }
-        .slider:before {
-          position: absolute;
-          content: "";
-          height: 18px;
-          width: 18px;
-          left: 3px;
-          bottom: 3px;
-          background-color: white;
-          -webkit-transition: .4s;
-          transition: .4s;
-          border-radius: 50%;
-        }
-        input:checked ~ .slider {
-          background-color: #2196F3;
-        }
-        input:checked ~ .slider:before {
-          -webkit-transform: translateX(20px);
-          -ms-transform: translateX(20px);
-          transform: translateX(20px);
-        }
-
-        /* Lightbox */
+        .action-btn:hover { background: #E5E7EB; color: #1F2937; }
+        .action-btn.delete:hover { background: #FEE2E2; color: #DC2626; }
+        .question-body { padding: 1.5rem; }
+        .question-text { font-size: 1.1rem; font-weight: 500; color: #111827; margin-bottom: 1rem; }
+        .question-meta { display: flex; gap: 1.5rem; font-size: 0.9rem; color: #6B7280; margin-bottom: 1rem; }
+        .meta-item { display: flex; align-items: center; gap: 0.4rem; }
+        .options-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 0.75rem; }
+        .option-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border: 1px solid #E5E7EB; border-radius: 8px; background: #F9FAFB; }
+        .option-item.correct { border-color: #10B981; background: #ECFDF5; }
+        .option-marker { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #D1D5DB; color: #D1D5DB; font-size: 0.8rem; }
+        .option-item.correct .option-marker { border-color: #10B981; background: #10B981; color: white; }
+        .add-question-card { border: 2px dashed #D1D5DB; border-radius: 12px; padding: 2rem; text-align: center; cursor: pointer; transition: all 0.2s; background: #F9FAFB; color: #6B7280; }
+        .add-question-card:hover { border-color: #3B82F6; color: #3B82F6; background: #EFF6FF; }
+        .alert-danger { color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; padding: 0.75rem 1.25rem; margin-bottom: 1rem; border: 1px solid transparent; border-radius: 0.25rem; }
+        .alert-success { color: #155724; background-color: #d4edda; border-color: #c3e6cb; padding: 0.75rem 1.25rem; margin-bottom: 1rem; border: 1px solid transparent; border-radius: 0.25rem; }
+        .duration-inputs { display: flex; gap: 1rem; align-items: center; }
+        .duration-field { flex: 1; }
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; -webkit-transition: .4s; transition: .4s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; -webkit-transition: .4s; transition: .4s; border-radius: 50%; }
+        input:checked ~ .slider { background-color: #2196F3; }
+        input:checked ~ .slider:before { -webkit-transform: translateX(20px); -ms-transform: translateX(20px); transform: translateX(20px); }
         .lightbox { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); justify-content: center; align-items: center; }
         .lightbox img { max-width: 90%; max-height: 90%; border-radius: 8px; }
         .lightbox-close { position: absolute; top: 20px; right: 30px; color: white; font-size: 40px; cursor: pointer; }
-
         [x-cloak] { display: none !important; }
-
-        .settings-panel {
-            margin-top: 1rem;
-            padding: 1.25rem;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border-left: 4px solid #3498DB;
-        }
-        .section-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #2C3E50;
-            margin-bottom: 1rem;
-            border-bottom: 1px solid #E5E7EB;
-            padding-bottom: 0.5rem;
-        }
+        .settings-panel { margin-top: 1rem; padding: 1.25rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #3498DB; }
+        .section-title { font-size: 1.1rem; font-weight: 700; color: #2C3E50; margin-bottom: 1rem; border-bottom: 1px solid #E5E7EB; padding-bottom: 0.5rem; }
     </style>
 </head>
 <body>
@@ -266,29 +105,29 @@
         <div class="card-body">
             <div class="flex justify-between items-start mb-4" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
                 <div>
-                    <h1 th:text="${quiz.name}" style="margin-bottom: 0.5rem;">Test nomi</h1>
+                    <h1 th:text="${quiz.name}" style="margin-bottom: 0.5rem;"></h1>
                     <div class="text-secondary" style="color: #6B7280;">
-                        <span th:text="${quiz.quizType.name}">Turi</span> &bull;
-                        <span th:text="${#lists.size(quiz.questions) + ' ta savol'}">0 ta savol</span> &bull;
-                        <span th:if="${quiz.timeType.name() == 'TOTAL_TIME'}" th:text="${(quiz.timeLimitSeconds / 60) + ' daqiqa jami'}"></span>
-                        <span th:if="${quiz.timeType.name() == 'NO_LIMIT'}">Vaqt chegarasi yo'q</span>
+                        <span th:text="${quiz.quizType.name}"></span> &bull;
+                        <span th:text="${#messages.msg('edit_quiz.questions_count', #lists.size(quiz.questions))}"></span> &bull;
+                        <span th:if="${quiz.timeType.name() == 'TOTAL_TIME'}" th:text="${#messages.msg('edit_quiz.total_time_minutes', (quiz.timeLimitSeconds / 60))}"></span>
+                        <span th:if="${quiz.timeType.name() == 'NO_LIMIT'}" th:text="#{edit_quiz.no_time_limit}"></span>
                     </div>
                     <div th:if="${isPublished}" style="margin-top: 0.5rem;">
-                        <span class="badge badge-success" style="background-color: #28a745; color: white; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.8rem;">BOSHLANGAN</span>
-                        <small class="text-muted" style="display: block; margin-top: 0.25rem;">Sozlamalarni tahrirlash uchun testni to'xtating.</small>
+                        <span class="badge badge-success" style="background-color: #28a745; color: white; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.8rem;" th:text="#{edit_quiz.quiz_status_started}"></span>
+                        <small class="text-muted" style="display: block; margin-top: 0.25rem;" th:text="#{edit_quiz.quiz_status_started_info}"></small>
                     </div>
                 </div>
                 <button type="button" @click="editing = !editing" class="btn btn-secondary btn-sm">
-                    <i class="fas fa-cog"></i> Sozlamalar
+                    <i class="fas fa-cog"></i> <span th:text="#{edit_quiz.settings_button}"></span>
                 </button>
             </div>
 
             <!-- Edit Quiz Form (Collapsible) -->
             <div x-show="editing" x-cloak x-transition style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #E5E7EB;">
-                <h2 style="margin-top: 0; margin-bottom: 1.5rem;">Test sozlamalari</h2>
+                <h2 style="margin-top: 0; margin-bottom: 1.5rem;" th:text="#{edit_quiz.settings_header}"></h2>
                 <form th:action="@{/quiz/{id}/edit(id=${quiz.id})}" th:object="${quiz}" method="post" enctype="multipart/form-data">
                     <div class="form-group">
-                        <label for="quizName">Test nomi</label>
+                        <label for="quizName" th:text="#{create_quiz.name.label}"></label>
                         <input type="text" id="quizName" th:field="*{name}" required>
                     </div>
 
@@ -302,35 +141,35 @@
                         <input type="hidden" th:field="*{kCoeff}" />
                         <input type="hidden" th:field="*{bCoeff}" />
                         <div class="alert-danger" style="font-size: 0.9rem;">
-                            <i class="fas fa-lock"></i> Strukturaviy sozlamalar (Turi, Vaqt, IQ) test BOSHLANGAN holatida bloklangan.
+                            <i class="fas fa-lock"></i> <span th:text="#{edit_quiz.settings_locked_alert}"></span>
                         </div>
                     </div>
 
                     <div th:unless="${isPublished}">
                         <div class="form-group">
-                            <label for="quizType">Test turi</label>
+                            <label for="quizType" th:text="#{create_quiz.type.label}"></label>
                             <select id="quizType" th:field="*{quizType.id}" required>
                                 <option th:each="type : ${quizTypes}" th:value="${type.id}" th:text="${type.name}"></option>
                             </select>
                         </div>
 
                         <!-- IQ Calculation Settings -->
-                        <div class="section-title" style="margin-top: 2rem;">IQ Hisoblash Dvigateli</div>
+                        <div class="section-title" style="margin-top: 2rem;" th:text="#{create_quiz.iq_engine.title}"></div>
 
                         <div class="form-group">
                             <label style="display: flex; align-items: center; gap: 1rem;">
-                                <span>Yosh koeffitsientini hisobga olish (C_age)</span>
+                                <span th:text="#{create_quiz.age_factor.label}"></span>
                                 <label class="switch">
                                     <input type="checkbox" th:field="*{ageFactorEnabled}">
                                     <span class="slider"></span>
                                 </label>
                             </label>
-                            <small class="text-muted">Yoqilsa, natija foydalanuvchi yoshiga qarab normallashtiriladi.</small>
+                            <small class="text-muted" th:text="#{create_quiz.age_factor.description}"></small>
                         </div>
 
                         <div class="form-group">
                             <label style="display: flex; align-items: center; gap: 1rem;">
-                                <span>Maxsus formula koeffitsientlari (K/B)</span>
+                                <span th:text="#{create_quiz.custom_formula.label}"></span>
                                 <label class="switch">
                                     <!-- FIXED: Use x-bind:checked for Alpine.js synchronization -->
                                     <input type="checkbox" id="customFormulaSwitch"
@@ -340,29 +179,29 @@
                                     <span class="slider"></span>
                                 </label>
                             </label>
-                            <small class="text-muted">Yoqilsa, IQ hisoblash uchun maxsus K va B koeffitsientlarini kiritish mumkin.</small>
+                            <small class="text-muted" th:text="#{create_quiz.custom_formula.description}"></small>
                         </div>
 
                         <div id="customFormulaSettings" class="settings-panel" x-show="customFormulaEnabled" x-cloak x-transition>
                             <div style="display: flex; gap: 1rem;">
                                 <div class="form-group" style="flex: 1;">
-                                    <label for="kCoeff">K Koeffitsienti (Default: 60)</label>
+                                    <label for="kCoeff" th:text="#{create_quiz.k_coeff.label}"></label>
                                     <input type="number" step="0.01" id="kCoeff" th:field="*{kCoeff}">
                                 </div>
                                 <div class="form-group" style="flex: 1;">
-                                    <label for="bCoeff">B Koeffitsienti (Default: 70)</label>
+                                    <label for="bCoeff" th:text="#{create_quiz.b_coeff.label}"></label>
                                     <input type="number" step="0.01" id="bCoeff" th:field="*{bCoeff}">
                                 </div>
                             </div>
-                            <p style="font-size: 0.85rem; color: #7f8c8d; margin: 0;">Formula: IQ = (Ball/Maks) * K * Yosh_Koeff + B</p>
+                            <p style="font-size: 0.85rem; color: #7f8c8d; margin: 0;" th:text="#{create_quiz.formula}"></p>
                         </div>
 
                         <!-- Time Settings -->
-                        <div class="section-title" style="margin-top: 2rem;">Vaqt va Sertifikat</div>
+                        <div class="section-title" style="margin-top: 2rem;" th:text="#{create_quiz.time_certificate.title}"></div>
 
                         <div class="form-group">
                             <label style="display: flex; align-items: center; gap: 1rem;">
-                                <span>Vaqt chegarasini yoqish</span>
+                                <span th:text="#{create_quiz.enable_time_limit.label}"></span>
                                 <label class="switch">
                                     <input type="checkbox" id="timeSwitch" onchange="toggleTimeSettings()">
                                     <span class="slider"></span>
@@ -373,18 +212,18 @@
 
                         <div id="timeSettings" class="settings-panel" style="display: none;">
                             <div class="form-group" id="globalTimeInput">
-                                <label for="minutes">Umumiy davomiyligi (daqiqalar)</label>
+                                <label for="minutes" th:text="#{create_quiz.total_duration.label}"></label>
                                 <div th:object="${durationDto}">
-                                    <input type="number" id="minutes" th:field="*{minutes}" min="1" max="180" placeholder="masalan, 30">
+                                    <input type="number" id="minutes" th:field="*{minutes}" min="1" max="180" th:placeholder="#{create_quiz.total_duration.placeholder}">
                                 </div>
-                                <small class="text-muted">Butun test uchun ruxsat etilgan umumiy vaqtni daqiqalarda belgilang.</small>
+                                <small class="text-muted" th:text="#{create_quiz.total_duration.description}"></small>
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label style="display: flex; align-items: center; gap: 1rem;">
-                            <span>Sertifikatni yoqish</span>
+                            <span th:text="#{create_quiz.enable_certificate.label}"></span>
                             <label class="switch">
                                 <input type="checkbox" th:field="*{certificateEnabled}"
                                        x-model="isCertificateEnabled"
@@ -392,35 +231,35 @@
                                 <span class="slider"></span>
                             </label>
                         </label>
-                        <small class="text-muted">Agar yoqilsa, foydalanuvchilar yakunlangandan so'ng yuklab olinadigan sertifikat oladi.</small>
+                        <small class="text-muted" th:text="#{edit_quiz.certificate_description}"></small>
                     </div>
 
                     <div x-show="isCertificateEnabled" x-cloak x-transition
                          class="settings-panel">
-                        <h4>Sertifikat konfiguratsiyasi</h4>
+                        <h4 th:text="#{edit_quiz.certificate_config_header}"></h4>
                         <div class="form-group">
-                            <label for="certificateTitle">Sertifikat nomi</label>
-                            <input type="text" id="certificateTitle" th:field="*{certificateTitle}" class="form-control" placeholder="masalan, Muvaffaqiyat sertifikati">
-                            <small class="text-muted">Sertifikatda ko'rsatiladigan asosiy sarlavha.</small>
+                            <label for="certificateTitle" th:text="#{create_quiz.certificate_title.label}"></label>
+                            <input type="text" id="certificateTitle" th:field="*{certificateTitle}" class="form-control" th:placeholder="#{create_quiz.certificate_title.placeholder}">
+                            <small class="text-muted" th:text="#{edit_quiz.certificate_title_info}"></small>
                         </div>
                         <div class="form-group">
-                            <label for="passingScore">O'tish uchun minimal ball (%)</label>
-                            <input type="number" id="passingScore" th:field="*{passingScore}" class="form-control" min="0" max="100" placeholder="masalan, 75">
-                            <small class="text-muted">Sertifikat olish uchun zarur bo'lgan to'g'ri javoblarning minimal foizi.</small>
+                            <label for="passingScore" th:text="#{edit_quiz.passing_score_label}"></label>
+                            <input type="number" id="passingScore" th:field="*{passingScore}" class="form-control" min="0" max="100" th:placeholder="#{edit_quiz.passing_score_placeholder}">
+                            <small class="text-muted" th:text="#{edit_quiz.passing_score_info}"></small>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label>Test rasmi (ixtiyoriy)</label>
+                        <label th:text="#{create_quiz.image.label}"></label>
                         <div class="file-upload-wrapper" id="quiz-image-uploader">
                             <!-- Existing Image Preview -->
                             <div class="file-preview-card" id="quiz-existing-card" th:if="${quiz.attachment != null}" style="display: flex;">
-                                <img class="file-preview-thumb" th:src="${quiz.attachment.webUrl != null ? quiz.attachment.webUrl : '/attachment/' + quiz.attachment.id}" title="Kattalashtirish uchun bosing" onclick="openLightbox(this.src)">
+                                <img class="file-preview-thumb" th:src="${quiz.attachment.webUrl != null ? quiz.attachment.webUrl : '/attachment/' + quiz.attachment.id}" th:title="#{add_question.image_upload.preview_title}" onclick="openLightbox(this.src)">
                                 <div class="file-info">
-                                    <span class="file-name">Mavjud rasm</span>
+                                    <span class="file-name" th:text="#{edit_quiz.existing_image_label}"></span>
                                 </div>
                                 <div class="file-actions">
-                                    <button type="button" class="btn-remove-file" onclick="removeExistingQuizImage()" title="Faylni o'chirish"><i class="fas fa-trash"></i></button>
+                                    <button type="button" class="btn-remove-file" onclick="removeExistingQuizImage()" th:title="#{add_question.image_upload.remove_title}"><i class="fas fa-trash"></i></button>
                                 </div>
                             </div>
                             <input type="hidden" name="removeImage" id="removeImage" value="false">
@@ -428,19 +267,19 @@
                             <!-- New Image Uploader -->
                             <div class="file-upload-area" id="quiz-upload-area" th:style="${quiz.attachment != null ? 'display: none;' : ''}" onclick="document.getElementById('file').click()">
                                 <i class="fas fa-cloud-upload-alt"></i>
-                                <span>Rasm biriktirish uchun bosing</span>
+                                <span th:text="#{add_question.image_upload.attach}"></span>
                             </div>
                             <input type="file" name="file" id="file" accept="image/*" class="hidden-file-input" onchange="previewFile(this, 'quiz-preview', 'quiz-upload-area')">
                             <div id="quiz-preview" style="display:none; margin-top: 10px;">
                                 <img src="" style="max-height: 150px; border-radius: 8px;">
-                                <button type="button" class="btn btn-sm btn-danger" onclick="clearFile('file', 'quiz-preview', 'quiz-upload-area')">Yangi rasmni o'chirish</button>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="clearFile('file', 'quiz-preview', 'quiz-upload-area')" th:text="#{edit_quiz.remove_new_image_button}"></button>
                             </div>
                         </div>
                     </div>
 
                     <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem;">
-                        <button type="button" @click="editing = false" class="btn btn-secondary">Bekor qilish</button>
-                        <button type="submit" class="btn btn-primary">O'zgarishlarni saqlash</button>
+                        <button type="button" @click="editing = false" class="btn btn-secondary" th:text="#{common.cancel}"></button>
+                        <button type="submit" class="btn btn-primary" th:text="#{common.save}"></button>
                     </div>
                 </form>
             </div>
@@ -449,10 +288,9 @@
 
     <!-- Questions List -->
     <div style="margin-bottom: 2rem;">
-        <h2 style="margin-bottom: 1.5rem; font-size: 1.25rem; color: #374151;">Savollar</h2>
+        <h2 style="margin-bottom: 1.5rem; font-size: 1.25rem; color: #374151;" th:text="#{edit_quiz.questions_header}"></h2>
 
-        <div th:if="${#lists.isEmpty(quiz.questions)}" class="text-center py-8 text-gray-500" style="text-align: center; padding: 2rem; color: #6B7280;">
-            Hali savollar qo'shilmagan. Qo'shish uchun quyida bosing.
+        <div th:if="${#lists.isEmpty(quiz.questions)}" class="text-center py-8 text-gray-500" style="text-align: center; padding: 2rem; color: #6B7280;" th:text="#{edit_quiz.no_questions_yet}">
         </div>
 
         <!-- Question Cards -->
@@ -461,18 +299,18 @@
                 <div class="question-header">
                     <div class="question-title">
                         <span class="text-gray-400" th:text="'#' + ${stat.count}">#1</span>
-                        <span class="question-badge" th:text="${question.questionType}">TANLOVLI SAVOL</span>
+                        <span class="question-badge" th:text="${question.questionType}"></span>
                     </div>
                     <div class="question-actions" th:unless="${isPublished}">
-                        <a th:href="@{/quiz/{quizId}/questions/{questionId}/edit(quizId=${quiz.id}, questionId=${question.questionId})}" class="action-btn" title="Savolni tahrirlash">
+                        <a th:href="@{/quiz/{quizId}/questions/{questionId}/edit(quizId=${quiz.id}, questionId=${question.questionId})}" class="action-btn" th:title="#{edit_quiz.edit_question_button}">
                             <i class="fas fa-pencil-alt"></i>
                         </a>
-                        <a th:href="@{/quiz/{quizId}/questions/{questionId}/delete(quizId=${quiz.id}, questionId=${question.questionId})}" class="action-btn delete" title="Savolni o'chirish" onclick="return confirm('Haqiqatan ham ushbu savolni o\'chirib tashlamoqchimisiz? Buni qaytarib bo\'lmaydi.')">
+                        <a th:href="@{/quiz/{quizId}/questions/{questionId}/delete(quizId=${quiz.id}, questionId=${question.questionId})}" class="action-btn delete" th:title="#{edit_quiz.delete_question_button}" onclick="return confirm([[#{edit_quiz.confirm_delete_question}]])">
                             <i class="fas fa-trash-alt"></i>
                         </a>
                     </div>
                     <div class="question-actions" th:if="${isPublished}">
-                        <span class="text-muted" title="Boshlangan holatda tahrirlab bo'lmaydi"><i class="fas fa-lock"></i></span>
+                        <span class="text-muted" th:title="#{edit_quiz.cannot_edit_published}"><i class="fas fa-lock"></i></span>
                     </div>
                 </div>
                 <div class="question-body">
@@ -481,9 +319,9 @@
                         <img th:src="@{${question.attachment.webUrl != null ? question.attachment.webUrl : '/attachment/' + question.attachment.id}}" style="max-height: 200px; border-radius: 8px; cursor: pointer;" onclick="openLightbox(this.src)">
                     </div>
                     <div class="question-meta">
-                        <div class="meta-item"><i class="fas fa-star text-yellow-400" style="color: #FBBF24;"></i> <span th:text="${question.points + ' ball'}"></span></div>
+                        <div class="meta-item"><i class="fas fa-star text-yellow-400" style="color: #FBBF24;"></i> <span th:text="${question.points + #messages.msg('edit_quiz.points_suffix')}"></span></div>
                         <div class="meta-item"><i class="fas fa-folder text-blue-400" style="color: #60A5FA;"></i> <span th:text="${question.questionCategory.categoryName}"></span></div>
-                        <div class="meta-item" th:if="${question.timeLimitSeconds != null}"><i class="fas fa-clock text-gray-400"></i> <span th:text="${question.timeLimitSeconds + 's'}"></span></div>
+                        <div class="meta-item" th:if="${question.timeLimitSeconds != null}"><i class="fas fa-clock text-gray-400"></i> <span th:text="${question.timeLimitSeconds + #messages.msg('edit_quiz.seconds_suffix')}"></span></div>
                     </div>
                     <div class="options-list">
                         <div th:each="option : ${question.answerOptions}" th:class="${'option-item ' + (option.isCorrect ? 'correct' : '')}">
@@ -502,10 +340,10 @@
         <!-- Add Question Button -->
         <a th:if="${!isPublished}" th:href="@{/quiz/{quizId}/questions/add(quizId=${quiz.id})}" class="add-question-card" style="display: block; text-decoration: none;">
             <i class="fas fa-plus-circle fa-2x" style="margin-bottom: 0.5rem;"></i>
-            <div style="font-weight: 500;">Yangi savol qo'shish</div>
+            <div style="font-weight: 500;" th:text="#{edit_quiz.add_new_question_button}"></div>
         </a>
         <div th:if="${isPublished}" class="text-center text-muted mt-4">
-            <i class="fas fa-lock"></i> Savollarni qo'shish yoki olib tashlash uchun testni to'xtating.
+            <i class="fas fa-lock"></i> <span th:text="#{edit_quiz.cannot_add_remove_questions_published}"></span>
         </div>
     </div>
 </div>
@@ -558,7 +396,7 @@
     }
 
     function removeExistingQuizImage() {
-        if(confirm('Mavjud rasmni o\'chirib tashlamoqchimisiz?')) {
+        if(confirm([[#{edit_quiz.confirm_remove_existing_image}]])) {
             document.getElementById('removeImage').value = 'true';
             document.getElementById('quiz-existing-card').style.display = 'none';
             document.getElementById('quiz-upload-area').style.display = 'flex';

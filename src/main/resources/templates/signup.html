@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Hisob yaratish - IQ baholash platformasi</title>
+    <title th:text="#{signup.title}"></title>
     <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}">
     <link rel="shortcut icon" type="image/x-icon" th:href="@{/images/favicon.ico}">
     <style>
@@ -138,9 +138,9 @@
     <div class="signup-header">
         <h2>
             <img th:src="@{/images/icon.png}" alt="Logo">
-            Hisob yaratish
+            <span th:text="#{signup.header.title}"></span>
         </h2>
-        <p>Professional kognitiv baholash platformasiga qo'shiling</p>
+        <p th:text="#{signup.header.subtitle}"></p>
     </div>
 
     <div class="signup-body">
@@ -148,79 +148,91 @@
 
         <form th:action="@{/signup}" th:object="${signupRequest}" method="post" id="signupForm">
             <div class="form-group">
-                <label for="username">Foydalanuvchi nomi <span class="required">*</span></label>
+                <label for="username"><span th:text="#{signup.username.label}"></span> <span class="required" th:text="#{common.required}"></span></label>
                 <input type="text" id="username" th:field="*{username}" required
-                       placeholder="Yagona foydalanuvchi nomini tanlang" minlength="3" maxlength="50">
+                       th:placeholder="#{signup.username.placeholder}" minlength="3" maxlength="50">
                 <div class="validation-message error" id="usernameError"></div>
                 <div class="validation-message success" id="usernameSuccess"></div>
             </div>
 
             <div class="form-group">
-                <label for="email">Email manzili <span class="required">*</span></label>
+                <label for="email"><span th:text="#{signup.email.label}"></span> <span class="required" th:text="#{common.required}"></span></label>
                 <input type="email" id="email" th:field="*{email}" required
-                       placeholder="sizning.email@example.com">
+                       th:placeholder="#{signup.email.placeholder}">
                 <div class="validation-message error" id="emailError"></div>
                 <div class="validation-message success" id="emailSuccess"></div>
             </div>
 
             <div class="form-group">
-                <label for="password">Parol <span class="required">*</span></label>
+                <label for="password"><span th:text="#{signup.password.label}"></span> <span class="required" th:text="#{common.required}"></span></label>
                 <input type="password" id="password" th:field="*{password}" required
-                       placeholder="Kamida 6 ta belgi" minlength="6">
+                       th:placeholder="#{signup.password.placeholder}" minlength="6">
                 <div class="validation-message error" id="passwordError"></div>
             </div>
 
             <div class="form-group">
-                <label for="confirmPassword">Parolni tasdiqlash <span class="required">*</span></label>
+                <label for="confirmPassword"><span th:text="#{signup.confirm_password.label}"></span> <span class="required" th:text="#{common.required}"></span></label>
                 <input type="password" id="confirmPassword" th:field="*{confirmPassword}" required
-                       placeholder="Parolni qayta kiriting">
+                       th:placeholder="#{signup.confirm_password.placeholder}">
                 <div class="validation-message error" id="confirmPasswordError"></div>
                 <div class="validation-message success" id="confirmPasswordSuccess"></div>
             </div>
 
             <div class="form-group">
-                <label for="age">Yosh <span class="required">*</span></label>
+                <label for="age"><span th:text="#{signup.age.label}"></span> <span class="required" th:text="#{common.required}"></span></label>
                 <input type="number" id="age" th:field="*{age}" min="10" max="120" required
-                       placeholder="Yoshingiz">
+                       th:placeholder="#{signup.age.placeholder}">
             </div>
 
             <div class="form-group">
-                <label for="country">Mamlakat</label>
+                <label for="country" th:text="#{signup.country.label}"></label>
                 <select id="country" th:field="*{country}">
-                    <option value="">Mamlakatingizni tanlang (ixtiyoriy)</option>
-                    <option value="USA">AQSH</option>
-                    <option value="UK">Buyuk Britaniya</option>
-                    <option value="Canada">Kanada</option>
-                    <option value="Australia">Avstraliya</option>
-                    <option value="Germany">Germaniya</option>
-                    <option value="France">Fransiya</option>
-                    <option value="India">Hindiston</option>
-                    <option value="China">Xitoy</option>
-                    <option value="Japan">Yaponiya</option>
-                    <option value="Brazil">Braziliya</option>
-                    <option value="Uzbekistan">O'zbekiston</option>
-                    <option value="Other">Boshqa</option>
+                    <option value="" th:text="#{signup.country.placeholder}"></option>
+                    <option value="USA" th:text="#{signup.country.usa}"></option>
+                    <option value="UK" th:text="#{signup.country.uk}"></option>
+                    <option value="Canada" th:text="#{signup.country.canada}"></option>
+                    <option value="Australia" th:text="#{signup.country.australia}"></option>
+                    <option value="Germany" th:text="#{signup.country.germany}"></option>
+                    <option value="France" th:text="#{signup.country.france}"></option>
+                    <option value="India" th:text="#{signup.country.india}"></option>
+                    <option value="China" th:text="#{signup.country.china}"></option>
+                    <option value="Japan" th:text="#{signup.country.japan}"></option>
+                    <option value="Brazil" th:text="#{signup.country.brazil}"></option>
+                    <option value="Uzbekistan" th:text="#{signup.country.uzbekistan}"></option>
+                    <option value="Other" th:text="#{signup.country.other}"></option>
                 </select>
             </div>
 
-            <button type="submit" class="btn-submit" id="submitBtn">Hisob yaratish</button>
+            <button type="submit" class="btn-submit" id="submitBtn" th:text="#{signup.button}"></button>
         </form>
 
         <div class="login-link">
-            Hisobingiz bormi? <a th:href="@{/login}">Tizimga kirish</a>
+            <span th:text="#{signup.has_account}"></span> <a th:href="@{/login}" th:text="#{signup.login_link}"></a>
         </div>
     </div>
 </div>
 
-<script>
+<script th:inline="javascript">
     let usernameAvailable = false;
     let emailAvailable = false;
     let passwordsMatch = false;
 
+    const messages = {
+        usernameMinLength: [[#{signup.username.validation.min_length}]],
+        usernameAvailable: [[#{signup.username.validation.available}]],
+        usernameTaken: [[#{signup.username.validation.taken}]],
+        emailInvalid: [[#{signup.email.validation.invalid}]],
+        emailAvailable: [[#{signup.email.validation.available}]],
+        emailTaken: [[#{signup.email.validation.taken}]],
+        passwordMinLength: [[#{signup.password.validation.min_length}]],
+        passwordsMatch: [[#{signup.confirm_password.validation.match}]],
+        passwordsNoMatch: [[#{signup.confirm_password.validation.no_match}]]
+    };
+
     document.getElementById('username').addEventListener('blur', async function() {
         const username = this.value;
         if (username.length < 3) {
-            showError('username', 'Foydalanuvchi nomi kamida 3 ta belgidan iborat bo\'lishi kerak');
+            showError('username', messages.usernameMinLength);
             usernameAvailable = false;
             return;
         }
@@ -230,14 +242,14 @@
             const data = await response.json();
 
             if (data.available) {
-                showSuccess('username', 'Foydalanuvchi nomi mavjud');
+                showSuccess('username', messages.usernameAvailable);
                 usernameAvailable = true;
             } else {
-                showError('username', 'Foydalanuvchi nomi band');
+                showError('username', messages.usernameTaken);
                 usernameAvailable = false;
             }
         } catch (error) {
-            console.error('Foydalanuvchi nomini tekshirishda xatolik:', error);
+            console.error('Error checking username:', error);
         }
         updateSubmitButton();
     });
@@ -247,7 +259,7 @@
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         if (!emailRegex.test(email)) {
-            showError('email', 'Iltimos, to\'g\'ri email manzilini kiriting');
+            showError('email', messages.emailInvalid);
             emailAvailable = false;
             return;
         }
@@ -257,14 +269,14 @@
             const data = await response.json();
 
             if (data.available) {
-                showSuccess('email', 'Email mavjud');
+                showSuccess('email', messages.emailAvailable);
                 emailAvailable = true;
             } else {
-                showError('email', 'Ushbu email allaqachon ro\'yxatdan o\'tgan');
+                showError('email', messages.emailTaken);
                 emailAvailable = false;
             }
         } catch (error) {
-            console.error('Emailni tekshirishda xatolik:', error);
+            console.error('Error checking email:', error);
         }
         updateSubmitButton();
     });
@@ -272,7 +284,7 @@
     document.getElementById('password').addEventListener('input', function() {
         const password = this.value;
         if (password.length < 6) {
-            showError('password', 'Parol kamida 6 ta belgidan iborat bo\'lishi kerak');
+            showError('password', messages.passwordMinLength);
         } else {
             hideError('password');
             checkPasswordMatch();
@@ -296,10 +308,10 @@
         }
 
         if (password === confirmPassword && password.length >= 6) {
-            showSuccess('confirmPassword', 'Parollar mos keldi');
+            showSuccess('confirmPassword', messages.passwordsMatch);
             passwordsMatch = true;
         } else {
-            showError('confirmPassword', 'Parollar mos kelmadi');
+            showError('confirmPassword', messages.passwordsNoMatch);
             passwordsMatch = false;
         }
         updateSubmitButton();

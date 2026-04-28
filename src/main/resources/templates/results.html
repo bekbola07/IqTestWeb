@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Test natijalari - IQ testi</title>
+    <title th:text="#{results.title}"></title>
     <div th:replace="~{fragments :: common-styles}"></div>
     <style>
         body {
@@ -211,14 +211,14 @@
                 <div class="user-info" th:if="${userName}">
                     <img th:src="${profilePicture != null ? profilePicture : '/images/default-avatar.png'}" alt="Profil">
                     <div class="user-details">
-                        <div class="user-name" th:text="${userName}">Foydalanuvchi ismi</div>
-                        <div class="user-email" th:text="${userEmail}" th:if="${userEmail}">user@email.com</div>
+                        <div class="user-name" th:text="${userName}"></div>
+                        <div class="user-email" th:text="${userEmail}" th:if="${userEmail}"></div>
                     </div>
                 </div>
 
                 <div class="score-circle">
-                    <div class="iq-score" th:text="${iqScore != null ? iqScore : 'N/A'}">120</div>
-                    <div class="score-label">IQ Balli</div>
+                    <div class="iq-score" th:text="${iqScore != null ? iqScore : 'N/A'}"></div>
+                    <div class="score-label" th:text="#{results.iq_score.label}"></div>
                 </div>
 
                 <div th:if="${category}"
@@ -227,32 +227,32 @@
                                     (${iqScore >= 120} ? 'category-superior' :
                                     (${iqScore >= 110} ? 'category-high' :
                                     (${iqScore >= 90} ? 'category-average' : 'category-below')))"
-                     th:text="${category}">Kategoriya</div>
+                     th:text="${category}"></div>
 
-                <p style="color: #718096; margin: 0;">Baholashni yakunlaganingiz bilan tabriklaymiz!</p>
+                <p style="color: #718096; margin: 0;" th:text="#{results.congratulations}"></p>
             </div>
 
             <!-- Stats Bar -->
             <div class="stats-grid">
                 <div class="stat-item">
-                    <span class="stat-val" th:text="${correctAnswers != null ? correctAnswers : 0}">15</span>
-                    <span class="stat-lbl">To'g'ri</span>
+                    <span class="stat-val" th:text="${correctAnswers != null ? correctAnswers : 0}"></span>
+                    <span class="stat-lbl" th:text="#{results.stat.correct}"></span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-val" th:text="${totalQuestions != null ? totalQuestions : 0}">20</span>
-                    <span class="stat-lbl">Jami</span>
+                    <span class="stat-val" th:text="${totalQuestions != null ? totalQuestions : 0}"></span>
+                    <span class="stat-lbl" th:text="#{results.stat.total}"></span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-val" th:text="${testSession.timeTakenSeconds != null ? (testSession.timeTakenSeconds / 60) + ':' + #numbers.formatInteger(testSession.timeTakenSeconds % 60, 2) : 'N/A'}">15:00</span>
-                    <span class="stat-lbl">Vaqt</span>
+                    <span class="stat-val" th:text="${testSession.timeTakenSeconds != null ? (testSession.timeTakenSeconds / 60) + ':' + #numbers.formatInteger(testSession.timeTakenSeconds % 60, 2) : 'N/A'}"></span>
+                    <span class="stat-lbl" th:text="#{results.stat.time}"></span>
                 </div>
             </div>
 
             <!-- Accuracy -->
             <div class="accuracy-container" th:if="${accuracy != null}">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 600; color: #4a5568;">
-                    <span>Baholash aniqligi</span>
-                    <span th:text="${accuracy} + '%'">75%</span>
+                    <span th:text="#{results.accuracy.label}"></span>
+                    <span th:text="${accuracy} + '%'"></span>
                 </div>
                 <div class="progress-track">
                     <div class="progress-fill" th:style="'width: ' + ${accuracy} + '%'"></div>
@@ -263,10 +263,9 @@
             <div class="interpretation-section" th:if="${interpretation}">
                 <div class="section-title">
                     <i class="fas fa-chart-line" style="color: #3498db;"></i>
-                    Tahlil
+                    <span th:text="#{results.interpretation.title}"></span>
                 </div>
                 <div class="interpretation-text" th:text="${interpretation}">
-                    Sizning balingiz talqini tafsilotlari.
                 </div>
             </div>
 
@@ -274,17 +273,17 @@
             <div class="action-area">
                 <div th:if="${certificateEnabled}">
                     <a th:href="@{/certificate/claim/{sessionId}(sessionId=${testSession.sessionId})}" class="btn btn-gold">
-                        <i class="fas fa-certificate"></i> Sertifikatni olish
+                        <i class="fas fa-certificate"></i> <span th:text="#{results.claim_certificate}"></span>
                     </a>
                 </div>
                 <a th:href="@{/dashboard}" class="btn btn-primary">
-                    <i class="fas fa-th-large"></i> Boshqaruv paneli
+                    <i class="fas fa-th-large"></i> <span th:text="#{results.dashboard_button}"></span>
                 </a>
                 <a th:href="@{/test/select-quiz}" class="btn btn-outline">
-                    <i class="fas fa-redo"></i> Qayta topshirish
+                    <i class="fas fa-redo"></i> <span th:text="#{results.retake_button}"></span>
                 </a>
                 <a th:href="@{/test/history}" class="btn btn-outline">
-                    <i class="fas fa-history"></i> Tarix
+                    <i class="fas fa-history"></i> <span th:text="#{results.history_button}"></span>
                 </a>
             </div>
         </div>

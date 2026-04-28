@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Boshqaruv paneli - IQ baholash platformasi</title>
+    <title th:text="#{dashboard.title}"></title>
     <div th:replace="~{fragments :: common-styles}"></div>
     <style>
         .dashboard-grid {
@@ -69,42 +69,42 @@
         <!-- Admin Card -->
         <div class="card admin-card" th:if="${session.userRole == 'ADMIN'}">
             <div class="card-icon">⚙</div>
-            <h2>Admin boshqaruv paneli</h2>
-            <p>Foydalanuvchilarni, kategoriyalarni boshqarish va barcha test seanslarini ko'rish.</p>
-            <a th:href="@{/admin/dashboard}" class="btn btn-admin">Admin paneliga kirish</a>
+            <h2 th:text="#{dashboard.admin_card.title}"></h2>
+            <p th:text="#{dashboard.admin_card.description}"></p>
+            <a th:href="@{/admin/dashboard}" class="btn btn-admin" th:text="#{dashboard.admin_card.button}"></a>
         </div>
 
         <!-- Start Test -->
         <div class="card">
             <div class="card-icon">📋</div>
-            <h2>Testni boshlash</h2>
-            <p>Intellektual koeffitsiyentingizni aniqlash uchun har tomonlama kognitiv baholashni boshlang.</p>
-            <a th:href="@{/test/select-quiz}" class="btn btn-primary">Baholashni boshlash</a>
+            <h2 th:text="#{dashboard.start_test_card.title}"></h2>
+            <p th:text="#{dashboard.start_test_card.description}"></p>
+            <a th:href="@{/test/select-quiz}" class="btn btn-primary" th:text="#{dashboard.start_test_card.button}"></a>
         </div>
 
         <!-- Quiz Management -->
         <div class="card">
             <div class="card-icon">✍️</div>
-            <h2>Testlarni boshqarish</h2>
-            <p>O'z testlaringiz va savollaringizni yarating, tahrirlang va boshqaring.</p>
-            <a th:href="@{/quiz/list}" class="btn btn-secondary">Testlarni boshqarish</a>
+            <h2 th:text="#{dashboard.quiz_management_card.title}"></h2>
+            <p th:text="#{dashboard.quiz_management_card.description}"></p>
+            <a th:href="@{/quiz/list}" class="btn btn-secondary" th:text="#{dashboard.quiz_management_card.button}"></a>
         </div>
 
         <!-- Statistics -->
         <div class="card">
             <div class="card-icon">📊</div>
-            <h2>Sizning natijangiz</h2>
+            <h2 th:text="#{dashboard.statistics_card.title}"></h2>
             <div class="stat-value" th:text="${testCount}">0</div>
-            <p>Yakunlangan testlar</p>
-            <a th:href="@{/test/history}" class="btn btn-secondary">Tarixni ko'rish</a>
+            <p th:text="#{dashboard.statistics_card.description}"></p>
+            <a th:href="@{/test/history}" class="btn btn-secondary" th:text="#{dashboard.statistics_card.button}"></a>
         </div>
 
         <!-- Best Score -->
         <div class="card">
             <div class="card-icon">🏆</div>
-            <h2>Eng yuqori ball</h2>
+            <h2 th:text="#{dashboard.best_score_card.title}"></h2>
             <div class="stat-value" th:text="${bestScore}">0</div>
-            <p>Eritilgan eng yuqori IQ ballingiz</p>
+            <p th:text="#{dashboard.best_score_card.description}"></p>
         </div>
     </div>
 </div>

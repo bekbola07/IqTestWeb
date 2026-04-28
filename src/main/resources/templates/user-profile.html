@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Complete Your Profile | IqTestWeb</title>
+    <title th:text="#{user_profile.title}"></title>
     <!-- Common Head Content Fragment -->
     <div th:replace="~{fragments :: head}"></div>
     <link rel="stylesheet" th:href="@{/css/user-profile.css}">
@@ -55,7 +55,6 @@
 <body class="bg-light">
 
 <!-- Navbar Fragment -->
-<!--<div th:replace="~{fragments :: navbar(backLink='/dashboard')}"></div>-->
 <div th:replace="~{fragments :: navbar(backLink=@{/dashboard})}"></div>
 
 <div class="container py-5">
@@ -66,86 +65,86 @@
                     <div class="mb-3">
                         <i class="fas fa-user-circle fa-4x text-primary"></i>
                     </div>
-                    <h2 class="font-weight-bold text-dark">One Last Step!</h2>
-                    <p class="text-muted">Please provide a few more details to finalize your IQ result.</p>
+                    <h2 class="font-weight-bold text-dark" th:text="#{user_profile.header}"></h2>
+                    <p class="text-muted" th:text="#{user_profile.subtitle}"></p>
                 </div>
                 <div class="card-body px-4 pb-4">
                     <form id="userProfileForm" th:action="@{/profile/save}" th:object="${userProfileForm}" method="post">
 
                         <!-- Age Field -->
                         <div class="form-group mb-4" th:if="${userProfileForm.age == null or cAgeEnabled}">
-                            <label for="age" class="h6 mb-2">How old are you? <span class="text-danger" th:if="${cAgeEnabled}">*</span></label>
+                            <label for="age" class="h6 mb-2"><span th:text="#{user_profile.age.label}"></span> <span class="text-danger" th:if="${cAgeEnabled}" th:text="#{common.required}"></span></label>
                             <input type="number" id="age" name="age" class="form-control form-control-lg form-control-interactive"
                                    th:value="${userProfileForm.age}"
                                    th:required="${cAgeEnabled}"
                                    min="1" max="120"
-                                   placeholder="e.g. 25">
-                            <small class="text-muted" th:if="${cAgeEnabled}">Required for accurate age-adjusted IQ scoring.</small>
+                                   th:placeholder="#{user_profile.age.placeholder}">
+                            <small class="text-muted" th:if="${cAgeEnabled}" th:text="#{user_profile.age.info}"></small>
                         </div>
 
                         <!-- Academic Degree Field -->
                         <div class="form-group mb-4">
-                            <label for="academicDegree" class="h6 mb-2">Highest Academic Degree</label>
+                            <label for="academicDegree" class="h6 mb-2" th:text="#{user_profile.degree.label}"></label>
                             <select id="academicDegree" name="academicDegree" class="form-control form-control-lg form-control-interactive">
-                                <option value="" th:selected="${userProfileForm.academicDegree == null}">Select Degree (Optional)</option>
-                                <option value="HIGH_SCHOOL" th:selected="${userProfileForm.academicDegree == 'HIGH_SCHOOL'}">High School</option>
-                                <option value="BACHELORS" th:selected="${userProfileForm.academicDegree == 'BACHELORS'}">Bachelor's Degree</option>
-                                <option value="MASTERS" th:selected="${userProfileForm.academicDegree == 'MASTERS'}">Master's Degree</option>
-                                <option value="PHD" th:selected="${userProfileForm.academicDegree == 'PHD'}">Doctorate (PhD)</option>
-                                <option value="OTHER" th:selected="${userProfileForm.academicDegree == 'OTHER'}">Other</option>
+                                <option value="" th:selected="${userProfileForm.academicDegree == null}" th:text="#{user_profile.degree.placeholder}"></option>
+                                <option value="HIGH_SCHOOL" th:selected="${userProfileForm.academicDegree == 'HIGH_SCHOOL'}" th:text="#{user_profile.degree.high_school}"></option>
+                                <option value="BACHELORS" th:selected="${userProfileForm.academicDegree == 'BACHELORS'}" th:text="#{user_profile.degree.bachelors}"></option>
+                                <option value="MASTERS" th:selected="${userProfileForm.academicDegree == 'MASTERS'}" th:text="#{user_profile.degree.masters}"></option>
+                                <option value="PHD" th:selected="${userProfileForm.academicDegree == 'PHD'}" th:text="#{user_profile.degree.phd}"></option>
+                                <option value="OTHER" th:selected="${userProfileForm.academicDegree == 'OTHER'}" th:text="#{user_profile.degree.other}"></option>
                             </select>
                         </div>
 
                         <!-- Field of Activity Field -->
                         <div class="form-group mb-4">
-                            <label for="fieldOfActivity" class="h6 mb-2">Primary Field of Activity</label>
+                            <label for="fieldOfActivity" class="h6 mb-2" th:text="#{user_profile.field.label}"></label>
                             <select id="fieldOfActivity" name="fieldOfActivity" class="form-control form-control-lg form-control-interactive">
-                                <option value="" th:selected="${userProfileForm.fieldOfActivity == null}">Select Field (Optional)</option>
-                                <option value="STEM" th:selected="${userProfileForm.fieldOfActivity == 'STEM'}">STEM (Science, Tech, Engineering, Math)</option>
-                                <option value="HUMANITIES" th:selected="${userProfileForm.fieldOfActivity == 'HUMANITIES'}">Humanities & Social Sciences</option>
-                                <option value="BUSINESS_FINANCE" th:selected="${userProfileForm.fieldOfActivity == 'BUSINESS_FINANCE'}">Business & Finance</option>
-                                <option value="ARTS" th:selected="${userProfileForm.fieldOfActivity == 'ARTS'}">Arts & Design</option>
-                                <option value="HEALTHCARE" th:selected="${userProfileForm.fieldOfActivity == 'HEALTHCARE'}">Healthcare & Medicine</option>
-                                <option value="STUDENT" th:selected="${userProfileForm.fieldOfActivity == 'STUDENT'}">Currently a Student</option>
-                                <option value="OTHER" th:selected="${userProfileForm.fieldOfActivity == 'OTHER'}">Other Professional Field</option>
+                                <option value="" th:selected="${userProfileForm.fieldOfActivity == null}" th:text="#{user_profile.field.placeholder}"></option>
+                                <option value="STEM" th:selected="${userProfileForm.fieldOfActivity == 'STEM'}" th:text="#{user_profile.field.stem}"></option>
+                                <option value="HUMANITIES" th:selected="${userProfileForm.fieldOfActivity == 'HUMANITIES'}" th:text="#{user_profile.field.humanities}"></option>
+                                <option value="BUSINESS_FINANCE" th:selected="${userProfileForm.fieldOfActivity == 'BUSINESS_FINANCE'}" th:text="#{user_profile.field.business}"></option>
+                                <option value="ARTS" th:selected="${userProfileForm.fieldOfActivity == 'ARTS'}" th:text="#{user_profile.field.arts}"></option>
+                                <option value="HEALTHCARE" th:selected="${userProfileForm.fieldOfActivity == 'HEALTHCARE'}" th:text="#{user_profile.field.healthcare}"></option>
+                                <option value="STUDENT" th:selected="${userProfileForm.fieldOfActivity == 'STUDENT'}" th:text="#{user_profile.field.student}"></option>
+                                <option value="OTHER" th:selected="${userProfileForm.fieldOfActivity == 'OTHER'}" th:text="#{user_profile.field.other}"></option>
                             </select>
                         </div>
 
                         <!-- Country Field -->
                         <div class="form-group mb-4">
-                            <label for="country" class="h6 mb-2">Your Country</label>
+                            <label for="country" class="h6 mb-2" th:text="#{user_profile.country.label}"></label>
                             <select id="country" name="country" class="form-control form-control-lg form-control-interactive">
-                                <option value="" th:selected="${userProfileForm.country == null or userProfileForm.country == ''}">Select Country (Optional)</option>
-                                <option value="USA" th:selected="${userProfileForm.country == 'USA'}">United States</option>
-                                <option value="CAN" th:selected="${userProfileForm.country == 'CAN'}">Canada</option>
-                                <option value="GBR" th:selected="${userProfileForm.country == 'GBR'}">United Kingdom</option>
-                                <option value="AUS" th:selected="${userProfileForm.country == 'AUS'}">Australia</option>
-                                <option value="DEU" th:selected="${userProfileForm.country == 'DEU'}">Germany</option>
-                                <option value="FRA" th:selected="${userProfileForm.country == 'FRA'}">France</option>
-                                <option value="UZB" th:selected="${userProfileForm.country == 'UZB'}">Uzbekistan</option>
-                                <option value="KAZ" th:selected="${userProfileForm.country == 'KAZ'}">Kazakhstan</option>
-                                <option value="RUS" th:selected="${userProfileForm.country == 'RUS'}">Russia</option>
-                                <option value="TUR" th:selected="${userProfileForm.country == 'TUR'}">Turkey</option>
-                                <option value="OTHER" th:selected="${userProfileForm.country == 'OTHER'}">Other</option>
+                                <option value="" th:selected="${userProfileForm.country == null or userProfileForm.country == ''}" th:text="#{user_profile.country.placeholder}"></option>
+                                <option value="USA" th:selected="${userProfileForm.country == 'USA'}" th:text="#{user_profile.country.usa}"></option>
+                                <option value="CAN" th:selected="${userProfileForm.country == 'CAN'}" th:text="#{user_profile.country.canada}"></option>
+                                <option value="GBR" th:selected="${userProfileForm.country == 'GBR'}" th:text="#{user_profile.country.uk}"></option>
+                                <option value="AUS" th:selected="${userProfileForm.country == 'AUS'}" th:text="#{user_profile.country.australia}"></option>
+                                <option value="DEU" th:selected="${userProfileForm.country == 'DEU'}" th:text="#{user_profile.country.germany}"></option>
+                                <option value="FRA" th:selected="${userProfileForm.country == 'FRA'}" th:text="#{user_profile.country.france}"></option>
+                                <option value="UZB" th:selected="${userProfileForm.country == 'UZB'}" th:text="#{user_profile.country.uzbekistan}"></option>
+                                <option value="KAZ" th:selected="${userProfileForm.country == 'KAZ'}" th:text="#{user_profile.country.kazakhstan}"></option>
+                                <option value="RUS" th:selected="${userProfileForm.country == 'RUS'}" th:text="#{user_profile.country.russia}"></option>
+                                <option value="TUR" th:selected="${userProfileForm.country == 'TUR'}" th:text="#{user_profile.country.turkey}"></option>
+                                <option value="OTHER" th:selected="${userProfileForm.country == 'OTHER'}" th:text="#{user_profile.country.other}"></option>
                             </select>
                         </div>
 
                         <button type="submit" class="btn btn-primary btn-lg btn-block mt-4 btn-animate shadow-sm">
-                            Generate My IQ Report <i class="fas fa-arrow-right ml-2"></i>
+                            <span th:text="#{user_profile.button}"></span> <i class="fas fa-arrow-right ml-2"></i>
                         </button>
                     </form>
 
                     <!-- Enhanced Progress Bar Container -->
                     <div id="progressBarContainer" class="progress-container mt-4" style="display:none;">
                         <div class="d-flex justify-content-between mb-2">
-                            <span class="font-weight-bold text-primary">Processing...</span>
+                            <span class="font-weight-bold text-primary" th:text="#{user_profile.processing}"></span>
                             <span id="progressPercent" class="font-weight-bold text-primary">0%</span>
                         </div>
                         <div class="progress" style="height: 12px; border-radius: 10px;">
                             <div id="mainProgressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-success"
                                  role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
-                        <p class="text-center mt-3 text-muted small">Optimizing psychometric results based on your profile.</p>
+                        <p class="text-center mt-3 text-muted small" th:text="#{user_profile.optimizing}"></p>
                     </div>
                 </div>
             </div>
@@ -171,7 +170,7 @@
 
         // Hide form and show progress
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + [[#{user_profile.processing}]];
 
         progressBarContainer.style.display = 'block';
 

@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Testlar tarixi - IQ testi</title>
+    <title th:text="#{test_history.title}"></title>
     <div th:replace="~{fragments :: common-styles}"></div>
     <style>
         /* Statistics Summary Cards */
@@ -146,7 +146,7 @@
         .empty-state {
             text-align: center;
             padding: 4rem 2rem;
-            color: var(--text-secondary);
+            color: var(--text-secondary);\
         }
         .empty-state-icon {
             font-size: 3rem;
@@ -165,45 +165,45 @@
 <div th:replace="~{fragments :: navbar(backLink='/dashboard')}"></div>
 
 <div class="container">
-    <h1>Sizning testlaringiz tarixi</h1>
+    <h1 th:text="#{test_history.header}"></h1>
 
     <!-- Statistics Summary -->
     <div class="stats-summary">
         <div class="stat-card">
             <div class="stat-icon">📝</div>
             <div class="stat-value" th:text="${totalTests}">0</div>
-            <div class="stat-label">Jami testlar</div>
+            <div class="stat-label" th:text="#{test_history.total_tests}"></div>
         </div>
 
         <div class="stat-card">
             <div class="stat-icon">🏆</div>
             <div class="stat-value" th:text="${bestScore}">0</div>
-            <div class="stat-label">Eng yaxshi natija</div>
+            <div class="stat-label" th:text="#{test_history.best_score}"></div>
         </div>
 
         <div class="stat-card">
             <div class="stat-icon">📈</div>
             <div class="stat-value" th:text="${avgScore}">0</div>
-            <div class="stat-label">O'rtacha ball</div>
+            <div class="stat-label" th:text="#{test_history.average_score}"></div>
         </div>
 
         <div class="stat-card">
             <div class="stat-icon">✅</div>
             <div class="stat-value" th:text="${avgAccuracy + '%'}">0%</div>
-            <div class="stat-label">O'rtacha aniqlik</div>
+            <div class="stat-label" th:text="#{test_history.average_accuracy}"></div>
         </div>
     </div>
 
     <!-- Test History -->
     <div class="card">
-        <h2>Testlar tarixi xronologiyasi</h2>
+        <h2 th:text="#{test_history.chronology_header}"></h2>
 
         <!-- Empty State -->
         <div th:if="${#lists.isEmpty(sessions)}" class="empty-state">
             <div class="empty-state-icon">📭</div>
-            <h3>Hali testlar yo'q</h3>
-            <p>Siz hali hech qanday test topshirmadingiz. Birinchi IQ testingizni hozir boshlang!</p>
-            <a th:href="@{/test/select-quiz}" class="btn btn-primary" style="margin-top: 1.5rem;">🚀 Birinchi testni boshlash</a>
+            <h3 th:text="#{test_history.empty_state.title}"></h3>
+            <p th:text="#{test_history.empty_state.description}"></p>
+            <a th:href="@{/test/select-quiz}" class="btn btn-primary" style="margin-top: 1.5rem;" th:text="#{test_history.empty_state.button}"></a>
         </div>
 
         <!-- Timeline -->
@@ -215,10 +215,9 @@
                         <div>
                             <div class="test-date"
                                  th:text="${#temporals.format(test_session.completedAt != null ? test_session.completedAt : test_session.startedAt, 'EEEE, dd-MMMM, yyyy - HH:mm')}">
-                                Dushanba, 01-Yanvar, 2024 - 10:00
                             </div>
 
-                            <h3 th:text="${test_session.quizSnapshot != null ? test_session.quizSnapshot.title : 'Test seansi #' + test_session.sessionId}">Test seansi #1</h3>
+                            <h3 th:text="${test_session.quizSnapshot != null ? test_session.quizSnapshot.title : #messages.msg('test_history.test_session_prefix', test_session.sessionId)}"></h3>
                         </div>
                         <div>
                             <div class="test-score"
@@ -227,37 +226,36 @@
                                                      (${test_session.iqScore >= 120} ? 'score-superior' :
                                                      (${test_session.iqScore >= 110} ? 'score-high' :
                                                      (${test_session.iqScore >= 90} ? 'score-average' : 'score-low')))"
-                                 th:text="${test_session.iqScore}">120</div>
+                                 th:text="${test_session.iqScore}"></div>
                             <div th:if="${test_session.iqScore == null}" class="test-score score-average">-</div>
                         </div>
                     </div>
 
                     <div class="test-details">
                         <div class="detail-item">
-                            <div class="detail-value" th:text="${test_session.totalQuestions ?: '-'}">20</div>
-                            <div class="detail-label">Savollar</div>
+                            <div class="detail-value" th:text="${test_session.totalQuestions ?: '-'}"></div>
+                            <div class="detail-label" th:text="#{test_history.questions_label}"></div>
                         </div>
                         <div class="detail-item">
-                            <div class="detail-value" th:text="${test_session.correctAnswers ?: '-'}">15</div>
-                            <div class="detail-label">To'g'ri</div>
+                            <div class="detail-value" th:text="${test_session.correctAnswers ?: '-'}"></div>
+                            <div class="detail-label" th:text="#{test_history.correct_label}"></div>
                         </div>
                         <div class="detail-item">
-                            <div class="detail-value" th:text="${test_session.timeTakenSeconds != null ? #numbers.formatInteger(test_session.timeTakenSeconds / 60, 0) + ' daqiqa' : '-'}">15 daqiqa</div>
-                            <div class="detail-label">Sarflangan vaqt</div>
+                            <div class="detail-value" th:text="${test_session.timeTakenSeconds != null ? #messages.msg('test_history.time_taken_value', #numbers.formatInteger(test_session.timeTakenSeconds / 60, 0)) : '-'}"></div>
+                            <div class="detail-label" th:text="#{test_history.time_spent_label}"></div>
                         </div>
                     </div>
 
                     <div th:if="${test_session.iqScore != null}" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
-                        <strong>Talqin: </strong>
-                        <span th:if="${test_session.iqScore >= 130}" style="color: #92400E;">🌟 Daholik - Ajoyib intellekt!</span>
-                        <span th:if="${test_session.iqScore >= 120 and test_session.iqScore < 130}" style="color: #065F46;">⭐ Yuqori - Ajoyib natija!</span>
-                        <span th:if="${test_session.iqScore >= 110 and test_session.iqScore < 120}" style="color: #1E40AF;">✨ O'rtachadan yuqori - Yaxshi natija!</span>
-                        <span th:if="${test_session.iqScore >= 90 and test_session.iqScore < 110}" style="color: #374151;">👍 O'rtacha - Yaxshi ish!</span>
-                        <span th:if="${test_session.iqScore < 90}" style="color: #991B1B;">💪 Mashq qilishda davom eting!</span>
+                        <strong th:text="#{test_history.interpretation_prefix}"></strong>
+                        <span th:if="${test_session.iqScore >= 130}" style="color: #92400E;" th:text="#{test_history.interpretation.genius}"></span>
+                        <span th:if="${test_session.iqScore >= 120 and test_session.iqScore < 130}" style="color: #065F46;" th:text="#{test_history.interpretation.superior}"></span>
+                        <span th:if="${test_session.iqScore >= 110 and test_session.iqScore < 120}" style="color: #1E40AF;" th:text="#{test_history.interpretation.high}"></span>
+                        <span th:if="${test_session.iqScore >= 90 and test_session.iqScore < 110}" style="color: #374151;" th:text="#{test_history.interpretation.average}"></span>
+                        <span th:if="${test_session.iqScore < 90}" style="color: #991B1B;" th:text="#{test_history.interpretation.low}"></span>
                     </div>
 
-                    <div th:if="${test_session.completedAt == null}" style="margin-top: 1rem; color: var(--warning-color); font-weight: 600;">
-                        ⏳ Test davom etmoqda...
+                    <div th:if="${test_session.completedAt == null}" style="margin-top: 1rem; color: var(--warning-color); font-weight: 600;" th:text="#{test_history.in_progress}">
                     </div>
                 </div>
             </div>

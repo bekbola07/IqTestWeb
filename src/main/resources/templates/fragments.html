@@ -381,6 +381,26 @@
                     </h1>
                 </a>
             </div>
+            <!-- Language Switcher -->
+<!--            <div class="language-switcher" style="display: flex; gap: 10px; margin-left: auto; margin-right: 20px;">-->
+<!--                <a th:href="@{${#request.requestURI}(lang='uz')}" th:classappend="${#locale.language == 'uz' ? 'active' : ''}">UZ</a>-->
+<!--                <a th:href="@{${#request.requestURI}(lang='ru')}" th:classappend="${#locale.language == 'ru' ? 'active' : ''}">RU</a>-->
+<!--                <a th:href="@{${#request.requestURI}(lang='en')}" th:classappend="${#locale.language == 'en' ? 'active' : ''}">EN</a>-->
+<!--            </div>-->
+            <!-- Language Switcher -->
+<!--            <div class="language-switcher" style="display: flex; gap: 10px; margin-left: auto; margin-right: 20px;">-->
+<!--                <a th:href="@{${#httpServletRequest.requestURI}(lang='uz')}" th:classappend="${#locale.language == 'uz' ? 'active' : ''}">UZ</a>-->
+<!--                <a th:href="@{${#httpServletRequest.requestURI}(lang='ru')}" th:classappend="${#locale.language == 'ru' ? 'active' : ''}">RU</a>-->
+<!--                <a th:href="@{${#httpServletRequest.requestURI}(lang='en')}" th:classappend="${#locale.language == 'en' ? 'active' : ''}">EN</a>-->
+<!--            </div>-->
+            <div class="language-switcher" style="display: flex; gap: 10px; margin-left: auto; margin-right: 20px;">
+                <a th:href="@{${request.requestURI}(lang='uz')}"
+                   th:classappend="${#locale.language == 'uz' ? 'active' : ''}">UZ</a>
+                <a th:href="@{${request.requestURI}(lang='ru')}"
+                   th:classappend="${#locale.language == 'ru' ? 'active' : ''}">RU</a>
+                <a th:href="@{${request.requestURI}(lang='en')}"
+                   th:classappend="${#locale.language == 'en' ? 'active' : ''}">EN</a>
+            </div>
             <div class="user-section">
                 <div class="user-info">
                     <img th:src="${session.profilePicture}" alt="Profil" class="user-avatar" th:if="${session.profilePicture}">

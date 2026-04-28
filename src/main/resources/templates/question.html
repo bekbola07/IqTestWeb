@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Baholash - IQ Platformasi</title>
+    <title th:text="#{index.title}"></title>
     <div th:replace="~{fragments :: common-styles}"></div>
     <style>
         body {
@@ -249,16 +249,16 @@
 <!-- Fixed Header -->
 <header class="assessment-header">
     <div class="user-badge">
-        <img th:src="${profilePicture}" alt="Foydalanuvchi" th:if="${profilePicture}">
-        <span style="font-weight: 500;" th:text="${userName}">Foydalanuvchi</span>
+        <img th:src="${profilePicture}" alt="User" th:if="${profilePicture}">
+        <span style="font-weight: 500;" th:text="${session.userName != null ? session.userName : #messages.msg('header.user.default')}"></span>
     </div>
     <div id="timer" class="timer" th:if="${timeLimitSeconds != null}">00:00</div>
 </header>
 
 <div class="progress-container">
     <div class="progress-info">
-        <span>Savol <span th:text="${currentIndex + 1}">1</span> / <span th:text="${totalQuestions}">20</span></span>
-        <span><span th:text="${progress}">5</span>% bajarildi</span>
+        <span><span th:text="#{add_question.question_text.label}"></span> <span th:text="${currentIndex + 1}">1</span> / <span th:text="${totalQuestions}">20</span></span>
+        <span><span th:text="${progress}">5</span>% <span th:text="#{results.stat.total}"></span></span>
     </div>
     <div class="progress-bar">
         <div class="progress-fill" th:style="'width: ' + ${progress} + '%'"></div>
@@ -273,7 +273,7 @@
         <input type="hidden" id="timeTakenSeconds" name="timeTakenSeconds" value="0">
 
         <div class="question-card">
-            <div class="question-number">Savol <span th:text="${currentIndex + 1}">1</span></div>
+            <div class="question-number"><span th:text="#{add_question.question_text.label}"></span> <span th:text="${currentIndex + 1}">1</span></div>
 
             <div th:if="${questionSnapshot.questionText != null and !questionSnapshot.questionText.isEmpty()}"
                  class="question-text" th:text="${questionSnapshot.questionText}"></div>
@@ -281,7 +281,7 @@
             <img th:if="${questionSnapshot.attachment != null}"
                  th:src="@{${questionSnapshot.attachment.webUrl != null ? questionSnapshot.attachment.webUrl : '/attachment/' + questionSnapshot.attachment.id}}"
                  class="question-image"
-                 alt="Savol tasviri"
+                 alt="Question image"
                  onclick="openLightbox(this.src)">
 
             <div class="options-grid">
@@ -297,7 +297,7 @@
                         <img th:if="${option.attachment != null}"
                              th:src="@{${option.attachment.webUrl != null ? option.attachment.webUrl : '/attachment/' + option.attachment.id}}"
                              class="option-image"
-                             alt="Variant tasviri"
+                             alt="Option image"
                              onclick="event.preventDefault(); openLightbox(this.src)">
                     </div>
                 </label>
@@ -305,7 +305,7 @@
 
             <div class="actions-footer">
                 <button type="submit" id="submitBtn" class="btn-next"
-                        th:text="${currentIndex + 1 < totalQuestions} ? 'Keyingi savol →' : 'Baholashni yakunlash'"
+                        th:text="${currentIndex + 1 < totalQuestions} ? 'Next Question →' : 'Finish Assessment'"
                         disabled>
                 </button>
             </div>

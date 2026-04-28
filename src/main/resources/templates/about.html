@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Haqida - IQ testi</title>
+    <title th:text="#{about.title}"></title>
     <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}">
     <link rel="shortcut icon" type="image/x-icon" th:href="@{/images/favicon.ico}">
     <style>
@@ -43,22 +43,22 @@
 </head>
 <body>
 <div class="container">
-    <h1>📚 IQ Test Pro haqida</h1>
-    <p>Bizning IQ testimiz mantiqiy fikrlash, naqshlarni aniqlash va muammolarni hal qilish qobiliyatlarini o'z ichiga olgan turli sohalardagi kognitiv qobiliyatlaringizni o'lchash uchun mo'ljallangan.</p>
+    <h1 th:text="#{about.header}"></h1>
+    <p th:text="#{about.description1}"></p>
 
-    <h2>Bu qanday ishlaydi</h2>
-    <p>Test intellektning turli jihatlarini baholaydigan puxta ishlab chiqilgan savollardan iborat. Yakuniy balingiz javoblaringizning aniqligi va tezligi asosida hisoblanadi.</p>
+    <h2 th:text="#{about.how_works.title}"></h2>
+    <p th:text="#{about.how_works.description}"></p>
 
-    <h2>Ballarni talqin qilish</h2>
+    <h2 th:text="#{about.scoring.title}"></h2>
     <ul>
-        <li>130+: Juda yuqori</li>
-        <li>120-129: Yuqori</li>
-        <li>110-119: O'rtachadan yuqori</li>
-        <li>90-109: O'rtacha</li>
-        <li>90 dan past: Yaxshilash uchun imkoniyat bor</li>
+        <li th:text="#{about.score130}"></li>
+        <li th:text="#{about.score120}"></li>
+        <li th:text="#{about.score110}"></li>
+        <li th:text="#{about.score90}"></li>
+        <li th:text="#{about.score_below90}"></li>
     </ul>
 
-    <a th:href="@{/}" class="btn">← Bosh sahifaga qaytish</a>
+    <a th:href="@{/}" class="btn" th:text="#{about.back_home}"></a>
 </div>
 </body>
 </html>

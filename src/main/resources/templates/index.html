@@ -31,14 +31,14 @@
     }
 </style>
 
-<!-- ============================================
+<!-- ========================================================================
    1. INDEX.HTML (Professional Landing)
-   ============================================ -->
+   ======================================================================== -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>IQ baholash platformasi - Professional kognitiv baholash</title>
+    <title th:text="#{index.title}">IQ baholash platformasi - Professional kognitiv baholash</title>
     <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}">
     <link rel="shortcut icon" type="image/x-icon" th:href="@{/images/favicon.ico}">
     <style>
@@ -191,11 +191,11 @@
     <div class="header-content">
         <div class="logo">
             <img th:src="@{/images/icon.png}" alt="Logo">
-            IQ baholash platformasi
+            <span th:text="#{header.app.title}">IQ baholash platformasi</span>
         </div>
         <div class="header-actions" sec:authorize="!isAuthenticated()">
-            <a th:href="@{/login}" class="btn btn-outline">Kirish</a>
-            <a th:href="@{/signup}" class="btn btn-primary">Boshlash</a>
+            <a th:href="@{/login}" class="btn btn-outline" th:text="#{index.login}">Kirish</a>
+            <a th:href="@{/signup}" class="btn btn-primary" th:text="#{index.start}">Boshlash</a>
         </div>
     </div>
 </div>
@@ -204,20 +204,20 @@
     <img th:src="${session.profilePicture}" alt="" th:if="${session.profilePicture}">
     <span style="font-weight: 500; color: #2C3E50;" th:text="${session.userName}">Foydalanuvchi</span>
     <form th:action="@{/logout}" method="post" style="margin: 0;">
-        <button type="submit" style="background: #E74C3C; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 500;">Chiqish</button>
+        <button type="submit" style="background: #E74C3C; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 500;" th:text="#{header.logout}">Chiqish</button>
     </form>
 </div>
 
 <div class="hero">
-    <h1>Professional kognitiv baholash</h1>
-    <p>Ilmiy jihatdan tasdiqlangan baholash tizimimiz orqali intellektual qobiliyatingizni baholang. Kognitiv faoliyatingiz haqida batafsil ma'lumotga ega bo'ling.</p>
+    <h1 th:text="#{index.hero.title}">Professional kognitiv baholash</h1>
+    <p th:text="#{index.hero.description}">Ilmiy jihatdan tasdiqlangan baholash tizimimiz orqali intellektual qobiliyatingizni baholang. Kognitiv faoliyatingiz haqida batafsil ma'lumotga ega bo'ling.</p>
     <div class="cta-buttons">
         <div sec:authorize="isAuthenticated()">
-            <a th:href="@{/test/start}" class="btn btn-primary btn-large">Baholashni boshlash</a>
-            <a th:href="@{/dashboard}" class="btn btn-outline btn-large" style="color: white; border-color: white;">Boshqaruv paneli</a>
+            <a th:href="@{/test/start}" class="btn btn-primary btn-large" th:text="#{index.start.assessment}">Baholashni boshlash</a>
+            <a th:href="@{/dashboard}" class="btn btn-outline btn-large" style="color: white; border-color: white;" th:text="#{index.dashboard}">Boshqaruv paneli</a>
         </div>
         <div sec:authorize="!isAuthenticated()">
-            <a th:href="@{/signup}" class="btn btn-primary btn-large">Baholashni boshlash</a>
+            <a th:href="@{/signup}" class="btn btn-primary btn-large" th:text="#{index.start.assessment}">Baholashni boshlash</a>
         </div>
     </div>
 </div>
@@ -225,18 +225,18 @@
 <div class="features">
     <div class="feature">
         <div class="feature-icon">⚡</div>
-        <h3>Samarali testlash</h3>
-        <p>Optimallashtirilgan savollar ketma-ketligi bilan baholashni taxminan 15-20 daqiqada yakunlang</p>
+        <h3 th:text="#{index.feature1.title}">Samarali testlash</h3>
+        <p th:text="#{index.feature1.description}">Optimallashtirilgan savollar ketma-ketligi bilan baholashni taxminan 15-20 daqiqada yakunlang</p>
     </div>
     <div class="feature">
         <div class="feature-icon">📊</div>
-        <h3>Tasdiqlangan metodologiya</h3>
-        <p>Belgilangan psixometrik printsiplar va standartlashtirilgan ball hisoblash protokollariga asoslangan</p>
+        <h3 th:text="#{index.feature2.title}">Tasdiqlangan metodologiya</h3>
+        <p th:text="#{index.feature2.description}">Belgilangan psixometrik printsiplar va standartlashtirilgan ball hisoblash protokollariga asoslangan</p>
     </div>
     <div class="feature">
         <div class="feature-icon">🎯</div>
-        <h3>Tezkor natijalar</h3>
-        <p>Keng qamrovli ball tahlili va natijalar haqida darhol ma'lumot oling</p>
+        <h3 th:text="#{index.feature3.title}">Tezkor natijalar</h3>
+        <p th:text="#{index.feature3.description}">Keng qamrovli ball tahlili va natijalar haqida darhol ma'lumot oling</p>
     </div>
 </div>
 </body>
