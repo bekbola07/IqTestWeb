@@ -217,7 +217,7 @@
                 </div>
 
                 <div class="score-circle">
-                    <div class="iq-score" th:text="${iqScore != null ? iqScore : 'N/A'}"></div>
+                    <div class="iq-score" th:text="${iqScore != null ? #numbers.formatDecimal(iqScore, 0, 1) : 'N/A'}"></div>
                     <div class="score-label" th:text="#{results.iq_score.label}"></div>
                 </div>
 

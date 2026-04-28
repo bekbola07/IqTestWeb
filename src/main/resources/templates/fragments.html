@@ -349,6 +349,69 @@
                 margin-top: auto;
             }
 
+            /* Language Switcher Styles */
+            .language-switcher {
+                display: flex;
+                gap: 8px;
+                align-items: center;
+                margin-left: auto;
+                margin-right: 20px;
+            }
+
+            .language-switcher a {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 7px 14px;
+                border-radius: 10px;
+                border: 1.5px solid rgba(0,0,0,0.12);
+                background: #fff;
+                text-decoration: none;
+                font-size: 14px;
+                color: #666;
+                transition: all 0.2s ease;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .language-switcher a:hover {
+                border-color: rgba(0,0,0,0.25);
+                color: #333;
+                transform: translateY(-1px);
+                background: #f8f8f8;
+            }
+
+            .language-switcher a:active {
+                transform: translateY(0) scale(0.97);
+            }
+
+            .language-switcher a.active {
+                border-color: #1D9E75;
+                background: #E1F5EE;
+                color: #0F6E56;
+                font-weight: 500;
+            }
+
+            .language-switcher a.active .lang-dot {
+                background: #1D9E75;
+            }
+
+            .language-switcher img {
+                width: 22px;
+                height: 15px;
+                border-radius: 3px;
+                object-fit: cover;
+                display: block;
+            }
+
+            .lang-dot {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: transparent;
+                transition: background 0.2s;
+            }
+
             /* Responsive */
             @media (max-width: 768px) {
                 .container { padding: var(--spacing-md); }
@@ -372,7 +435,7 @@
         <div class="navbar-content">
             <div style="display: flex; align-items: center;">
                 <a th:if="${backLink != null}" th:href="@{${backLink}}" class="btn btn-secondary" style="padding: 0.5rem 1rem; margin-right: 1rem; text-decoration: none;">
-                    <i class="fas fa-arrow-left"></i> Orqaga
+                    <i class="fas fa-arrow-left"></i> [[#{header.back}]]
                 </a>
                 <a th:href="@{/dashboard}" style="text-decoration: none; color: inherit;">
                     <h1>
@@ -381,25 +444,25 @@
                     </h1>
                 </a>
             </div>
-            <!-- Language Switcher -->
-<!--            <div class="language-switcher" style="display: flex; gap: 10px; margin-left: auto; margin-right: 20px;">-->
-<!--                <a th:href="@{${#request.requestURI}(lang='uz')}" th:classappend="${#locale.language == 'uz' ? 'active' : ''}">UZ</a>-->
-<!--                <a th:href="@{${#request.requestURI}(lang='ru')}" th:classappend="${#locale.language == 'ru' ? 'active' : ''}">RU</a>-->
-<!--                <a th:href="@{${#request.requestURI}(lang='en')}" th:classappend="${#locale.language == 'en' ? 'active' : ''}">EN</a>-->
-<!--            </div>-->
-            <!-- Language Switcher -->
-<!--            <div class="language-switcher" style="display: flex; gap: 10px; margin-left: auto; margin-right: 20px;">-->
-<!--                <a th:href="@{${#httpServletRequest.requestURI}(lang='uz')}" th:classappend="${#locale.language == 'uz' ? 'active' : ''}">UZ</a>-->
-<!--                <a th:href="@{${#httpServletRequest.requestURI}(lang='ru')}" th:classappend="${#locale.language == 'ru' ? 'active' : ''}">RU</a>-->
-<!--                <a th:href="@{${#httpServletRequest.requestURI}(lang='en')}" th:classappend="${#locale.language == 'en' ? 'active' : ''}">EN</a>-->
-<!--            </div>-->
-            <div class="language-switcher" style="display: flex; gap: 10px; margin-left: auto; margin-right: 20px;">
+            <div class="language-switcher">
                 <a th:href="@{${request.requestURI}(lang='uz')}"
-                   th:classappend="${#locale.language == 'uz' ? 'active' : ''}">UZ</a>
+                   th:classappend="${#locale.language == 'uz' ? 'active' : ''}">
+                    <img th:src="@{/images/flags/uz.png}" alt="UZ" />
+<!--                    <span>O'zbek</span>-->
+                    <span class="lang-dot"></span>
+                </a>
                 <a th:href="@{${request.requestURI}(lang='ru')}"
-                   th:classappend="${#locale.language == 'ru' ? 'active' : ''}">RU</a>
+                   th:classappend="${#locale.language == 'ru' ? 'active' : ''}">
+                    <img th:src="@{/images/flags/ru.png}" alt="RU" />
+<!--                    <span>Русский</span>-->
+                    <span class="lang-dot"></span>
+                </a>
                 <a th:href="@{${request.requestURI}(lang='en')}"
-                   th:classappend="${#locale.language == 'en' ? 'active' : ''}">EN</a>
+                   th:classappend="${#locale.language == 'en' ? 'active' : ''}">
+                    <img th:src="@{/images/flags/en.png}" alt="EN" />
+<!--                    <span>English</span>-->
+                    <span class="lang-dot"></span>
+                </a>
             </div>
             <div class="user-section">
                 <div class="user-info">

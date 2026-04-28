@@ -146,7 +146,7 @@
         .empty-state {
             text-align: center;
             padding: 4rem 2rem;
-            color: var(--text-secondary);\
+            color: var(--text-secondary);
         }
         .empty-state-icon {
             font-size: 3rem;
@@ -177,13 +177,13 @@
 
         <div class="stat-card">
             <div class="stat-icon">🏆</div>
-            <div class="stat-value" th:text="${bestScore}">0</div>
+            <div class="stat-value" th:text="${bestScore != null ? #numbers.formatDecimal(bestScore, 0, 1) : '0'}">0</div>
             <div class="stat-label" th:text="#{test_history.best_score}"></div>
         </div>
 
         <div class="stat-card">
             <div class="stat-icon">📈</div>
-            <div class="stat-value" th:text="${avgScore}">0</div>
+            <div class="stat-value" th:text="${avgScore != null ? #numbers.formatDecimal(avgScore, 0, 1) : '0'}">0</div>
             <div class="stat-label" th:text="#{test_history.average_score}"></div>
         </div>
 
@@ -226,7 +226,7 @@
                                                      (${test_session.iqScore >= 120} ? 'score-superior' :
                                                      (${test_session.iqScore >= 110} ? 'score-high' :
                                                      (${test_session.iqScore >= 90} ? 'score-average' : 'score-low')))"
-                                 th:text="${test_session.iqScore}"></div>
+                                 th:text="${#numbers.formatDecimal(test_session.iqScore, 0, 1)}"></div>
                             <div th:if="${test_session.iqScore == null}" class="test-score score-average">-</div>
                         </div>
                     </div>

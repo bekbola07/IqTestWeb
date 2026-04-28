@@ -38,7 +38,7 @@ public class TestSession {
 
     private Integer totalQuestions;
     private Integer correctAnswers;
-    private Integer iqScore;
+    private Double iqScore; // Changed from Integer to Double
     private Integer timeTakenSeconds;
 
     @Column(name = "calculation_log", columnDefinition = "TEXT")

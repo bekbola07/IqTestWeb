@@ -51,13 +51,13 @@ public class TestHistoryController {
         model.addAttribute("sessions", userSessions);
         model.addAttribute("totalTests", userSessions.size());
 
-        int bestScore = userSessions.stream()
-                .mapToInt(s -> s.getIqScore() != null ? s.getIqScore() : 0)
+        double bestScore = userSessions.stream()
+                .mapToDouble(s -> s.getIqScore() != null ? s.getIqScore() : 0)
                 .max().orElse(0);
         model.addAttribute("bestScore", bestScore);
 
         double avgScore = userSessions.stream()
-                .mapToInt(s -> s.getIqScore() != null ? s.getIqScore() : 0)
+                .mapToDouble(s -> s.getIqScore() != null ? s.getIqScore() : 0)
                 .average().orElse(0);
         model.addAttribute("avgScore", Math.round(avgScore));
 

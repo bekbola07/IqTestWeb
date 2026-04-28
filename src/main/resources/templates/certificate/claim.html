@@ -265,7 +265,7 @@
                         </p>
                         <div class="preview-score-section">
                             <div class="preview-score-label">ACHIEVED INTELLIGENCE SCORE</div>
-                            <div class="preview-score-value" th:text="${certificate.testSession.iqScore}">120</div>
+                            <div class="preview-score-value" th:text="${certificate.testSession.iqScore != null ? #numbers.formatDecimal(certificate.testSession.iqScore, 0, 1) : 'N/A'}">120</div>
                         </div>
                     </div>
 

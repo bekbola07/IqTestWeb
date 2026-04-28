@@ -198,7 +198,7 @@ public class TestSessionService {
                                                 Double kCoeff, Double bCoeff) {
         
         if (maxScore <= 0) {
-            return new IqCalculationResult(40, "Error: Max score is zero.");
+            return new IqCalculationResult(40.0, "Error: Max score is zero.");
         }
 
         StringBuilder log = new StringBuilder();
@@ -234,20 +234,21 @@ public class TestSessionService {
         double result = (userScore / maxScore) * k * cAge + b;
 
         // 4. Validation & Integrity
-        int finalIQ = (int) Math.round(result);
+        // Round to one decimal place
+        double finalIQ = Math.round(result * 10.0) / 10.0;
         
-        // Clamp between 40 and 160
-        if (finalIQ < 40) finalIQ = 40;
-        if (finalIQ > 160) finalIQ = 160;
+        // Clamp between 40.0 and 160.0
+        if (finalIQ < 40.0) finalIQ = 40.0;
+        if (finalIQ > 160.0) finalIQ = 160.0;
 
         return new IqCalculationResult(finalIQ, log.toString().trim());
     }
 
     private static class IqCalculationResult {
-        int finalIQ;
+        double finalIQ; // Changed from int to double
         String calculationLog;
 
-        IqCalculationResult(int finalIQ, String calculationLog) {
+        IqCalculationResult(double finalIQ, String calculationLog) { // Changed constructor parameter
             this.finalIQ = finalIQ;
             this.calculationLog = calculationLog;
         }

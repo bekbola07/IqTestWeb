@@ -22,6 +22,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Controller
 @RequiredArgsConstructor
@@ -138,11 +139,11 @@ public class HomeController {
         if (userId != null) {
             List<TestSession> userSessions = testSessionService.getUserSessions(userId);
             int testCount = userSessions.size();
-            Integer bestScore = userSessions.stream()
-                    .filter(s -> s.getIqScore() != null)
+            Double bestScore = userSessions.stream()
                     .map(TestSession::getIqScore)
-                    .max(Integer::compareTo)
-                    .orElse(0);
+                    .filter(Objects::nonNull)
+                    .max(Double::compareTo)
+                    .orElse(0.0);
 
             model.addAttribute("testCount", testCount);
             model.addAttribute("bestScore", bestScore);

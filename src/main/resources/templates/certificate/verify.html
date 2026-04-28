@@ -112,7 +112,7 @@
             </div>
             <div class="detail-row">
                 <span class="label">Verified Score</span>
-                <span class="value" th:text="${certificate.testSession.iqScore}">120</span>
+                <span class="value" th:text="${certificate.testSession.iqScore != null ? #numbers.formatDecimal(certificate.testSession.iqScore, 0, 1) : 'N/A'}">120</span>
             </div>
             <div class="detail-row">
                 <span class="label">Issue Date</span>
