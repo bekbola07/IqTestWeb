@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Claim Your Certificate</title>
+    <title th:text="#{certificate.claim.title}"></title>
     <div th:replace="~{fragments :: common-styles}"></div>
     <style>
         body {
@@ -241,8 +241,8 @@
 
     <div class="claim-container" th:if="${certificate}">
         <div class="header">
-            <h1>Claim Your Certificate</h1>
-            <p>Congratulations on your achievement! Customize your name and download your official certificate.</p>
+            <h1 th:text="#{certificate.claim.header}">Claim Your Certificate</h1>
+            <p th:text="#{certificate.claim.description}">Congratulations on your achievement! Customize your name and download your official certificate.</p>
         </div>
 
         <div class="main-content">
@@ -256,26 +256,26 @@
                     </div>
 
                     <div class="preview-content">
-                        <div class="preview-presented-to">THIS CERTIFICATE IS PROUDLY PRESENTED TO</div>
+                        <div class="preview-presented-to" th:text="#{certificate.preview.presented_to}">THIS CERTIFICATE IS PROUDLY PRESENTED TO</div>
                         <div id="previewName" class="preview-user-name" th:text="${certificate.certificateName}">Your Name Here</div>
-                        <p class="preview-description">
+                        <p class="preview-description" th:text="#{certificate.preview.description}">
                             This document hereby certifies that the above-named individual has successfully completed a
                             standardized intelligence assessment designed to evaluate cognitive reasoning, analytical
                             thinking, and problem-solving abilities.
                         </p>
                         <div class="preview-score-section">
-                            <div class="preview-score-label">ACHIEVED INTELLIGENCE SCORE</div>
+                            <div class="preview-score-label" th:text="#{certificate.preview.achieved_score_label}">ACHIEVED INTELLIGENCE SCORE</div>
                             <div class="preview-score-value" th:text="${certificate.testSession.iqScore != null ? #numbers.formatDecimal(certificate.testSession.iqScore, 0, 1) : 'N/A'}">120</div>
                         </div>
                     </div>
 
                     <div class="preview-footer">
                         <div class="preview-issuer">
-                            Issued and verified by<br />
+                            <span th:text="#{certificate.preview.issued_by}">Issued and verified by</span><br />
                             <div class="preview-issuer-name" th:text="${certificate.authorCertificate.createdBy.username}">Admin</div>
                         </div>
                         <div class="preview-verification">
-                            <div class="preview-qr-placeholder">QR CODE</div>
+                            <div class="preview-qr-placeholder" th:text="#{certificate.preview.qr_code}">QR CODE</div>
                             <div class="preview-verification-code" th:text="${certificate.verificationCode}">VER-XXXX-XXXX</div>
                         </div>
                     </div>
@@ -284,18 +284,18 @@
 
             <!-- Controls -->
             <div class="controls-wrapper">
-                <h2>Customize & Download</h2>
+                <h2 th:text="#{certificate.claim.customize_download_header}">Customize & Download</h2>
                 <div class="form-group">
-                    <label for="certificateNameInput">Name on Certificate</label>
-                    <input type="text" id="certificateNameInput" class="form-control" th:value="${certificate.certificateName}" maxlength="50" placeholder="Enter your full name">
+                    <label for="certificateNameInput" th:text="#{certificate.claim.name_label}">Name on Certificate</label>
+                    <input type="text" id="certificateNameInput" class="form-control" th:value="${certificate.certificateName}" maxlength="50" th:placeholder="#{certificate.claim.name_placeholder}">
                     <div id="updateStatus"></div>
                 </div>
 
                 <div class="action-buttons">
                     <a th:href="@{/api/certificates/download/{sessionId}(sessionId=${certificate.testSession.sessionId})}" class="btn btn-download" id="downloadBtn">
-                        <i class="fas fa-download"></i> Download PDF
+                        <i class="fas fa-download"></i> <span th:text="#{certificate.claim.download_pdf}">Download PDF</span>
                     </a>
-                    <p style="font-size: 0.8rem; color: #718096; margin-top: 0.5rem;">
+                    <p style="font-size: 0.8rem; color: #718096; margin-top: 0.5rem;" th:text="#{certificate.claim.note}">
                         Note: You can change the name as many times as you want.
                     </p>
                 </div>
@@ -314,7 +314,7 @@
         if (nameInput) {
             nameInput.addEventListener('input', (e) => {
                 const newName = e.target.value;
-                previewName.textContent = newName || 'Your Name Here';
+                previewName.textContent = newName || [[#{certificate.preview.your_name_here}]];
 
                 clearTimeout(debounceTimer);
                 debounceTimer = setTimeout(() => {
@@ -326,7 +326,7 @@
         }
 
         function updateCertificateName(name) {
-            updateStatus.textContent = 'Saving changes...';
+            updateStatus.textContent = [[#{certificate.claim.saving_changes}]];
             updateStatus.style.color = '#27ae60';
 
             const formData = new FormData();
@@ -338,16 +338,16 @@
             })
             .then(response => {
                 if (response.ok) {
-                    updateStatus.textContent = 'Name updated successfully!';
+                    updateStatus.textContent = [[#{certificate.claim.update_success}]];
                     setTimeout(() => { updateStatus.textContent = ''; }, 3000);
                 } else {
-                    updateStatus.textContent = 'Error updating name.';
+                    updateStatus.textContent = [[#{certificate.claim.update_error}]];
                     updateStatus.style.color = '#e74c3c';
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                updateStatus.textContent = 'An error occurred while saving.';
+                updateStatus.textContent = [[#{certificate.claim.save_error}]];
                 updateStatus.style.color = '#e74c3c';
             });
         }

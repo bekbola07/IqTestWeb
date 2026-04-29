@@ -37,12 +37,12 @@ public class QuestionController {
         // Refresh session from DB
         testSession = testSessionService.getSession(testSession.getSessionId());
         if (testSession.getStatus() != Status.IN_PROGRESS) {
-            return "redirect:/test/results";
+            return "redirect:/test/results/" + testSession.getSessionId();
         }
 
         if (testSessionService.isSessionExpired(testSession)) {
             testSessionService.handleTimeout(testSession);
-            return "redirect:/test/results";
+            return "redirect:/test/results/" + testSession.getSessionId();
         }
 
         QuizSnapshot quizSnapshot = testSession.getQuizSnapshot();
@@ -79,7 +79,7 @@ public class QuestionController {
 
             return "question";
         } else if (index == questionSnapshots.size()) {
-            return "redirect:/test/results";
+            return "redirect:/test/results/" + testSession.getSessionId();
         } else {
             return "redirect:/test/select-quiz";
         }

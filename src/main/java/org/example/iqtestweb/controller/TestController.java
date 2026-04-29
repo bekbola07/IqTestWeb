@@ -112,7 +112,7 @@ public class TestController {
             int nextIndex = existingAnswers.size();
             return "redirect:/question/" + nextIndex;
         } else {
-             return "redirect:/test/results";
+             return "redirect:/test/results/" + testSession.getSessionId(); // Updated redirect
         }
     }
 
@@ -132,12 +132,12 @@ public class TestController {
         // Refresh session from DB to check status and time
         testSession = testSessionService.getSession(testSession.getSessionId());
         if (testSession.getStatus() != Status.IN_PROGRESS) {
-             return "redirect:/test/results";
+             return "redirect:/test/results/" + testSession.getSessionId(); // Updated redirect
         }
 
         if (testSessionService.isSessionExpired(testSession)) {
             testSessionService.handleTimeout(testSession);
-            return "redirect:/test/results";
+            return "redirect:/test/results/" + testSession.getSessionId(); // Updated redirect
         }
 
         // 🔥 Snapshot'lardan ma'lumot olish
@@ -166,22 +166,22 @@ public class TestController {
             if (result.isProfileDataRequired()) { // Changed from isAgeRequired()
                 return "redirect:/profile"; // Redirect to the new user profile page
             }
-            return "redirect:/test/results";
+            return "redirect:/test/results/" + testSession.getSessionId(); // Updated redirect
         }
     }
 
     // Removed the enterAge GET method
     // Removed the submitAge POST method
 
-    @GetMapping("/results")
-    public String showResults(Model model, HttpSession session) {
-        TestSession testSession = (TestSession) session.getAttribute("testSession");
+    @GetMapping("/results/{sessionId}") // Changed mapping
+    public String showResults(@PathVariable Long sessionId, Model model, HttpSession session) { // Added @PathVariable
+        TestSession testSession = testSessionService.getSession(sessionId); // Get session by ID
         if (testSession == null) {
-            return "redirect:/dashboard";
+            return "redirect:/dashboard"; // Redirect if session not found
         }
         
         // Refresh from DB to ensure we have latest status
-        testSession = testSessionService.getSession(testSession.getSessionId());
+        // testSession = testSessionService.getSession(testSession.getSessionId()); // Already fetched by ID
 
         if (testSession.getStatus() == Status.IN_PROGRESS) {
              // If user navigates to results manually, try to complete session

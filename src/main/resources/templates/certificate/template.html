@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
-    <title th:text="${certificateName}">IQ Assessment Certificate</title>
+    <title th:text="${certificateName}"></title>
     <style>
         /* PDF Generation specific settings */
         @page {
@@ -204,7 +204,7 @@
             <img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/award.svg" style="height: 40px; filter: contrast(0.5);" alt="Icon"/>
         </div>
         <h1 class="certificate-title" th:text="${certificateName}">
-            Certificate of Intelligence
+            [[#{certificate.template.header_title}]]
         </h1>
         <div class="subtitle-line"></div>
     </div>
@@ -212,7 +212,7 @@
     <!-- Main content: User name and description -->
     <div class="content">
         <div class="presented-to">
-            THIS OFFICIAL DOCUMENT IS PROUDLY PRESENTED TO
+            [[#{certificate.template.presented_to}]]
         </div>
 
         <div class="user-name" th:text="${userFullName}">
@@ -220,30 +220,27 @@
         </div>
 
         <p class="description">
-            For successfully demonstrating exceptional cognitive capabilities in our standardized
-            intelligence assessment. This award recognizes proficiency in logical reasoning,
-            pattern recognition, and complex problem-solving strategies evaluated
-            under supervised testing conditions.
+            [[#{certificate.template.description}]]
         </p>
 
         <!-- Score section -->
         <div class="score-section">
-            <div class="score-label">VERIFIED ASSESSMENT SCORE</div>
-            <div class="score-value" th:text="${score}">128</div>
+            <div class="score-label">[[#{certificate.template.score_label}]]</div>
+            <div class="score-value" th:text="${#numbers.formatDecimal(score, 0, 1)}">128</div>
         </div>
     </div>
 
     <!-- Footer: Issuer, Date and QR verification -->
     <div class="footer">
         <div class="footer-cell issuer">
-            Authorized Signature<br />
+            [[#{certificate.template.authorized_signature}]]<br />
             <div class="issuer-name" th:text="${assessmentCreator}">
                 Lead Psychometrician
             </div>
         </div>
 
         <div class="footer-cell date-section">
-            Date of Issue<br />
+            [[#{certificate.template.date_of_issue}]]<br />
             <strong th:text="${#temporals.format(issuedDate, 'MMMM dd, yyyy')}">January 01, 2024</strong>
         </div>
 
