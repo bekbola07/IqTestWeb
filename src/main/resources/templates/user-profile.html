@@ -70,6 +70,7 @@
                 </div>
                 <div class="card-body px-4 pb-4">
                     <form id="userProfileForm" th:action="@{/profile/save}" th:object="${userProfileForm}" method="post">
+                        <input type="hidden" name="sessionId" th:value="${sessionId}" th:if="${sessionId != null}">
 
                         <!-- Age Field -->
                         <div class="form-group mb-4" th:if="${userProfileForm.age == null or cAgeEnabled}">

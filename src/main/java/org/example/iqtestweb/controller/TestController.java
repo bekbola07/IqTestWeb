@@ -15,8 +15,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,7 +34,6 @@ public class TestController {
 
     @GetMapping("/select-quiz")
     public String selectQuizForTest(Model model, HttpSession session) {
-        // Ensure user is in session for proper authorization checks later
         User user = (User) session.getAttribute("user");
         if (user == null) {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -64,7 +61,6 @@ public class TestController {
     @Transactional
     public String startTest(@PathVariable Long quizId, HttpSession session, RedirectAttributes redirectAttributes) {
         User user = (User) session.getAttribute("user");
-        // If user is null in session, try to get it from SecurityContext
         if (user == null) {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
@@ -83,36 +79,30 @@ public class TestController {
 
         if (user == null) {
             redirectAttributes.addFlashAttribute("error", "User not authenticated.");
-            return "redirect:/login"; // Redirect to login if user is still null
+            return "redirect:/login";
         }
 
         Quiz quiz = quizService.getQuizById(quizId);
-
         if (quiz == null) {
             redirectAttributes.addFlashAttribute("error", "Quiz not found.");
             return "redirect:/test/select-quiz";
         }
 
         if (quiz.getStatus() != QuizStatus.STARTED) {
-            redirectAttributes.addFlashAttribute("error", "This quiz is not started yet. Please start it from the quiz management page.");
-            return "redirect:/test/select-quiz"; // Redirect to quiz selection page
+            redirectAttributes.addFlashAttribute("error", "This quiz is not started yet.");
+            return "redirect:/test/select-quiz";
         }
 
-        // Get or create QuizSnapshot
         QuizSnapshot quizSnapshot = quizSnapshotService.getOrCreateSnapshot(quiz);
-
-        // Start or resume session
         TestSession testSession = testSessionService.startSession(user, quizSnapshot);
-
         session.setAttribute("testSession", testSession);
-        
-        // Find where the user left off if resuming
+
         if (testSession.getStatus() == Status.IN_PROGRESS) {
             List<UserAnswer> existingAnswers = userAnswerService.getUserAnswersBySessionId(testSession.getSessionId());
             int nextIndex = existingAnswers.size();
             return "redirect:/question/" + nextIndex;
         } else {
-             return "redirect:/test/results/" + testSession.getSessionId(); // Updated redirect
+            return "redirect:/test/results/" + testSession.getSessionId();
         }
     }
 
@@ -128,76 +118,66 @@ public class TestController {
             redirectAttributes.addFlashAttribute("error", "Test session expired.");
             return "redirect:/test/select-quiz";
         }
-        
-        // Refresh session from DB to check status and time
+
         testSession = testSessionService.getSession(testSession.getSessionId());
         if (testSession.getStatus() != Status.IN_PROGRESS) {
-             return "redirect:/test/results/" + testSession.getSessionId(); // Updated redirect
+            return "redirect:/test/results/" + testSession.getSessionId();
         }
 
         if (testSessionService.isSessionExpired(testSession)) {
             testSessionService.handleTimeout(testSession);
-            return "redirect:/test/results/" + testSession.getSessionId(); // Updated redirect
+            return "redirect:/test/results/" + testSession.getSessionId();
         }
 
-        // 🔥 Snapshot'lardan ma'lumot olish
         QuestionSnapshot questionSnapshot = questionSnapshotService.getById(questionSnapshotId);
-        
-        // Only process answer if option is selected
+
         if (optionSnapshotId != null) {
             AnswerOptionSnapshot selectedOptionSnapshot = answerOptionSnapshotService.getById(optionSnapshotId);
-
-            // UserAnswer saqlash (endi snapshot'ga bog'lanadi)
             UserAnswer userAnswer = new UserAnswer();
             userAnswer.setSession(testSession);
             userAnswer.setQuestionSnapshot(questionSnapshot);
             userAnswer.setSelectedOptionSnapshot(selectedOptionSnapshot);
             userAnswer.setIsCorrect(selectedOptionSnapshot.getIsCorrect());
-            userAnswer.setTimeTakenSeconds(timeTakenSeconds); // Save time taken
+            userAnswer.setTimeTakenSeconds(timeTakenSeconds);
             userAnswerService.saveUserAnswer(userAnswer);
         }
 
-        // Keyingi savolga o'tish
         List<QuestionSnapshot> questionSnapshots = questionSnapshotService.findByQuizSnapshotId(testSession.getQuizSnapshot().getId());
         if (nextIndex < questionSnapshots.size()) {
             return "redirect:/question/" + nextIndex;
         } else {
-            TestSessionService.TestSessionCompletionResult result = testSessionService.completeSession(testSession.getSessionId());
-            if (result.isProfileDataRequired()) { // Changed from isAgeRequired()
-                return "redirect:/profile"; // Redirect to the new user profile page
+            // ✅ sessionId ni oldindan saqlab qo'yamiz
+            Long sessionId = testSession.getSessionId();
+            TestSessionService.TestSessionCompletionResult result = testSessionService.completeSession(sessionId);
+
+            if (result.isProfileDataRequired()) {
+                // ✅ sessionId ni profile sahifasiga uzatamiz
+                return "redirect:/profile?sessionId=" + sessionId;
             }
-            return "redirect:/test/results/" + testSession.getSessionId(); // Updated redirect
+            return "redirect:/test/results/" + sessionId;
         }
     }
 
-    // Removed the enterAge GET method
-    // Removed the submitAge POST method
-
-    @GetMapping("/results/{sessionId}") // Changed mapping
-    public String showResults(@PathVariable Long sessionId, Model model, HttpSession session) { // Added @PathVariable
-        TestSession testSession = testSessionService.getSession(sessionId); // Get session by ID
+    @GetMapping("/results/{sessionId}")
+    public String showResults(@PathVariable Long sessionId, Model model, HttpSession session) {
+        TestSession testSession = testSessionService.getSession(sessionId);
         if (testSession == null) {
-            return "redirect:/dashboard"; // Redirect if session not found
+            return "redirect:/dashboard";
         }
-        
-        // Refresh from DB to ensure we have latest status
-        // testSession = testSessionService.getSession(testSession.getSessionId()); // Already fetched by ID
 
         if (testSession.getStatus() == Status.IN_PROGRESS) {
-             // If user navigates to results manually, try to complete session
-             TestSessionService.TestSessionCompletionResult result = testSessionService.completeSession(testSession.getSessionId());
-             if (result.isProfileDataRequired()) { // Changed from isAgeRequired()
-                 return "redirect:/profile"; // Redirect to the new user profile page
-             }
-             testSession = result.getSession();
+            TestSessionService.TestSessionCompletionResult result = testSessionService.completeSession(testSession.getSessionId());
+            if (result.isProfileDataRequired()) {
+                // ✅ Bu yerda ham sessionId uzatiladi
+                return "redirect:/profile?sessionId=" + sessionId;
+            }
+            testSession = result.getSession();
         }
 
         List<UserAnswer> userAnswers = userAnswerService.getUserAnswersBySessionId(testSession.getSessionId());
         long correctAnswers = userAnswers.stream().filter(UserAnswer::getIsCorrect).count();
-        
-        // Use quiz snapshot to get total questions
         int totalQuestions = questionSnapshotService.findByQuizSnapshotId(testSession.getQuizSnapshot().getId()).size();
-        
+
         int score = userAnswers.stream()
                 .filter(UserAnswer::getIsCorrect)
                 .mapToInt(i -> i.getQuestionSnapshot().getPoints())
@@ -206,21 +186,19 @@ public class TestController {
         model.addAttribute("testSession", testSession);
         model.addAttribute("correctAnswers", correctAnswers);
         model.addAttribute("totalQuestions", totalQuestions);
-        model.addAttribute("iqScore", testSession.getIqScore()); // Use calculated IQ score
+        model.addAttribute("iqScore", testSession.getIqScore());
         model.addAttribute("accuracy", totalQuestions > 0 ? (int) (((double) correctAnswers / totalQuestions) * 100) : 0);
-        
-        // Add certificate enabled flag and check if already generated
+
         boolean certificateEnabled = testSession.getQuizSnapshot().getQuiz().isCertificateEnabled();
         model.addAttribute("certificateEnabled", certificateEnabled);
-        
+
         boolean certificateGenerated = false;
         if (certificateEnabled) {
             certificateGenerated = certificateService.getUserCertificateBySessionId(testSession.getSessionId()).isPresent();
         }
         model.addAttribute("certificateGenerated", certificateGenerated);
 
-        session.removeAttribute("testSession"); // Clear session after showing results
-
+        session.removeAttribute("testSession");
         return "results";
     }
 }
